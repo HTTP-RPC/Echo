@@ -14,8 +14,65 @@
 
 #import "WSWebServiceProxy.h"
 
-@implementation WSWebServiceProxy
+#import <UIKit/UIKit.h>
 
-// TODO
+NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
+
+@implementation WSWebServiceProxy
+{
+    NSString *_multipartBoundary;
+}
+
+static NSString * const kApplicationJSON = @"application/json";
+
+- (instancetype)initWithSession:(NSURLSession *)session serverURL:(NSURL *)serverURL
+{
+    self = [super init];
+
+    if (self) {
+        _session = session;
+        _serverURL = serverURL;
+
+        _encoding = WSEncodingApplicationXWWWFormURLEncoded;
+
+        _multipartBoundary = [[NSUUID new] UUIDString];
+    }
+
+    return self;
+}
+
+- (NSURLSessionTask *)invoke:(WSMethod)method path:(NSString *)path
+    arguments:(NSDictionary *)arguments
+    body:(NSData *)body
+    resultHandler:(void (^)(id, NSError *))resultHandler
+{
+    return [self invoke:method path:path arguments:arguments body: body responseHandler:^id (NSData *data, NSString *contentType, NSError **error) {
+        id result = nil;
+
+        if ([contentType hasPrefix:kApplicationJSON]) {
+            result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
+        } else if ([contentType hasPrefix:@"image/"]) {
+            result = [UIImage imageWithData:data];
+        } else if ([contentType hasPrefix:@"text/"]) {
+            result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        } else {
+            *error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
+                NSLocalizedDescriptionKey:@"Unsupported response encoding."
+            }];
+        }
+
+        return result;
+    } resultHandler:resultHandler];
+}
+
+- (NSURLSessionTask *)invoke:(WSMethod)method path:(NSString *)path
+    arguments:(NSDictionary<NSString *, id> *)arguments
+    body:(NSData *)body
+    responseHandler:(id (^)(NSData *data, NSString *contentType, NSError **error))responseHandler
+    resultHandler:(void (^)(id, NSError *))resultHandler;
+{
+    // TODO
+    return nil;
+}
 
 @end

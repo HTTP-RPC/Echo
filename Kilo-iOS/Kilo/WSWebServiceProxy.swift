@@ -18,5 +18,33 @@ import Foundation
  * Swift refinements to web service proxy.
  */
 extension WSWebServiceProxy {
-    // TODO
+    @discardableResult
+    open func invoke<T, E: Error>(_ method: WSMethod, path: String, arguments: [String: Any]? = nil, body: Data? = nil,
+        resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
+        return __invoke(method, path: path, arguments: arguments, body: body) { result, error in
+            resultHandler(result as! T?, error as! E?)
+        }
+    }
+
+    @discardableResult
+    open func invoke<T, E: Error>(_ method: WSMethod, path: String, arguments: [String: Any]? = nil, body: Data? = nil,
+        responseHandler: @escaping (Data, String) throws -> T?,
+        resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
+        return __invoke(method, path: path, arguments: arguments, body: body, responseHandler: { data, contentType, errorPointer in
+            let result: Any?
+            do {
+                result = try responseHandler(data, contentType)
+            } catch {
+                if (errorPointer != nil) {
+                    errorPointer!.pointee = error as NSError
+                }
+
+                result = nil
+            }
+
+            return result
+        }) { result, error in
+            resultHandler(result as! T?, error as! E?)
+        }
+    }
 }
