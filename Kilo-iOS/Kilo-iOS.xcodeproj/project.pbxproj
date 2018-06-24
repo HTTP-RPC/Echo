@@ -7,13 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		372598C520DFDD8600F8B493 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372598C420DFDD8600F8B493 /* AppDelegate.swift */; };
+		372598C720DFDD8600F8B493 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372598C620DFDD8600F8B493 /* ViewController.swift */; };
+		372598CC20DFDD8800F8B493 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 372598CB20DFDD8800F8B493 /* Assets.xcassets */; };
+		372598CF20DFDD8800F8B493 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 372598CD20DFDD8800F8B493 /* LaunchScreen.storyboard */; };
+		372598E820DFDE4200F8B493 /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 372598E720DFDE4200F8B493 /* MarkupKit.framework */; };
+		372598E920DFDE4200F8B493 /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 372598E720DFDE4200F8B493 /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3731086E20DFCD780046B4EC /* WSWebServiceProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 3731086C20DFCD780046B4EC /* WSWebServiceProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3731086F20DFCD780046B4EC /* WSWebServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3731086D20DFCD780046B4EC /* WSWebServiceProxy.m */; };
 		3731087520DFCE270046B4EC /* WSWebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3731087420DFCE270046B4EC /* WSWebServiceProxy.swift */; };
 		378C65A220DFCC0B0026158E /* Kilo.h in Headers */ = {isa = PBXBuildFile; fileRef = 378C65A020DFCC0B0026158E /* Kilo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		372598EA20DFDE4200F8B493 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				372598E920DFDE4200F8B493 /* MarkupKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		372598C220DFDD8600F8B493 /* KiloTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KiloTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		372598C420DFDD8600F8B493 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		372598C620DFDD8600F8B493 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		372598CB20DFDD8800F8B493 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		372598CE20DFDD8800F8B493 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		372598D020DFDD8800F8B493 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		372598E720DFDE4200F8B493 /* MarkupKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MarkupKit.framework; sourceTree = "<group>"; };
 		3731086C20DFCD780046B4EC /* WSWebServiceProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WSWebServiceProxy.h; sourceTree = "<group>"; };
 		3731086D20DFCD780046B4EC /* WSWebServiceProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WSWebServiceProxy.m; sourceTree = "<group>"; };
 		3731087420DFCE270046B4EC /* WSWebServiceProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSWebServiceProxy.swift; sourceTree = "<group>"; };
@@ -23,6 +50,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		372598BF20DFDD8600F8B493 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				372598E820DFDE4200F8B493 /* MarkupKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		378C659920DFCC0B0026158E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -33,10 +68,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		372598C320DFDD8600F8B493 /* KiloTest */ = {
+			isa = PBXGroup;
+			children = (
+				372598C420DFDD8600F8B493 /* AppDelegate.swift */,
+				372598C620DFDD8600F8B493 /* ViewController.swift */,
+				372598CB20DFDD8800F8B493 /* Assets.xcassets */,
+				372598CD20DFDD8800F8B493 /* LaunchScreen.storyboard */,
+				372598D020DFDD8800F8B493 /* Info.plist */,
+			);
+			path = KiloTest;
+			sourceTree = "<group>";
+		};
 		378C659320DFCC0B0026158E = {
 			isa = PBXGroup;
 			children = (
+				372598E720DFDE4200F8B493 /* MarkupKit.framework */,
 				378C659F20DFCC0B0026158E /* Kilo */,
+				372598C320DFDD8600F8B493 /* KiloTest */,
 				378C659E20DFCC0B0026158E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -45,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				378C659D20DFCC0B0026158E /* Kilo.framework */,
+				372598C220DFDD8600F8B493 /* KiloTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -76,6 +126,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		372598C120DFDD8600F8B493 /* KiloTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 372598D320DFDD8800F8B493 /* Build configuration list for PBXNativeTarget "KiloTest" */;
+			buildPhases = (
+				372598BE20DFDD8600F8B493 /* Sources */,
+				372598BF20DFDD8600F8B493 /* Frameworks */,
+				372598C020DFDD8600F8B493 /* Resources */,
+				372598EA20DFDE4200F8B493 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KiloTest;
+			productName = KiloTest;
+			productReference = 372598C220DFDD8600F8B493 /* KiloTest.app */;
+			productType = "com.apple.product-type.application";
+		};
 		378C659C20DFCC0B0026158E /* Kilo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 378C65A520DFCC0B0026158E /* Build configuration list for PBXNativeTarget "Kilo" */;
@@ -100,9 +168,13 @@
 		378C659420DFCC0B0026158E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0930;
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "HTTP-RPC";
 				TargetAttributes = {
+					372598C120DFDD8600F8B493 = {
+						CreatedOnToolsVersion = 9.3;
+					};
 					378C659C20DFCC0B0026158E = {
 						CreatedOnToolsVersion = 9.3;
 						LastSwiftMigration = 0930;
@@ -115,6 +187,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 378C659320DFCC0B0026158E;
 			productRefGroup = 378C659E20DFCC0B0026158E /* Products */;
@@ -122,11 +195,21 @@
 			projectRoot = "";
 			targets = (
 				378C659C20DFCC0B0026158E /* Kilo */,
+				372598C120DFDD8600F8B493 /* KiloTest */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		372598C020DFDD8600F8B493 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				372598CF20DFDD8800F8B493 /* LaunchScreen.storyboard in Resources */,
+				372598CC20DFDD8800F8B493 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		378C659B20DFCC0B0026158E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,6 +220,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		372598BE20DFDD8600F8B493 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				372598C720DFDD8600F8B493 /* ViewController.swift in Sources */,
+				372598C520DFDD8600F8B493 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		378C659820DFCC0B0026158E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,7 +240,68 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXVariantGroup section */
+		372598CD20DFDD8800F8B493 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				372598CE20DFDD8800F8B493 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		372598D120DFDD8800F8B493 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FBUU23VBFN;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = KiloTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.httprpc.KiloTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		372598D220DFDD8800F8B493 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FBUU23VBFN;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = KiloTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.httprpc.KiloTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		378C65A320DFCC0B0026158E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -323,6 +476,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		372598D320DFDD8800F8B493 /* Build configuration list for PBXNativeTarget "KiloTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				372598D120DFDD8800F8B493 /* Debug */,
+				372598D220DFDD8800F8B493 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		378C659720DFCC0B0026158E /* Build configuration list for PBXProject "Kilo-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
