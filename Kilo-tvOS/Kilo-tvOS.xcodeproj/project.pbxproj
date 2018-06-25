@@ -8,13 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3705419620DFF5EC00A4D54B /* Kilo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37D49B0420DFCC4700410E0A /* Kilo.framework */; };
-		3731086B20DFCD270046B4EC /* Kilo.h in Headers */ = {isa = PBXBuildFile; fileRef = 3731086A20DFCD270046B4EC /* Kilo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3731087220DFCDEA0046B4EC /* WSWebServiceProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 3731087020DFCDEA0046B4EC /* WSWebServiceProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3731087320DFCDEA0046B4EC /* WSWebServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3731087120DFCDEA0046B4EC /* WSWebServiceProxy.m */; };
-		3731087720DFCEEF0046B4EC /* WSWebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3731087620DFCEEF0046B4EC /* WSWebServiceProxy.swift */; };
 		3760E23A20E14554005D501B /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3760E23920E14554005D501B /* ViewController.xml */; };
-		3760E24520E1482C005D501B /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3760E24320E1482B005D501B /* test.txt */; };
-		3760E24620E1482C005D501B /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3760E24420E1482B005D501B /* test.jpg */; };
+		3760E24820E17178005D501B /* WebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3760E24720E17178005D501B /* WebServiceProxy.swift */; };
 		376EBFDC20DFE0010035CF3C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 376EBFDB20DFE0010035CF3C /* Assets.xcassets */; };
 		376EBFE220DFE0310035CF3C /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 376EBFE120DFE0310035CF3C /* MarkupKit.framework */; };
 		376EBFE320DFE0310035CF3C /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 376EBFE120DFE0310035CF3C /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -37,13 +32,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3731086A20DFCD270046B4EC /* Kilo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Kilo.h; path = "../../Kilo-iOS/Kilo/Kilo.h"; sourceTree = "<group>"; };
-		3731087020DFCDEA0046B4EC /* WSWebServiceProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WSWebServiceProxy.h; path = "../../Kilo-iOS/Kilo/WSWebServiceProxy.h"; sourceTree = "<group>"; };
-		3731087120DFCDEA0046B4EC /* WSWebServiceProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WSWebServiceProxy.m; path = "../../Kilo-iOS/Kilo/WSWebServiceProxy.m"; sourceTree = "<group>"; };
-		3731087620DFCEEF0046B4EC /* WSWebServiceProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WSWebServiceProxy.swift; path = "../../Kilo-iOS/Kilo/WSWebServiceProxy.swift"; sourceTree = "<group>"; };
 		3760E23920E14554005D501B /* ViewController.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = ViewController.xml; path = "../../Kilo-iOS/KiloTest/ViewController.xml"; sourceTree = "<group>"; };
-		3760E24320E1482B005D501B /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test.txt; path = "../../Kilo-iOS/KiloTest/test.txt"; sourceTree = "<group>"; };
-		3760E24420E1482B005D501B /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = test.jpg; path = "../../Kilo-iOS/KiloTest/test.jpg"; sourceTree = "<group>"; };
+		3760E24720E17178005D501B /* WebServiceProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebServiceProxy.swift; path = "../../Kilo-iOS/Kilo/WebServiceProxy.swift"; sourceTree = "<group>"; };
 		376EBFD220DFE0000035CF3C /* KiloTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KiloTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		376EBFDB20DFE0010035CF3C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		376EBFDD20DFE0010035CF3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -87,8 +77,6 @@
 				376EBFE520DFE05C0035CF3C /* AppDelegate.swift */,
 				376EBFE620DFE05C0035CF3C /* ViewController.swift */,
 				3760E23920E14554005D501B /* ViewController.xml */,
-				3760E24420E1482B005D501B /* test.jpg */,
-				3760E24320E1482B005D501B /* test.txt */,
 				376EBFDB20DFE0010035CF3C /* Assets.xcassets */,
 				376EBFDD20DFE0010035CF3C /* Info.plist */,
 			);
@@ -118,10 +106,7 @@
 		37D49B0620DFCC4700410E0A /* Kilo */ = {
 			isa = PBXGroup;
 			children = (
-				3731086A20DFCD270046B4EC /* Kilo.h */,
-				3731087020DFCDEA0046B4EC /* WSWebServiceProxy.h */,
-				3731087120DFCDEA0046B4EC /* WSWebServiceProxy.m */,
-				3731087620DFCEEF0046B4EC /* WSWebServiceProxy.swift */,
+				3760E24720E17178005D501B /* WebServiceProxy.swift */,
 				37D49B0820DFCC4700410E0A /* Info.plist */,
 			);
 			path = Kilo;
@@ -134,8 +119,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3731086B20DFCD270046B4EC /* Kilo.h in Headers */,
-				3731087220DFCDEA0046B4EC /* WSWebServiceProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,9 +206,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3760E23A20E14554005D501B /* ViewController.xml in Resources */,
-				3760E24520E1482C005D501B /* test.txt in Resources */,
 				376EBFDC20DFE0010035CF3C /* Assets.xcassets in Resources */,
-				3760E24620E1482C005D501B /* test.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,8 +233,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3731087320DFCDEA0046B4EC /* WSWebServiceProxy.m in Sources */,
-				3731087720DFCEEF0046B4EC /* WSWebServiceProxy.swift in Sources */,
+				3760E24820E17178005D501B /* WebServiceProxy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,7 +430,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -477,7 +457,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.httprpc.Kilo;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};

@@ -14,13 +14,8 @@
 		372598CF20DFDD8800F8B493 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 372598CD20DFDD8800F8B493 /* LaunchScreen.storyboard */; };
 		372598E820DFDE4200F8B493 /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 372598E720DFDE4200F8B493 /* MarkupKit.framework */; };
 		372598E920DFDE4200F8B493 /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 372598E720DFDE4200F8B493 /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3731086E20DFCD780046B4EC /* WSWebServiceProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 3731086C20DFCD780046B4EC /* WSWebServiceProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3731086F20DFCD780046B4EC /* WSWebServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3731086D20DFCD780046B4EC /* WSWebServiceProxy.m */; };
-		3731087520DFCE270046B4EC /* WSWebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3731087420DFCE270046B4EC /* WSWebServiceProxy.swift */; };
+		3731087520DFCE270046B4EC /* WebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3731087420DFCE270046B4EC /* WebServiceProxy.swift */; };
 		3760E23820E14549005D501B /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3760E23720E14549005D501B /* ViewController.xml */; };
-		3760E24120E14822005D501B /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3760E23F20E14822005D501B /* test.txt */; };
-		3760E24220E14822005D501B /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3760E24020E14822005D501B /* test.jpg */; };
-		378C65A220DFCC0B0026158E /* Kilo.h in Headers */ = {isa = PBXBuildFile; fileRef = 378C65A020DFCC0B0026158E /* Kilo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,14 +40,9 @@
 		372598CE20DFDD8800F8B493 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		372598D020DFDD8800F8B493 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		372598E720DFDE4200F8B493 /* MarkupKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MarkupKit.framework; sourceTree = "<group>"; };
-		3731086C20DFCD780046B4EC /* WSWebServiceProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WSWebServiceProxy.h; sourceTree = "<group>"; };
-		3731086D20DFCD780046B4EC /* WSWebServiceProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WSWebServiceProxy.m; sourceTree = "<group>"; };
-		3731087420DFCE270046B4EC /* WSWebServiceProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSWebServiceProxy.swift; sourceTree = "<group>"; };
+		3731087420DFCE270046B4EC /* WebServiceProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebServiceProxy.swift; sourceTree = "<group>"; };
 		3760E23720E14549005D501B /* ViewController.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = ViewController.xml; sourceTree = "<group>"; };
-		3760E23F20E14822005D501B /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
-		3760E24020E14822005D501B /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
 		378C659D20DFCC0B0026158E /* Kilo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kilo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		378C65A020DFCC0B0026158E /* Kilo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kilo.h; sourceTree = "<group>"; };
 		378C65A120DFCC0B0026158E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,8 +79,6 @@
 				372598C420DFDD8600F8B493 /* AppDelegate.swift */,
 				372598C620DFDD8600F8B493 /* ViewController.swift */,
 				3760E23720E14549005D501B /* ViewController.xml */,
-				3760E24020E14822005D501B /* test.jpg */,
-				3760E23F20E14822005D501B /* test.txt */,
 				372598CB20DFDD8800F8B493 /* Assets.xcassets */,
 				372598CD20DFDD8800F8B493 /* LaunchScreen.storyboard */,
 				372598D020DFDD8800F8B493 /* Info.plist */,
@@ -121,10 +109,7 @@
 		378C659F20DFCC0B0026158E /* Kilo */ = {
 			isa = PBXGroup;
 			children = (
-				378C65A020DFCC0B0026158E /* Kilo.h */,
-				3731086C20DFCD780046B4EC /* WSWebServiceProxy.h */,
-				3731086D20DFCD780046B4EC /* WSWebServiceProxy.m */,
-				3731087420DFCE270046B4EC /* WSWebServiceProxy.swift */,
+				3731087420DFCE270046B4EC /* WebServiceProxy.swift */,
 				378C65A120DFCC0B0026158E /* Info.plist */,
 			);
 			path = Kilo;
@@ -137,8 +122,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				378C65A220DFCC0B0026158E /* Kilo.h in Headers */,
-				3731086E20DFCD780046B4EC /* WSWebServiceProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -225,9 +208,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				372598CF20DFDD8800F8B493 /* LaunchScreen.storyboard in Resources */,
-				3760E24220E14822005D501B /* test.jpg in Resources */,
 				3760E23820E14549005D501B /* ViewController.xml in Resources */,
-				3760E24120E14822005D501B /* test.txt in Resources */,
 				372598CC20DFDD8800F8B493 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -255,8 +236,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3731086F20DFCD780046B4EC /* WSWebServiceProxy.m in Sources */,
-				3731087520DFCE270046B4EC /* WSWebServiceProxy.swift in Sources */,
+				3731087520DFCE270046B4EC /* WebServiceProxy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,7 +443,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -490,7 +470,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.httprpc.Kilo;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
