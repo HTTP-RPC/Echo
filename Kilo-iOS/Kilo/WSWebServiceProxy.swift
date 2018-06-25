@@ -19,7 +19,8 @@ import Foundation
  */
 extension WSWebServiceProxy {
     @discardableResult
-    open func invoke<T, E: Error>(_ method: WSMethod, path: String, arguments: [String: Any]? = nil, body: Data? = nil,
+    open func invoke<T, E: Error>(_ method: WSMethod, path: String,
+        arguments: [String: Any]? = nil, body: Data? = nil,
         resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path, arguments: arguments, body: body) { result, error in
             resultHandler(result as! T?, error as! E?)
@@ -27,7 +28,8 @@ extension WSWebServiceProxy {
     }
 
     @discardableResult
-    open func invoke<T, E: Error>(_ method: WSMethod, path: String, arguments: [String: Any]? = nil, body: Data? = nil,
+    open func invoke<T, E: Error>(_ method: WSMethod, path: String,
+        arguments: [String: Any]? = nil, body: Data? = nil,
         responseHandler: @escaping (Data, String) throws -> T?,
         resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path, arguments: arguments, body: body, responseHandler: { data, contentType, errorPointer in

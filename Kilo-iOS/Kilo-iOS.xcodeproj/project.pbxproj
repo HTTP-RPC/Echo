@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3705419420DFF5E400A4D54B /* Kilo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 378C659D20DFCC0B0026158E /* Kilo.framework */; };
 		372598C520DFDD8600F8B493 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372598C420DFDD8600F8B493 /* AppDelegate.swift */; };
 		372598C720DFDD8600F8B493 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372598C620DFDD8600F8B493 /* ViewController.swift */; };
 		372598CC20DFDD8800F8B493 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 372598CB20DFDD8800F8B493 /* Assets.xcassets */; };
@@ -16,6 +17,9 @@
 		3731086E20DFCD780046B4EC /* WSWebServiceProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 3731086C20DFCD780046B4EC /* WSWebServiceProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3731086F20DFCD780046B4EC /* WSWebServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3731086D20DFCD780046B4EC /* WSWebServiceProxy.m */; };
 		3731087520DFCE270046B4EC /* WSWebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3731087420DFCE270046B4EC /* WSWebServiceProxy.swift */; };
+		3760E23820E14549005D501B /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3760E23720E14549005D501B /* ViewController.xml */; };
+		3760E24120E14822005D501B /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3760E23F20E14822005D501B /* test.txt */; };
+		3760E24220E14822005D501B /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3760E24020E14822005D501B /* test.jpg */; };
 		378C65A220DFCC0B0026158E /* Kilo.h in Headers */ = {isa = PBXBuildFile; fileRef = 378C65A020DFCC0B0026158E /* Kilo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -44,6 +48,9 @@
 		3731086C20DFCD780046B4EC /* WSWebServiceProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WSWebServiceProxy.h; sourceTree = "<group>"; };
 		3731086D20DFCD780046B4EC /* WSWebServiceProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WSWebServiceProxy.m; sourceTree = "<group>"; };
 		3731087420DFCE270046B4EC /* WSWebServiceProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSWebServiceProxy.swift; sourceTree = "<group>"; };
+		3760E23720E14549005D501B /* ViewController.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = ViewController.xml; sourceTree = "<group>"; };
+		3760E23F20E14822005D501B /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
+		3760E24020E14822005D501B /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
 		378C659D20DFCC0B0026158E /* Kilo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kilo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		378C65A020DFCC0B0026158E /* Kilo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kilo.h; sourceTree = "<group>"; };
 		378C65A120DFCC0B0026158E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -54,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3705419420DFF5E400A4D54B /* Kilo.framework in Frameworks */,
 				372598E820DFDE4200F8B493 /* MarkupKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -68,11 +76,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3705419320DFF5E400A4D54B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		372598C320DFDD8600F8B493 /* KiloTest */ = {
 			isa = PBXGroup;
 			children = (
 				372598C420DFDD8600F8B493 /* AppDelegate.swift */,
 				372598C620DFDD8600F8B493 /* ViewController.swift */,
+				3760E23720E14549005D501B /* ViewController.xml */,
+				3760E24020E14822005D501B /* test.jpg */,
+				3760E23F20E14822005D501B /* test.txt */,
 				372598CB20DFDD8800F8B493 /* Assets.xcassets */,
 				372598CD20DFDD8800F8B493 /* LaunchScreen.storyboard */,
 				372598D020DFDD8800F8B493 /* Info.plist */,
@@ -87,6 +105,7 @@
 				378C659F20DFCC0B0026158E /* Kilo */,
 				372598C320DFDD8600F8B493 /* KiloTest */,
 				378C659E20DFCC0B0026158E /* Products */,
+				3705419320DFF5E400A4D54B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -206,6 +225,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				372598CF20DFDD8800F8B493 /* LaunchScreen.storyboard in Resources */,
+				3760E24220E14822005D501B /* test.jpg in Resources */,
+				3760E23820E14549005D501B /* ViewController.xml in Resources */,
+				3760E24120E14822005D501B /* test.txt in Resources */,
 				372598CC20DFDD8800F8B493 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
