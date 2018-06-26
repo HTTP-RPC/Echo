@@ -113,6 +113,14 @@ public class WebServiceProxy {
         return query
     }
 
+    func encodeApplicationXWWWFormURLEncodedData(for arguments: [String: Any]) -> Data {
+        var body = Data()
+
+        body.append(utf8DataFor: encodeQuery(for: arguments))
+
+        return body
+    }
+
     func encodeMultipartFormData(for arguments: [String: Any]) -> Data {
         var body = Data()
 
@@ -122,12 +130,12 @@ public class WebServiceProxy {
             }
 
             for element in argument.value as? [Any] ?? [argument.value] {
-                body.append(utf8DataFor: String(format: "--%@\r\n", multipartBoundary))
-                body.append(utf8DataFor: String(format: "Content-Disposition: form-data; name=\"%@\"", key))
+                body.append(utf8DataFor: "--%\(multipartBoundary)\r\n")
+                body.append(utf8DataFor: "Content-Disposition: form-data; name=\"\(key)\"")
 
                 if let url = element as? URL {
-                    body.append(utf8DataFor: String(format: "; filename=\"%@\"\r\n", url.lastPathComponent))
-                    body.append(utf8DataFor: String(format: "Content-Type: application/octet-stream%@\r\n\r\n"))
+                    body.append(utf8DataFor: "; filename=\"\(url.lastPathComponent)\"\r\n")
+                    body.append(utf8DataFor: "Content-Type: application/octet-stream\r\n\r\n")
 
                     if let data = try? Data(contentsOf: url) {
                         body.append(data)
@@ -144,7 +152,7 @@ public class WebServiceProxy {
             }
         }
 
-        body.append(utf8DataFor: String(format:"--%@--\r\n", multipartBoundary))
+        body.append(utf8DataFor: "--\(multipartBoundary)--\r\n")
 
         return body
     }
