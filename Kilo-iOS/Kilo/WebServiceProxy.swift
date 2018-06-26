@@ -149,9 +149,9 @@ public class WebServiceProxy {
 
             urlRequest.httpMethod = method.rawValue
 
+            let contentType: String
             let httpBody: Data?
             if (method == .post && content == nil) {
-                let contentType: String
                 switch encoding {
                 case .applicationXWWWFormURLEncoded:
                     contentType = "application/x-www-form-urlencoded"
@@ -161,12 +161,12 @@ public class WebServiceProxy {
                     contentType = "multipart/form-data; boundary=\(multipartBoundary)"
                     httpBody = encodeMultipartFormData(for: arguments)
                 }
-
-                urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
             } else {
+                contentType = "application/octet-stream"
                 httpBody = content
             }
 
+            urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = httpBody
 
             task = session.dataTask(with: urlRequest) { data, urlResponse, error in

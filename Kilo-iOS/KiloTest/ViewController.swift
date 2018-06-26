@@ -118,7 +118,14 @@ class ViewController: LMTableViewController {
                 error: error, cell: self.postMultipartCell)
         }
 
-        // TODO Custom post
+        // Custom post
+        webServiceProxy.invoke(.post, path: "/httprpc-server/test", arguments: [
+            "name": imageTestURL.lastPathComponent
+        ], content: try? Data(contentsOf: imageTestURL), responseHandler: { content, contentType in
+            return UIImage(data: content)
+        }) { (result: UIImage?, error: Error?) in
+            self.validate(result != nil, error: error, cell: self.postCustomCell)
+        }
 
         // TODO PUT (w/body)
 
