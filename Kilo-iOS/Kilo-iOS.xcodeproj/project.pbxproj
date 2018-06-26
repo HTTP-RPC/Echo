@@ -16,6 +16,8 @@
 		372598E920DFDE4200F8B493 /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 372598E720DFDE4200F8B493 /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3731087520DFCE270046B4EC /* WebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3731087420DFCE270046B4EC /* WebServiceProxy.swift */; };
 		3760E23820E14549005D501B /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3760E23720E14549005D501B /* ViewController.xml */; };
+		378F659820E2BAD200D4440E /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 378F659620E2BAD100D4440E /* test.txt */; };
+		378F659920E2BAD200D4440E /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 378F659720E2BAD100D4440E /* test.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +46,8 @@
 		3760E23720E14549005D501B /* ViewController.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = ViewController.xml; sourceTree = "<group>"; };
 		378C659D20DFCC0B0026158E /* Kilo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kilo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		378C65A120DFCC0B0026158E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		378F659620E2BAD100D4440E /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
+		378F659720E2BAD100D4440E /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +83,8 @@
 				372598C420DFDD8600F8B493 /* AppDelegate.swift */,
 				372598C620DFDD8600F8B493 /* ViewController.swift */,
 				3760E23720E14549005D501B /* ViewController.xml */,
+				378F659720E2BAD100D4440E /* test.jpg */,
+				378F659620E2BAD100D4440E /* test.txt */,
 				372598CB20DFDD8800F8B493 /* Assets.xcassets */,
 				372598CD20DFDD8800F8B493 /* LaunchScreen.storyboard */,
 				372598D020DFDD8800F8B493 /* Info.plist */,
@@ -207,9 +213,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				372598CF20DFDD8800F8B493 /* LaunchScreen.storyboard in Resources */,
 				3760E23820E14549005D501B /* ViewController.xml in Resources */,
+				378F659920E2BAD200D4440E /* test.jpg in Resources */,
+				378F659820E2BAD200D4440E /* test.txt in Resources */,
 				372598CC20DFDD8800F8B493 /* Assets.xcassets in Resources */,
+				372598CF20DFDD8800F8B493 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

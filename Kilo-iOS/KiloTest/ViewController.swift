@@ -44,7 +44,7 @@ class ViewController: LMTableViewController {
         let sessionConfiguration = URLSessionConfiguration.default
 
         sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-        sessionConfiguration.timeoutIntervalForResource = 3
+        sessionConfiguration.timeoutIntervalForResource = 2
 
         // Create web service proxy
         let session = URLSession(configuration: sessionConfiguration)
@@ -65,9 +65,58 @@ class ViewController: LMTableViewController {
                 error: error, cell: self.getCell)
         }
 
-        // TODO URL-encoded post (w/date argument)
+        // POST
+        struct Response: Decodable {
+            struct AttachmentInfo: Decodable, Equatable {
+                let bytes: Int
+                let checksum: Int
+            }
 
-        // TODO Multi-part post (w/date argument)
+            let string: String
+            let strings: [String]
+            let number: Int
+            let flag: Bool
+            let attachmentInfo: [AttachmentInfo]
+        }
+
+        // URL-encoded form data
+        webServiceProxy.invoke(.post, path: "/httprpc-server/test", arguments: [
+            "string": "héllo",
+            "strings": ["a", "b", "c"],
+            "number": 123,
+            "flag": true
+        ]) { (result: Response?, error: Error?) in
+            self.validate(result?.string == "héllo"
+                && result?.strings == ["a", "b", "c"]
+                && result?.number == 123
+                && result?.flag == true
+                && result?.attachmentInfo == [],
+                error: error, cell: self.postURLEncodedCell)
+        }
+
+        // Multi-part form data
+        let textTestURL = Bundle.main.url(forResource: "test", withExtension: "txt")!
+        let imageTestURL = Bundle.main.url(forResource: "test", withExtension: "jpg")!
+
+        webServiceProxy.encoding = .multipartFormData
+
+        webServiceProxy.invoke(.post, path: "/httprpc-server/test", arguments: [
+            "string": "héllo",
+            "strings": ["a", "b", "c"],
+            "number": 123,
+            "flag": true,
+            "attachments": [textTestURL, imageTestURL]
+        ]) { (result: Response?, error: Error?) in
+            self.validate(result?.string == "héllo"
+                && result?.strings == ["a", "b", "c"]
+                && result?.number == 123
+                && result?.flag == true
+                && result?.attachmentInfo == [
+                    Response.AttachmentInfo(bytes: 26, checksum: 2412),
+                    Response.AttachmentInfo(bytes: 10392, checksum: 1038036)
+                ],
+                error: error, cell: self.postMultipartCell)
+        }
 
         // TODO Custom post
 
@@ -75,16 +124,35 @@ class ViewController: LMTableViewController {
 
         // TODO PATCH (w/body)
 
-        // TODO DELETE
+        // DELETE
+        webServiceProxy.invoke(.delete, path: "/httprpc-server/test", arguments: ["id": 101]) { (_: Any?, error: Error?) in
+            self.validate(true, error: error, cell: self.deleteCell)
+        }
 
-        // TODO Error
+        // Error
+        webServiceProxy.invoke(.get, path: "/httprpc-server/test/error") { (_: Any?, error: Error?) in
+            self.errorCell.detailTextLabel?.text = error?.localizedDescription
 
-        // TODO Timeout
+            self.validate(error != nil, error: error, cell: self.errorCell)
+        }
 
-        // TODO Cancel
-        let task: URLSessionTask? = nil
+        // Timeout
+        webServiceProxy.invoke(.get, path: "/httprpc-server/test", arguments: [
+            "value": 123,
+            "delay": 6000
+        ]) { (_: Any?, error: Error?) in
+            self.validate(error != nil, error: error, cell: self.timeoutCell)
+        }
 
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
+        // Cancel
+        let task = webServiceProxy.invoke(.get, path: "/httprpc-server/test", arguments: [
+            "value": 123,
+            "delay": 6000
+        ]) { (_: Any?, error: Error?) in
+            self.validate(error != nil, error: error, cell: self.cancelCell)
+        }
+
+        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { timer in
             task?.cancel()
         }
     }

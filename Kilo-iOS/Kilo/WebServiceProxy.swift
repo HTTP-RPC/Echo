@@ -173,12 +173,27 @@ public class WebServiceProxy {
                 if let httpURLResponse = urlResponse as? HTTPURLResponse {
                     do {
                         let result: T?
-                        if httpURLResponse.statusCode / 100 == 2,
-                            httpURLResponse.statusCode % 100 < 4,
-                            let content = data {
-                            result = try responseHandler(content, httpURLResponse.mimeType)
+                        if (httpURLResponse.statusCode / 100 == 2) {
+                            if let content = data, !content.isEmpty {
+                                result = try responseHandler(content, httpURLResponse.mimeType)
+                            } else {
+                                result = nil
+                            }
                         } else {
-                            result = nil
+                            guard let errorDomain = Bundle(for: WebServiceProxy.self).bundleIdentifier else {
+                                fatalError()
+                            }
+
+                            let errorMessage: String?
+                            if let content = data, let contentType = httpURLResponse.mimeType, contentType.hasPrefix("text/plain") {
+                                errorMessage = String(data: content, encoding: .utf8)
+                            } else {
+                                errorMessage = nil
+                            }
+
+                            throw NSError(domain: errorDomain, code: httpURLResponse.statusCode, userInfo: [
+                                NSLocalizedDescriptionKey: errorMessage ?? HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode)
+                            ])
                         }
 
                         OperationQueue.main.addOperation {
