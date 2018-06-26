@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<LMTableView>
+<LMTableView style="groupedTableView">
     <UITableViewCell id="getCell" textLabel.text="GET"/>
     <UITableViewCell id="postURLEncodedCell" textLabel.text="POST (URL-encoded)"/>
     <UITableViewCell id="postMultipartCell" textLabel.text="POST (multipart)"/>
