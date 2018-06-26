@@ -49,15 +49,23 @@ class ViewController: LMTableViewController {
         // Create web service proxy
         let session = URLSession(configuration: sessionConfiguration)
 
-        let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost")!)
+        let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost:8080")!)
 
-        // TODO GET (w/date argument)
-        webServiceProxy.invoke(.get, path: "/httprpc-server/test") { (result: [String: Any]?, error: Error?) in
+        // GET
+        webServiceProxy.invoke(.get, path: "/httprpc-server/test", arguments: [
+            "string": "héllo+gøodbye",
+            "strings": ["a", "b", "c"],
+            "number": 123,
+            "flag": true,
+        ]) { (result: [String: Any]?, error: Error?) in
+            self.validate(result?["string"] as? String == "héllo+gøodbye"
+                && result?["strings"] as? [String] == ["a", "b", "c"]
+                && result?["number"] as? Int == 123
+                && result?["flag"] as? Bool == true,
+                error: error, cell: self.getCell)
         }
 
         // TODO URL-encoded post (w/date argument)
-        webServiceProxy.invoke(.post, path: "/httprpc-server/test") { (_: Void?, error: Error?) in
-        }
 
         // TODO Multi-part post (w/date argument)
 

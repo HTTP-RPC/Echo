@@ -13,6 +13,7 @@
 //
 
 import Foundation
+import MobileCoreServices
 
 public class WebServiceProxy {
     public enum Encoding: Int {
@@ -33,6 +34,8 @@ public class WebServiceProxy {
 
     public var encoding: Encoding
 
+    let multipartBoundary = UUID().uuidString
+
     static let applicationJSON = "application/json"
 
     public init(session: URLSession, serverURL: URL) {
@@ -40,33 +43,6 @@ public class WebServiceProxy {
         self.serverURL = serverURL
 
         encoding = .applicationXWWWFormURLEncoded
-    }
-
-    @discardableResult
-    public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: Data? = nil,
-        responseHandler: @escaping (Data, String) throws -> T?,
-        resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
-        // TODO
-        return nil
-    }
-
-    @discardableResult
-    public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: Data? = nil,
-        resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
-        return invoke(method, path: path, arguments: arguments, body: body, responseHandler: { data, contentType in
-            let result: T?
-            if (contentType.hasPrefix(WebServiceProxy.applicationJSON)) {
-                let jsonDecoder = JSONDecoder()
-
-                result = try jsonDecoder.decode(T.self, from: data)
-            } else {
-                result = nil
-            }
-
-            return result
-        }, resultHandler: resultHandler)
     }
 
     @discardableResult
@@ -83,5 +59,129 @@ public class WebServiceProxy {
 
             return result
         }, resultHandler: resultHandler)
+    }
+
+    @discardableResult
+    public func invoke<T: Decodable>(_ method: Method, path: String,
+        arguments: [String: Any] = [:], body: Data? = nil,
+        resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
+        return invoke(method, path: path, arguments: arguments, body: body, responseHandler: { data, contentType in
+            let result: T?
+            if (contentType.hasPrefix(WebServiceProxy.applicationJSON)) {
+                result = try JSONDecoder().decode(T.self, from: data)
+            } else {
+                result = nil
+            }
+
+            return result
+        }, resultHandler: resultHandler)
+    }
+
+    @discardableResult
+    public func invoke<T>(_ method: Method, path: String,
+        arguments: [String: Any] = [:], body: Data? = nil,
+        responseHandler: @escaping (Data, String) throws -> T?,
+        resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
+        let task: URLSessionDataTask? = nil
+
+        // TODO
+
+        return task
+    }
+
+    func encodeQuery(for arguments: [String: Any]) -> String {
+        var query = ""
+
+        for argument in arguments {
+            guard let key = argument.key.urlEncodedString, !key.isEmpty else {
+                continue
+            }
+
+            for element in argument.value as? [Any] ?? [argument.value] {
+                if (query.count > 0) {
+                    query += "&"
+                }
+
+                query += key + "=" + (WebServiceProxy.value(for: element)?.description.urlEncodedString ?? "")
+            }
+        }
+
+        return query
+    }
+
+    func encodeMultipartFormData(for arguments: [String: Any]) -> Data {
+        var body = Data()
+
+        let lineFeed = "\r\n"
+
+        for argument in arguments {
+            guard let key = argument.key.urlEncodedString, !key.isEmpty else {
+                continue
+            }
+
+            for element in argument.value as? [Any] ?? [argument.value] {
+                body.append(utf8DataFor: String(format: "--%@%@", multipartBoundary, lineFeed))
+                body.append(utf8DataFor: String(format: "Content-Disposition: form-data; name=\"%@\"", key))
+
+                if let url = element as? URL {
+                    let filename = url.lastPathComponent
+
+                    body.append(utf8DataFor: String(format: "; filename=\"%@\"", filename))
+                    body.append(utf8DataFor: lineFeed)
+
+                    // TODO
+                    let attachmentContentType = "application/octet-stream"
+
+                    /*
+                    CFStringRef extension = (__bridge CFStringRef)[filename pathExtension];
+                    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, extension, NULL);
+
+                    NSString *attachmentContentType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+                    CFRelease(uti);
+                    */
+
+                    body.append(utf8DataFor: String(format: "Content-Type: %@%@", attachmentContentType, lineFeed))
+                    body.append(utf8DataFor: lineFeed)
+
+                    body.append((try? Data(contentsOf: url)) ?? Data())
+                } else {
+                    body.append(utf8DataFor: lineFeed)
+
+                    body.append(utf8DataFor: lineFeed)
+                    body.append(utf8DataFor: WebServiceProxy.value(for: element)?.description ?? "")
+                }
+
+                body.append(utf8DataFor: lineFeed)
+            }
+        }
+
+        return body
+    }
+
+    static func value(for element: Any) -> CustomStringConvertible? {
+        let value: CustomStringConvertible?
+        if let date = element as? Date {
+            value = date.timeIntervalSince1970 * 1000
+        } else if let customStringConvertible = element as? CustomStringConvertible {
+            value = customStringConvertible
+        } else {
+            value = nil
+        }
+
+        return value
+    }
+}
+
+extension String {
+    var urlEncodedString: String? {
+        return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.replacingOccurrences(of: "+", with: "%2B")
+    }
+}
+
+extension Data {
+    mutating func append(utf8DataFor string: String) {
+        if let data = string.data(using: .utf8) {
+            append(data)
+        }
     }
 }
