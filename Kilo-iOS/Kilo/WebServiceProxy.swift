@@ -260,7 +260,7 @@ public class WebServiceProxy {
             }
 
             for element in argument.value as? [Any] ?? [argument.value] {
-                body.append(utf8DataFor: "--%\(multipartBoundary)\r\n")
+                body.append(utf8DataFor: "--\(multipartBoundary)\r\n")
                 body.append(utf8DataFor: "Content-Disposition: form-data; name=\"\(key)\"")
 
                 if let url = element as? URL {
