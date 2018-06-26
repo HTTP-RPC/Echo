@@ -102,7 +102,11 @@ public class WebServiceProxy {
                     query += "&"
                 }
 
-                query += key + "=" + (WebServiceProxy.value(for: element)?.description.urlEncodedString ?? "")
+                query += key + "="
+
+                if let value = WebServiceProxy.value(for: element)?.description.urlEncodedString {
+                    query += value
+                }
             }
         }
 
@@ -112,48 +116,35 @@ public class WebServiceProxy {
     func encodeMultipartFormData(for arguments: [String: Any]) -> Data {
         var body = Data()
 
-        let lineFeed = "\r\n"
-
         for argument in arguments {
             guard let key = argument.key.urlEncodedString, !key.isEmpty else {
                 continue
             }
 
             for element in argument.value as? [Any] ?? [argument.value] {
-                body.append(utf8DataFor: String(format: "--%@%@", multipartBoundary, lineFeed))
+                body.append(utf8DataFor: String(format: "--%@\r\n", multipartBoundary))
                 body.append(utf8DataFor: String(format: "Content-Disposition: form-data; name=\"%@\"", key))
 
                 if let url = element as? URL {
-                    let filename = url.lastPathComponent
+                    body.append(utf8DataFor: String(format: "; filename=\"%@\"\r\n", url.lastPathComponent))
+                    body.append(utf8DataFor: String(format: "Content-Type: application/octet-stream%@\r\n\r\n"))
 
-                    body.append(utf8DataFor: String(format: "; filename=\"%@\"", filename))
-                    body.append(utf8DataFor: lineFeed)
-
-                    // TODO
-                    let attachmentContentType = "application/octet-stream"
-
-                    /*
-                    CFStringRef extension = (__bridge CFStringRef)[filename pathExtension];
-                    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, extension, NULL);
-
-                    NSString *attachmentContentType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
-                    CFRelease(uti);
-                    */
-
-                    body.append(utf8DataFor: String(format: "Content-Type: %@%@", attachmentContentType, lineFeed))
-                    body.append(utf8DataFor: lineFeed)
-
-                    body.append((try? Data(contentsOf: url)) ?? Data())
+                    if let data = try? Data(contentsOf: url) {
+                        body.append(data)
+                    }
                 } else {
-                    body.append(utf8DataFor: lineFeed)
+                    body.append(utf8DataFor: "\r\n\r\n")
 
-                    body.append(utf8DataFor: lineFeed)
-                    body.append(utf8DataFor: WebServiceProxy.value(for: element)?.description ?? "")
+                    if let value = WebServiceProxy.value(for: element)?.description {
+                        body.append(utf8DataFor: value)
+                    }
                 }
 
-                body.append(utf8DataFor: lineFeed)
+                body.append(utf8DataFor: "\r\n")
             }
         }
+
+        body.append(utf8DataFor: String(format:"--%@--\r\n", multipartBoundary))
 
         return body
     }
