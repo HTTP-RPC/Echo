@@ -22,11 +22,11 @@ public class WebServiceProxy {
     }
 
     public enum Method: String {
-        case get
-        case post
-        case put
-        case patch
-        case delete
+        case get = "GET"
+        case post = "POST"
+        case put = "PUT"
+        case patch = "PATCH"
+        case delete = "DELETE"
     }
 
     public private(set) var session: URLSession
@@ -47,12 +47,12 @@ public class WebServiceProxy {
 
     @discardableResult
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: Data? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil,
         resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
-        return invoke(method, path: path, arguments: arguments, body: body, responseHandler: { data, contentType in
+        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
             let result: T?
             if (contentType.hasPrefix(WebServiceProxy.applicationJSON)) {
-                result = try JSONSerialization.jsonObject(with: data, options: []) as? T
+                result = try JSONSerialization.jsonObject(with: content, options: []) as? T
             } else {
                 result = nil
             }
@@ -63,12 +63,12 @@ public class WebServiceProxy {
 
     @discardableResult
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: Data? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil,
         resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
-        return invoke(method, path: path, arguments: arguments, body: body, responseHandler: { data, contentType in
+        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
             let result: T?
             if (contentType.hasPrefix(WebServiceProxy.applicationJSON)) {
-                result = try JSONDecoder().decode(T.self, from: data)
+                result = try JSONDecoder().decode(T.self, from: content)
             } else {
                 result = nil
             }
@@ -79,12 +79,61 @@ public class WebServiceProxy {
 
     @discardableResult
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: Data? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil,
         responseHandler: @escaping (Data, String) throws -> T?,
         resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
-        let task: URLSessionDataTask? = nil
+        let query = (method != .post || content != nil) ? encodeQuery(for: arguments) : ""
 
-        // TODO
+        let task: URLSessionDataTask?
+        if let url = URL(string: path + (query.isEmpty ? "" : "?" + query), relativeTo: serverURL) {
+            var urlRequest = URLRequest(url: url)
+
+            urlRequest.httpMethod = method.rawValue
+
+            let httpBody: Data?
+            if (method == .post && content == nil) {
+                let contentType: String
+                switch encoding {
+                case .applicationXWWWFormURLEncoded:
+                    contentType = "application/x-www-form-urlencoded"
+                    httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
+
+                case .multipartFormData:
+                    contentType = "multipart/form-data; boundary=\(multipartBoundary)"
+                    httpBody = encodeMultipartFormData(for: arguments)
+                }
+
+                urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+            } else {
+                httpBody = content
+            }
+
+            urlRequest.httpBody = httpBody
+
+            task = session.dataTask(with: urlRequest) { data, urlResponse, error in
+                if let content = data, let contentType = urlResponse?.mimeType, error == nil {
+                    do {
+                        let result = try responseHandler(content, contentType)
+
+                        OperationQueue.main.addOperation {
+                            resultHandler(result, nil)
+                        }
+                    } catch {
+                        OperationQueue.main.addOperation {
+                            resultHandler(nil, error)
+                        }
+                    }
+                } else {
+                    OperationQueue.main.addOperation {
+                        resultHandler(nil, error)
+                    }
+                }
+            }
+        } else {
+            task = nil
+        }
+
+        task?.resume()
 
         return task
     }
