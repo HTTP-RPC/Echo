@@ -44,12 +44,15 @@ class ViewController: LMTableViewController {
         let sessionConfiguration = URLSessionConfiguration.default
 
         sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-        sessionConfiguration.timeoutIntervalForResource = 2
+        sessionConfiguration.timeoutIntervalForResource = 4
 
         // Create web service proxy
         let session = URLSession(configuration: sessionConfiguration)
 
-        let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost:8080")!)
+        let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost:8080/httprpc-server")!)
+
+        let testTextURL = Bundle.main.url(forResource: "test", withExtension: "txt")!
+        let testImageURL = Bundle.main.url(forResource: "test", withExtension: "jpg")!
 
         // GET
         webServiceProxy.invoke(.get, path: "/httprpc-server/test", arguments: [
@@ -95,9 +98,6 @@ class ViewController: LMTableViewController {
         }
 
         // Multi-part form data
-        let textTestURL = Bundle.main.url(forResource: "test", withExtension: "txt")!
-        let imageTestURL = Bundle.main.url(forResource: "test", withExtension: "jpg")!
-
         webServiceProxy.encoding = .multipartFormData
 
         webServiceProxy.invoke(.post, path: "/httprpc-server/test", arguments: [
@@ -105,7 +105,7 @@ class ViewController: LMTableViewController {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
-            "attachments": [textTestURL, imageTestURL]
+            "attachments": [testTextURL, testImageURL]
         ]) { (result: Response?, error: Error?) in
             self.validate(result?.string == "héllo"
                 && result?.strings == ["a", "b", "c"]
@@ -120,19 +120,35 @@ class ViewController: LMTableViewController {
 
         // Custom post
         webServiceProxy.invoke(.post, path: "/httprpc-server/test", arguments: [
-            "name": imageTestURL.lastPathComponent
-        ], content: try? Data(contentsOf: imageTestURL), responseHandler: { content, contentType in
+            "name": testImageURL.lastPathComponent
+        ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
             return UIImage(data: content)
         }) { (result: UIImage?, error: Error?) in
             self.validate(result != nil, error: error, cell: self.postCustomCell)
         }
 
-        // TODO PUT (w/body)
+        // PUT
+        webServiceProxy.invoke(.put, path: "/httprpc-server/test", arguments: [
+            "id": 101
+        ], content: try? Data(contentsOf: testTextURL), responseHandler: { content, contentType in
+            return String(data: content, encoding: .utf8)
+        }) { (result: String?, error: Error?) in
+            self.validate(result != nil, error: error, cell: self.putCell)
+        }
 
-        // TODO PATCH (w/body)
+        // PATCH
+        webServiceProxy.invoke(.patch, path: "/httprpc-server/test", arguments: [
+            "id": 101
+        ], content: try? Data(contentsOf: testTextURL), responseHandler: { content, contentType in
+            return String(data: content, encoding: .utf8)
+        }) { (result: String?, error: Error?) in
+            self.validate(result != nil, error: error, cell: self.patchCell)
+        }
 
         // DELETE
-        webServiceProxy.invoke(.delete, path: "/httprpc-server/test", arguments: ["id": 101]) { (_: Any?, error: Error?) in
+        webServiceProxy.invoke(.delete, path: "/httprpc-server/test", arguments: [
+            "id": 101
+        ]) { (_: Any?, error: Error?) in
             self.validate(true, error: error, cell: self.deleteCell)
         }
 
@@ -159,7 +175,7 @@ class ViewController: LMTableViewController {
             self.validate(error != nil, error: error, cell: self.cancelCell)
         }
 
-        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { timer in
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
             task?.cancel()
         }
     }
