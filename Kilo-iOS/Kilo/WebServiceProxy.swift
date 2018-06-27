@@ -55,8 +55,6 @@ public class WebServiceProxy {
 
     let multipartBoundary = UUID().uuidString
 
-    static let applicationJSON = "application/json"
-
     /**
      Creates a new web service proxy.
 
@@ -77,17 +75,18 @@ public class WebServiceProxy {
      - parameter path: The path associated with the request.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
+     - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter resultHandler: A callback that will be invoked upon completion of the request.
 
      - returns: A URL session task representing the invocation request, or `nil` if the task could not be created.
      */
     @discardableResult
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
             let result: T?
-            if (contentType?.hasPrefix(WebServiceProxy.applicationJSON) ?? false) {
+            if (contentType?.hasPrefix("application/json") ?? false) {
                 result = try JSONSerialization.jsonObject(with: content, options: []) as? T
             } else {
                 result = nil
@@ -104,17 +103,18 @@ public class WebServiceProxy {
      - parameter path: The path associated with the request.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
+     - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter resultHandler: A callback that will be invoked upon completion of the request.
 
      - returns: A URL session task representing the invocation request, or `nil` if the task could not be created.
      */
     @discardableResult
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
             let result: T?
-            if (contentType?.hasPrefix(WebServiceProxy.applicationJSON) ?? false) {
+            if (contentType?.hasPrefix("application/json") ?? false) {
                 result = try JSONDecoder().decode(T.self, from: content)
             } else {
                 result = nil
@@ -131,6 +131,7 @@ public class WebServiceProxy {
      - parameter path: The path associated with the request.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
+     - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter responseHandler: A callback that will be invoked upon completion of the request.
      - parameter resultHandler: A callback that will be invoked upon completion of the request.
 
@@ -138,7 +139,7 @@ public class WebServiceProxy {
      */
     @discardableResult
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         responseHandler: @escaping (_ content: Data, _ contentType: String?) throws -> T?,
         resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
         let query = (method != .post || content != nil) ? encodeQuery(for: arguments) : ""
@@ -149,25 +150,24 @@ public class WebServiceProxy {
 
             urlRequest.httpMethod = method.rawValue
 
-            let contentType: String
-            let httpBody: Data?
-            if (method == .post && content == nil) {
+            switch method {
+            case .post where content == nil:
                 switch encoding {
                 case .applicationXWWWFormURLEncoded:
-                    contentType = "application/x-www-form-urlencoded"
-                    httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
+                    urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                    urlRequest.httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
 
                 case .multipartFormData:
-                    contentType = "multipart/form-data; boundary=\(multipartBoundary)"
-                    httpBody = encodeMultipartFormData(for: arguments)
+                    urlRequest.setValue("multipart/form-data; boundary=\(multipartBoundary)", forHTTPHeaderField: "Content-Type")
+                    urlRequest.httpBody = encodeMultipartFormData(for: arguments)
                 }
-            } else {
-                contentType = "application/octet-stream"
-                httpBody = content
-            }
 
-            urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = httpBody
+            default:
+                if (content != nil) {
+                    urlRequest.setValue(contentType ?? "application/octet-stream", forHTTPHeaderField: "Content-Type")
+                    urlRequest.httpBody = content
+                }
+            }
 
             task = session.dataTask(with: urlRequest) { data, urlResponse, error in
                 if let httpURLResponse = urlResponse as? HTTPURLResponse {

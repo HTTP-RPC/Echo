@@ -130,7 +130,7 @@ class ViewController: LMTableViewController {
         // PUT
         webServiceProxy.invoke(.put, path: "/httprpc-server/test", arguments: [
             "id": 101
-        ], content: try? Data(contentsOf: testTextURL), responseHandler: { content, contentType in
+        ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
         }) { (result: String?, error: Error?) in
             self.validate(result != nil, error: error, cell: self.putCell)
@@ -139,7 +139,7 @@ class ViewController: LMTableViewController {
         // PATCH
         webServiceProxy.invoke(.patch, path: "/httprpc-server/test", arguments: [
             "id": 101
-        ], content: try? Data(contentsOf: testTextURL), responseHandler: { content, contentType in
+        ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
         }) { (result: String?, error: Error?) in
             self.validate(result != nil, error: error, cell: self.patchCell)
