@@ -28,7 +28,7 @@ public class WebServiceProxy {
     }
 
     /**
-     HTTP method options.
+     Service method options.
      */
     public enum Method: String {
         case get = "GET"
@@ -39,7 +39,7 @@ public class WebServiceProxy {
     }
 
     /**
-     The URL session the service proxy uses to execute HTTP requests.
+     The URL session the service proxy will use to issue HTTP requests.
      */
     public private(set) var session: URLSession
 
@@ -53,12 +53,10 @@ public class WebServiceProxy {
      */
     public var encoding: Encoding
 
-    let multipartBoundary = UUID().uuidString
-
     /**
      Creates a new web service proxy.
 
-     - parameter session: The URL session the service proxy will use to execute HTTP requests.
+     - parameter session: The URL session the service proxy will use to issue HTTP requests.
      - parameter serverURL: The server URL.
      */
     public init(session: URLSession, serverURL: URL) {
@@ -158,8 +156,10 @@ public class WebServiceProxy {
                     urlRequest.httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
 
                 case .multipartFormData:
+                    let multipartBoundary = UUID().uuidString
+
                     urlRequest.setValue("multipart/form-data; boundary=\(multipartBoundary)", forHTTPHeaderField: "Content-Type")
-                    urlRequest.httpBody = encodeMultipartFormData(for: arguments)
+                    urlRequest.httpBody = encodeMultipartFormData(for: arguments, multipartBoundary: multipartBoundary)
                 }
 
             default:
@@ -188,7 +188,7 @@ public class WebServiceProxy {
                                 NSLocalizedDescriptionKey: HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode)
                             ]
 
-                            if let content = data, let contentType = httpURLResponse.mimeType, contentType.hasPrefix("text/plain") {
+                            if let content = data, let contentType = httpURLResponse.mimeType, contentType.hasPrefix("text/") {
                                 userInfo[NSDebugDescriptionErrorKey] = String(data: content, encoding: .utf8)
                             }
 
@@ -250,7 +250,7 @@ public class WebServiceProxy {
         return body
     }
 
-    func encodeMultipartFormData(for arguments: [String: Any]) -> Data {
+    func encodeMultipartFormData(for arguments: [String: Any], multipartBoundary: String) -> Data {
         var body = Data()
 
         for argument in arguments {
