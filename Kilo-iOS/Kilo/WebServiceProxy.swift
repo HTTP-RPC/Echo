@@ -184,16 +184,15 @@ public class WebServiceProxy {
                                 fatalError()
                             }
 
-                            let errorMessage: String?
+                            var userInfo = [
+                                NSLocalizedDescriptionKey: HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode)
+                            ]
+
                             if let content = data, let contentType = httpURLResponse.mimeType, contentType.hasPrefix("text/plain") {
-                                errorMessage = String(data: content, encoding: .utf8)
-                            } else {
-                                errorMessage = nil
+                                userInfo[NSDebugDescriptionErrorKey] = String(data: content, encoding: .utf8)
                             }
 
-                            throw NSError(domain: errorDomain, code: httpURLResponse.statusCode, userInfo: [
-                                NSLocalizedDescriptionKey: errorMessage ?? HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode)
-                            ])
+                            throw NSError(domain: errorDomain, code: httpURLResponse.statusCode, userInfo: userInfo)
                         }
 
                         OperationQueue.main.addOperation {

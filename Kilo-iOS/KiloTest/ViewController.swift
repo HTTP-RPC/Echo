@@ -149,7 +149,7 @@ class ViewController: LMTableViewController {
         webServiceProxy.invoke(.delete, path: "/httprpc-server/test", arguments: [
             "id": 101
         ]) { (_: Any?, error: Error?) in
-            self.validate(true, error: error, cell: self.deleteCell)
+            self.validate(error == nil, error: error, cell: self.deleteCell)
         }
 
         // Error
