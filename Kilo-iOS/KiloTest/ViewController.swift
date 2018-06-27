@@ -60,11 +60,13 @@ class ViewController: LMTableViewController {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
+            "date": Date(timeIntervalSince1970: 0)
         ]) { (result: [String: Any]?, error: Error?) in
             self.validate(result?["string"] as? String == "héllo+gøodbye"
                 && result?["strings"] as? [String] == ["a", "b", "c"]
                 && result?["number"] as? Int == 123
-                && result?["flag"] as? Bool == true,
+                && result?["flag"] as? Bool == true
+                && result?["date"] as? Int64 == 0,
                 error: error, cell: self.getCell)
         }
 
@@ -79,6 +81,7 @@ class ViewController: LMTableViewController {
             let strings: [String]
             let number: Int
             let flag: Bool
+            let date: Date
             let attachmentInfo: [AttachmentInfo]
         }
 
@@ -87,12 +90,14 @@ class ViewController: LMTableViewController {
             "string": "héllo",
             "strings": ["a", "b", "c"],
             "number": 123,
-            "flag": true
+            "flag": true,
+            "date": Date(timeIntervalSince1970: 0)
         ]) { (result: Response?, error: Error?) in
             self.validate(result?.string == "héllo"
                 && result?.strings == ["a", "b", "c"]
                 && result?.number == 123
                 && result?.flag == true
+                && result?.date == Date(timeIntervalSince1970: 0)
                 && result?.attachmentInfo == [],
                 error: error, cell: self.postURLEncodedCell)
         }
@@ -105,12 +110,14 @@ class ViewController: LMTableViewController {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
+            "date": Date(timeIntervalSince1970: 0),
             "attachments": [testTextURL, testImageURL]
         ]) { (result: Response?, error: Error?) in
             self.validate(result?.string == "héllo"
                 && result?.strings == ["a", "b", "c"]
                 && result?.number == 123
                 && result?.flag == true
+                && result?.date == Date(timeIntervalSince1970: 0)
                 && result?.attachmentInfo == [
                     Response.AttachmentInfo(bytes: 26, checksum: 2412),
                     Response.AttachmentInfo(bytes: 10392, checksum: 1038036)

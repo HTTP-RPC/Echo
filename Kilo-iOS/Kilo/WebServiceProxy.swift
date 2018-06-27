@@ -113,7 +113,11 @@ public class WebServiceProxy {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
             let result: T?
             if (contentType?.hasPrefix("application/json") ?? false) {
-                result = try JSONDecoder().decode(T.self, from: content)
+                let jsonDecoder = JSONDecoder()
+
+                jsonDecoder.dateDecodingStrategy = .millisecondsSince1970
+
+                result = try jsonDecoder.decode(T.self, from: content)
             } else {
                 result = nil
             }
@@ -156,7 +160,9 @@ public class WebServiceProxy {
                     urlRequest.httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
 
                 case .multipartFormData:
-                    let multipartBoundary = UUID().uuidString
+                    let uuid = UUID()
+
+                    let multipartBoundary = uuid.uuidString
 
                     urlRequest.setValue("multipart/form-data; boundary=\(multipartBoundary)", forHTTPHeaderField: "Content-Type")
                     urlRequest.httpBody = encodeMultipartFormData(for: arguments, multipartBoundary: multipartBoundary)
@@ -289,7 +295,7 @@ public class WebServiceProxy {
     static func value(for element: Any) -> CustomStringConvertible? {
         let value: CustomStringConvertible?
         if let date = element as? Date {
-            value = date.timeIntervalSince1970 * 1000
+            value = Int64(date.timeIntervalSince1970 * 1000)
         } else if let customStringConvertible = element as? CustomStringConvertible {
             value = customStringConvertible
         } else {
