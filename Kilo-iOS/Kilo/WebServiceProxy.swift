@@ -160,9 +160,7 @@ public class WebServiceProxy {
                     urlRequest.httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
 
                 case .multipartFormData:
-                    let uuid = UUID()
-
-                    let multipartBoundary = uuid.uuidString
+                    let multipartBoundary = UUID().uuidString
 
                     urlRequest.setValue("multipart/form-data; boundary=\(multipartBoundary)", forHTTPHeaderField: "Content-Type")
                     urlRequest.httpBody = encodeMultipartFormData(for: arguments, multipartBoundary: multipartBoundary)

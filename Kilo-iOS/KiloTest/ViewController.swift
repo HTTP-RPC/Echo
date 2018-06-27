@@ -51,6 +51,8 @@ class ViewController: LMTableViewController {
 
         let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost:8080/httprpc-server")!)
 
+        let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
+
         let testTextURL = Bundle.main.url(forResource: "test", withExtension: "txt")!
         let testImageURL = Bundle.main.url(forResource: "test", withExtension: "jpg")!
 
@@ -60,13 +62,13 @@ class ViewController: LMTableViewController {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
-            "date": Date(timeIntervalSince1970: 0)
+            "date": now
         ]) { (result: [String: Any]?, error: Error?) in
             self.validate(result?["string"] as? String == "héllo+gøodbye"
                 && result?["strings"] as? [String] == ["a", "b", "c"]
                 && result?["number"] as? Int == 123
                 && result?["flag"] as? Bool == true
-                && result?["date"] as? Int64 == 0,
+                && result?["date"] as? Int64 == Int64(now.timeIntervalSince1970 * 1000),
                 error: error, cell: self.getCell)
         }
 
@@ -91,13 +93,13 @@ class ViewController: LMTableViewController {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
-            "date": Date(timeIntervalSince1970: 0)
+            "date": now
         ]) { (result: Response?, error: Error?) in
             self.validate(result?.string == "héllo"
                 && result?.strings == ["a", "b", "c"]
                 && result?.number == 123
                 && result?.flag == true
-                && result?.date == Date(timeIntervalSince1970: 0)
+                && result?.date == now
                 && result?.attachmentInfo == [],
                 error: error, cell: self.postURLEncodedCell)
         }
@@ -110,14 +112,14 @@ class ViewController: LMTableViewController {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
-            "date": Date(timeIntervalSince1970: 0),
+            "date": now,
             "attachments": [testTextURL, testImageURL]
         ]) { (result: Response?, error: Error?) in
             self.validate(result?.string == "héllo"
                 && result?.strings == ["a", "b", "c"]
                 && result?.number == 123
                 && result?.flag == true
-                && result?.date == Date(timeIntervalSince1970: 0)
+                && result?.date == now
                 && result?.attachmentInfo == [
                     Response.AttachmentInfo(bytes: 26, checksum: 2412),
                     Response.AttachmentInfo(bytes: 10392, checksum: 1038036)
