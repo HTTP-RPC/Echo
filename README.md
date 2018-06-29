@@ -25,7 +25,9 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [Additional Information](#additional-information)
 
 # Getting Kilo
-Kilo is distributed as a universal binary that will run in the iOS simulator as well as on an actual device. To install:
+Kilo is distributed as a universal binary that will run in the iOS simulator as well as on an actual device. Either iOS 10 or tvOS 10 or later is required. 
+
+To install:
 
 * Download the [latest release](https://github.com/gk-brown/Kilo/releases) archive and expand
 * In Xcode, select the project root node in the Project Navigator view
