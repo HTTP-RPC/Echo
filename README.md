@@ -90,7 +90,27 @@ Note that, while service requests are typically processed on a background thread
 If the server returns an error response, a localized description of the error will be provided in the localized description of the error parameter. Further, if the error is returned with a content type of "text/plain", the response body will be returned in the error's debug description.
 
 ## Example
-TODO
+The following code snippet demonstrates how the `WebServiceProxy` class might be used to access the operations of a hypothetical math service:
+
+```swift
+// Create service proxy
+let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: URL(string: "http://localhost:8080")!)
+
+// Get sum of "a" and "b"
+webServiceProxy.invoke(.get, path: "/math/sum", arguments: [
+    "a": 2,
+    "b": 4
+]) { (result: Int?, error: Error?) in
+    // result is 6
+}
+
+// Get sum of all values
+webServiceProxy.invoke(.get, path: "/math/sum", arguments: [
+    "values": [1, 2, 3, 4]
+]) { (result: Int?, error: Error?) in
+    // result is 10
+}
+```
 
 # Deployment
 The Kilo framework is a universal binary that must be "trimmed" prior to submission to the App Store:
