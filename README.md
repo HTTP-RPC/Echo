@@ -1,10 +1,9 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
-[![CocoaPods](https://img.shields.io/cocoapods/v/Kilo.svg)](https://cocoapods.org/pods/Kilo)
 
 # Introduction
 Kilo is an open-source framework for consuming REST services in iOS or tvOS. It is extremely lightweight and provides a convenient, callback-based interface that makes it easy to interact with remote APIs.
 
-For example, the following code snippet shows how a client application might access a simple web service that returns a friendly greeting. The request is executed asynchronously, and the result is printed when the call returns:
+For example, the following code snippet shows how a client application might access a simple service that returns a friendly greeting. The request is executed asynchronously, and the result is printed when the call returns:
 
 ```swift
 webServiceProxy.invoke(.get, path: "/hello") { (result: String?, error: Error?) in
@@ -21,7 +20,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 
 # Contents
 * [Getting Kilo](#getting-kilo)
-* [WebServiceProxy Class](#web-service-proxy-class)
+* [WebServiceProxy Class](#webserviceproxy-class)
 * [Deployment](#deployment)
 * [Additional Information](#additional-information)
 
@@ -78,7 +77,7 @@ Like HTML forms, arguments are submitted either via the query string or in the r
 
 `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (determined via the service proxy's `encoding` property). However, if a custom body is specified via the `content` parameter, `POST` arguments will be sent in the query string.
 
-Any value that implements the `description` property may be used as an argument. This property is used to convert the argument to its string representation. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970).
+Any value that provides a `description` property may be used as an argument. This property is used to convert the argument to its string representation. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970).
 
 Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
 
