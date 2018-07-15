@@ -13,6 +13,10 @@ webServiceProxy.invoke(.get, path: "/hello") { (result: String?, error: Error?) 
 }
 ```
 
+The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+
+![](README/kilo.png)
+
 This guide introduces the Kilo framework and provides an overview of its key features.
 
 # Feedback
