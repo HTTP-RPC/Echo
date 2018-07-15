@@ -70,7 +70,7 @@ All three methods accept the following arguments:
 * `contentType` - an optional string value containing the MIME type of the content
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
-The first method uses `JSONSerialization` to decode response data, and the second uses `JSONDecoder` to return a decodable value. The third version accepts an additional `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
+The first version of the method uses `JSONSerialization` to decode response data. The second uses `JSONDecoder` to return a decodable value. The third version accepts an additional `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
 
 All three methods return an instance of `URLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
@@ -91,7 +91,7 @@ Note that, while service requests are typically processed on a background thread
 If the server returns an error response, a localized description of the error will be provided in the localized description of the error parameter. Further, if the error is returned with a content type of "text/plain", the response body will be returned in the error's debug description.
 
 ## Example
-The following code snippet demonstrates how the `WebServiceProxy` class might be used to access the operations of a hypothetical math service:
+The following code snippet demonstrates how the `WebServiceProxy` class might be used to access the operations of a simple math service:
 
 ```swift
 // Create service proxy
