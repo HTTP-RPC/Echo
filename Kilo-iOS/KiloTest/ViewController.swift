@@ -49,7 +49,7 @@ class ViewController: LMTableViewController {
         // Create web service proxy
         let session = URLSession(configuration: sessionConfiguration)
 
-        let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost:8080/httprpc-server")!)
+        let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost:8080")!)
 
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
