@@ -49,7 +49,7 @@ class ViewController: LMTableViewController {
         // Create web service proxy
         let session = URLSession(configuration: sessionConfiguration)
 
-        let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost:8080")!)
+        let webServiceProxy = WebServiceProxy(session: session, serverURL: URL(string: "http://localhost:8080/httprpc-server-test/")!)
 
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
@@ -57,7 +57,7 @@ class ViewController: LMTableViewController {
         let testImageURL = Bundle.main.url(forResource: "test", withExtension: "jpg")!
 
         // GET
-        webServiceProxy.invoke(.get, path: "/httprpc-server-test/test", arguments: [
+        webServiceProxy.invoke(.get, path: "test", arguments: [
             "string": "héllo+gøodbye",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -88,7 +88,7 @@ class ViewController: LMTableViewController {
         }
 
         // URL-encoded form data
-        webServiceProxy.invoke(.post, path: "/httprpc-server-test/test", arguments: [
+        webServiceProxy.invoke(.post, path: "test", arguments: [
             "string": "héllo",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -107,7 +107,7 @@ class ViewController: LMTableViewController {
         // Multi-part form data
         webServiceProxy.encoding = .multipartFormData
 
-        webServiceProxy.invoke(.post, path: "/httprpc-server-test/test", arguments: [
+        webServiceProxy.invoke(.post, path: "test", arguments: [
             "string": "héllo",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -128,7 +128,7 @@ class ViewController: LMTableViewController {
         }
 
         // Custom post
-        webServiceProxy.invoke(.post, path: "/httprpc-server-test/test", arguments: [
+        webServiceProxy.invoke(.post, path: "test", arguments: [
             "name": testImageURL.lastPathComponent
         ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
             return UIImage(data: content)
@@ -137,7 +137,7 @@ class ViewController: LMTableViewController {
         }
 
         // PUT
-        webServiceProxy.invoke(.put, path: "/httprpc-server-test/test", arguments: [
+        webServiceProxy.invoke(.put, path: "test", arguments: [
             "id": 101
         ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
@@ -146,7 +146,7 @@ class ViewController: LMTableViewController {
         }
 
         // PATCH
-        webServiceProxy.invoke(.patch, path: "/httprpc-server-test/test", arguments: [
+        webServiceProxy.invoke(.patch, path: "test", arguments: [
             "id": 101
         ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
@@ -155,21 +155,21 @@ class ViewController: LMTableViewController {
         }
 
         // DELETE
-        webServiceProxy.invoke(.delete, path: "/httprpc-server-test/test", arguments: [
+        webServiceProxy.invoke(.delete, path: "test", arguments: [
             "id": 101
         ]) { (_: Any?, error: Error?) in
             self.validate(error == nil, error: error, cell: self.deleteCell)
         }
 
         // Error
-        webServiceProxy.invoke(.get, path: "/httprpc-server-test/test/error") { (_: Any?, error: Error?) in
+        webServiceProxy.invoke(.get, path: "test/error") { (_: Any?, error: Error?) in
             self.errorCell.detailTextLabel?.text = error?.localizedDescription
 
             self.validate(error != nil, error: error, cell: self.errorCell)
         }
 
         // Timeout
-        webServiceProxy.invoke(.get, path: "/httprpc-server-test/test", arguments: [
+        webServiceProxy.invoke(.get, path: "test", arguments: [
             "value": 123,
             "delay": 6000
         ]) { (_: Any?, error: Error?) in
@@ -177,7 +177,7 @@ class ViewController: LMTableViewController {
         }
 
         // Cancel
-        let task = webServiceProxy.invoke(.get, path: "/httprpc-server-test/test", arguments: [
+        let task = webServiceProxy.invoke(.get, path: "test", arguments: [
             "value": 123,
             "delay": 6000
         ]) { (_: Any?, error: Error?) in
