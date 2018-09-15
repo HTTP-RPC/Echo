@@ -195,7 +195,7 @@ class ViewController: LMTableViewController {
 
     func validate(_ condition: Bool, error: Error?, cell: UITableViewCell) {
         if (condition) {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            cell.accessoryType = UITableViewCell.AccessoryType.checkmark
         } else {
             cell.textLabel?.textColor = UIColor.red
         }
