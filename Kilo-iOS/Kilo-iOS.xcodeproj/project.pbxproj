@@ -73,6 +73,7 @@
 		3705419320DFF5E400A4D54B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				372598E720DFDE4200F8B493 /* MarkupKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -95,7 +96,6 @@
 		378C659320DFCC0B0026158E = {
 			isa = PBXGroup;
 			children = (
-				372598E720DFDE4200F8B493 /* MarkupKit.framework */,
 				378C659F20DFCC0B0026158E /* Kilo */,
 				372598C320DFDD8600F8B493 /* KiloTest */,
 				378C659E20DFCC0B0026158E /* Products */,
@@ -178,7 +178,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
 				LastUpgradeCheck = 0930;
-				ORGANIZATIONNAME = "Kilo";
+				ORGANIZATIONNAME = Kilo;
 				TargetAttributes = {
 					372598C120DFDD8600F8B493 = {
 						CreatedOnToolsVersion = 9.3;
