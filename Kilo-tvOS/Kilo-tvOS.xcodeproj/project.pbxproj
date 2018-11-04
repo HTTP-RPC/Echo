@@ -8,15 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		3705419620DFF5EC00A4D54B /* Kilo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37D49B0420DFCC4700410E0A /* Kilo.framework */; };
-		3760E23A20E14554005D501B /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3760E23920E14554005D501B /* ViewController.xml */; };
 		3760E24820E17178005D501B /* WebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3760E24720E17178005D501B /* WebServiceProxy.swift */; };
 		376EBFDC20DFE0010035CF3C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 376EBFDB20DFE0010035CF3C /* Assets.xcassets */; };
-		376EBFE220DFE0310035CF3C /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 376EBFE120DFE0310035CF3C /* MarkupKit.framework */; };
-		376EBFE320DFE0310035CF3C /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 376EBFE120DFE0310035CF3C /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		376EBFE720DFE05C0035CF3C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376EBFE520DFE05C0035CF3C /* AppDelegate.swift */; };
 		376EBFE820DFE05C0035CF3C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376EBFE620DFE05C0035CF3C /* ViewController.swift */; };
 		378F659C20E2BADB00D4440E /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 378F659A20E2BADB00D4440E /* test.txt */; };
 		378F659D20E2BADB00D4440E /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 378F659B20E2BADB00D4440E /* test.jpg */; };
+		37CF6F99218F47D600AE42F4 /* Lima.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37CF6F98218F47D600AE42F4 /* Lima.framework */; };
+		37CF6F9A218F47D600AE42F4 /* Lima.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 37CF6F98218F47D600AE42F4 /* Lima.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,7 +25,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				376EBFE320DFE0310035CF3C /* MarkupKit.framework in Embed Frameworks */,
+				37CF6F9A218F47D600AE42F4 /* Lima.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -34,16 +33,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3760E23920E14554005D501B /* ViewController.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = ViewController.xml; path = "../../Kilo-iOS/KiloTest/ViewController.xml"; sourceTree = "<group>"; };
 		3760E24720E17178005D501B /* WebServiceProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebServiceProxy.swift; path = "../../Kilo-iOS/Kilo/WebServiceProxy.swift"; sourceTree = "<group>"; };
 		376EBFD220DFE0000035CF3C /* KiloTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KiloTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		376EBFDB20DFE0010035CF3C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		376EBFDD20DFE0010035CF3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		376EBFE120DFE0310035CF3C /* MarkupKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MarkupKit.framework; sourceTree = "<group>"; };
 		376EBFE520DFE05C0035CF3C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = "../../Kilo-iOS/KiloTest/AppDelegate.swift"; sourceTree = "<group>"; };
 		376EBFE620DFE05C0035CF3C /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = "../../Kilo-iOS/KiloTest/ViewController.swift"; sourceTree = "<group>"; };
 		378F659A20E2BADB00D4440E /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test.txt; path = "../../Kilo-iOS/KiloTest/test.txt"; sourceTree = "<group>"; };
 		378F659B20E2BADB00D4440E /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = test.jpg; path = "../../Kilo-iOS/KiloTest/test.jpg"; sourceTree = "<group>"; };
+		37CF6F98218F47D600AE42F4 /* Lima.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Lima.framework; sourceTree = "<group>"; };
 		37D49B0420DFCC4700410E0A /* Kilo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kilo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		37D49B0820DFCC4700410E0A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -54,7 +52,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3705419620DFF5EC00A4D54B /* Kilo.framework in Frameworks */,
-				376EBFE220DFE0310035CF3C /* MarkupKit.framework in Frameworks */,
+				37CF6F99218F47D600AE42F4 /* Lima.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,7 +69,7 @@
 		3705419520DFF5EC00A4D54B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				376EBFE120DFE0310035CF3C /* MarkupKit.framework */,
+				37CF6F98218F47D600AE42F4 /* Lima.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -81,7 +79,6 @@
 			children = (
 				376EBFE520DFE05C0035CF3C /* AppDelegate.swift */,
 				376EBFE620DFE05C0035CF3C /* ViewController.swift */,
-				3760E23920E14554005D501B /* ViewController.xml */,
 				378F659B20E2BADB00D4440E /* test.jpg */,
 				378F659A20E2BADB00D4440E /* test.txt */,
 				376EBFDB20DFE0010035CF3C /* Assets.xcassets */,
@@ -211,7 +208,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3760E23A20E14554005D501B /* ViewController.xml in Resources */,
 				378F659D20E2BADB00D4440E /* test.jpg in Resources */,
 				378F659C20E2BADB00D4440E /* test.txt in Resources */,
 				376EBFDC20DFE0010035CF3C /* Assets.xcassets in Resources */,

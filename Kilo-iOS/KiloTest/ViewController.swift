@@ -13,26 +13,38 @@
 //
 
 import UIKit
-import MarkupKit
 import Kilo
+import Lima
 
-class ViewController: LMTableViewController {
-    @IBOutlet var getCell: UITableViewCell!
-    @IBOutlet var postURLEncodedCell: UITableViewCell!
-    @IBOutlet var postMultipartCell: UITableViewCell!
-    @IBOutlet var postCustomCell: UITableViewCell!
-    @IBOutlet var putCell: UITableViewCell!
-    @IBOutlet var patchCell: UITableViewCell!
-    @IBOutlet var deleteCell: UITableViewCell!
-    @IBOutlet var timeoutCell: UITableViewCell!
-    @IBOutlet var cancelCell: UITableViewCell!
-    @IBOutlet var errorCell: UITableViewCell!
+class ViewController: UITableViewController {
+    var getCell: UITableViewCell!
+    var postURLEncodedCell: UITableViewCell!
+    var postMultipartCell: UITableViewCell!
+    var postCustomCell: UITableViewCell!
+    var putCell: UITableViewCell!
+    var patchCell: UITableViewCell!
+    var deleteCell: UITableViewCell!
+    var timeoutCell: UITableViewCell!
+    var cancelCell: UITableViewCell!
+    var errorCell: UITableViewCell!
+
+    var cells: [UITableViewCell]!
 
     override func loadView() {
-        view = LMViewBuilder.view(withName: "ViewController", owner: self, root: nil)
+        super.loadView()
 
-        tableView.dataSource = self
-        tableView.delegate = self
+        cells = [
+            UITableViewCell(style: .value1, text: "GET") { self.getCell = $0 },
+            UITableViewCell(style: .value1, text: "POST (URL-encoded)") { self.postURLEncodedCell = $0 },
+            UITableViewCell(style: .value1, text: "POST (multipart)") { self.postMultipartCell = $0 },
+            UITableViewCell(style: .value1, text: "POST (custom)") { self.postCustomCell = $0 },
+            UITableViewCell(style: .value1, text: "PUT") { self.putCell = $0 },
+            UITableViewCell(style: .value1, text: "PATCH") { self.patchCell = $0 },
+            UITableViewCell(style: .value1, text: "DELETE") { self.deleteCell = $0 },
+            UITableViewCell(style: .value1, text: "Error") { self.errorCell = $0 },
+            UITableViewCell(style: .value1, text: "Timeout") { self.timeoutCell = $0 },
+            UITableViewCell(style: .value1, text: "Cancel") { self.cancelCell = $0 }
+        ]
     }
 
     override func viewDidLoad() {
@@ -187,6 +199,18 @@ class ViewController: LMTableViewController {
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
             task?.cancel()
         }
+    }
+
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return cells.count
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return cells[indexPath.row]
     }
 
     override func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool {

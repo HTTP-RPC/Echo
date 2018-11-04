@@ -12,23 +12,15 @@
 // limitations under the License.
 //
 
-import UIKit
+#import "LMLayoutView.h"
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
+NS_ASSUME_NONNULL_BEGIN
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        window = UIWindow()
+/**
+ * Layout view that optionally anchors subviews to one or more edges.
+ */
+@interface LMAnchorView : LMLayoutView
 
-        window?.rootViewController = UINavigationController(rootViewController: ViewController(style: .grouped))
+@end
 
-        window?.backgroundColor = UIColor.white
-        window?.frame = UIScreen.main.bounds
-
-        window?.makeKeyAndVisible()
-
-        return true
-    }
-}
-
+NS_ASSUME_NONNULL_END

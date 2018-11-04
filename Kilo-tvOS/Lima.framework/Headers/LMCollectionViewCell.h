@@ -12,23 +12,20 @@
 // limitations under the License.
 //
 
-import UIKit
+#import <UIKit/UIKit.h>
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
+NS_ASSUME_NONNULL_BEGIN
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        window = UIWindow()
+/**
+ * Collection view cell that hosts custom content.
+ */
+@interface LMCollectionViewCell : UICollectionViewCell
 
-        window?.rootViewController = UINavigationController(rootViewController: ViewController(style: .grouped))
+/**
+ * The cell's content.
+ */
+@property (nonatomic, nullable) UIView *content;
 
-        window?.backgroundColor = UIColor.white
-        window?.frame = UIScreen.main.bounds
+@end
 
-        window?.makeKeyAndVisible()
-
-        return true
-    }
-}
-
+NS_ASSUME_NONNULL_END
