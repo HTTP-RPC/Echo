@@ -83,14 +83,7 @@ public class WebServiceProxy {
         arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
-            let result: T?
-            if (contentType?.hasPrefix("application/json") ?? false) {
-                result = try JSONSerialization.jsonObject(with: content, options: []) as? T
-            } else {
-                result = nil
-            }
-
-            return result
+            return try JSONSerialization.jsonObject(with: content, options: []) as? T
         }, resultHandler: resultHandler)
     }
 
@@ -111,18 +104,11 @@ public class WebServiceProxy {
         arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
-            let result: T?
-            if (contentType?.hasPrefix("application/json") ?? false) {
-                let jsonDecoder = JSONDecoder()
+            let jsonDecoder = JSONDecoder()
+            
+            jsonDecoder.dateDecodingStrategy = .millisecondsSince1970
 
-                jsonDecoder.dateDecodingStrategy = .millisecondsSince1970
-
-                result = try jsonDecoder.decode(T.self, from: content)
-            } else {
-                result = nil
-            }
-
-            return result
+            return try jsonDecoder.decode(T.self, from: content)
         }, resultHandler: resultHandler)
     }
 

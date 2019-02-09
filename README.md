@@ -74,7 +74,7 @@ All three methods accept the following arguments:
 * `contentType` - an optional string value containing the MIME type of the content
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
-The first version of the method uses `JSONSerialization` to decode response data. The second uses `JSONDecoder` to return a decodable value. The third version accepts an additional `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
+The first version of the method uses `JSONSerialization` to decode response data. The second uses `JSONDecoder` with a date decoding strategy of `millisecondsSince1970`. The third version accepts an additional `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
 
 All three methods return an instance of `URLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
