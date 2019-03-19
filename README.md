@@ -1,4 +1,5 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
+[![CocoaPods](https://img.shields.io/cocoapods/v/Kilo.svg)](https://cocoapods.org/pods/Kilo)
 
 # Introduction
 Kilo is an open-source framework for consuming REST services in iOS or tvOS. It is extremely lightweight and provides a convenient, callback-based interface that makes it easy to interact with remote APIs.
@@ -29,7 +30,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [Additional Information](#additional-information)
 
 # Getting Kilo
-Kilo is distributed as a universal binary that will run in the iOS simulator as well as on an actual device. Either iOS 10 or tvOS 10 or later is required. 
+Kilo is distributed as a universal binary that will run in the iOS simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 10 or tvOS 10 or later is required. 
 
 To install:
 
