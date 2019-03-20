@@ -18,6 +18,7 @@
 		378F659920E2BAD200D4440E /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 378F659720E2BAD100D4440E /* test.jpg */; };
 		37CF6F96218F47C800AE42F4 /* Lima.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37CF6F95218F47C800AE42F4 /* Lima.framework */; };
 		37CF6F97218F47C800AE42F4 /* Lima.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 37CF6F95218F47C800AE42F4 /* Lima.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		37E16A1A2242E45A0041CC98 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 37E16A192242E45A0041CC98 /* Settings.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		378F659620E2BAD100D4440E /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
 		378F659720E2BAD100D4440E /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
 		37CF6F95218F47C800AE42F4 /* Lima.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Lima.framework; sourceTree = "<group>"; };
+		37E16A192242E45A0041CC98 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 				372598CB20DFDD8800F8B493 /* Assets.xcassets */,
 				372598CD20DFDD8800F8B493 /* LaunchScreen.storyboard */,
 				372598D020DFDD8800F8B493 /* Info.plist */,
+				37E16A192242E45A0041CC98 /* Settings.bundle */,
 				378F659720E2BAD100D4440E /* test.jpg */,
 				378F659620E2BAD100D4440E /* test.txt */,
 			);
@@ -225,6 +228,7 @@
 			files = (
 				372598CC20DFDD8800F8B493 /* Assets.xcassets in Resources */,
 				372598CF20DFDD8800F8B493 /* LaunchScreen.storyboard in Resources */,
+				37E16A1A2242E45A0041CC98 /* Settings.bundle in Resources */,
 				378F659920E2BAD200D4440E /* test.jpg in Resources */,
 				378F659820E2BAD200D4440E /* test.txt in Resources */,
 			);
