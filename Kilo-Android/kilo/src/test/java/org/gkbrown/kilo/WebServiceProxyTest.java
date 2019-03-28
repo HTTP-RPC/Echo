@@ -164,11 +164,9 @@ public class WebServiceProxyTest {
             entry("name", imageTestURL.getFile())
         ));
 
-        BufferedImage image = webServiceProxy.invoke((inputStream, contentType) -> {
-            return ImageIO.read(inputStream);
-        });
+        BufferedImage image = webServiceProxy.invoke((inputStream, contentType) -> ImageIO.read(inputStream));
 
-        Assert.assertTrue("POST (custom)", image != null);
+        Assert.assertNotNull("POST (custom)", image);
     }
 
     @Test
@@ -203,7 +201,7 @@ public class WebServiceProxyTest {
             return textBuilder.toString();
         });
 
-        Assert.assertTrue("PUT", text != null);
+        Assert.assertNotNull("PUT", text);
     }
 
     @Test
@@ -232,7 +230,7 @@ public class WebServiceProxyTest {
             status = exception.getStatus();
         }
 
-        Assert.assertTrue("Unauthorized", status == HttpURLConnection.HTTP_FORBIDDEN);
+        Assert.assertEquals("Unauthorized", HttpURLConnection.HTTP_FORBIDDEN, status);
     }
 
     @Test
