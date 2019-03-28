@@ -290,7 +290,7 @@ public class WebServiceProxy {
      * The result type.
      *
      * @param responseHandler
-     * The response handler.
+     * The response handler, or <tt>null</tt> for no response handler.
      *
      * @return
      * The result of the operation.
@@ -299,10 +299,6 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
-        if (responseHandler == null) {
-            throw new IllegalArgumentException();
-        }
-
         URL url;
         RequestHandler requestHandler;
         if (method.equalsIgnoreCase("POST") && this.requestHandler == null) {
@@ -406,7 +402,7 @@ public class WebServiceProxy {
 
         T result;
         if (responseCode / 100 == 2) {
-            if (responseCode % 100 < 4) {
+            if (responseCode % 100 < 4 && responseHandler != null) {
                 try (InputStream inputStream = connection.getInputStream()) {
                     result = responseHandler.decodeResponse(inputStream, connection.getContentType());
                 }
