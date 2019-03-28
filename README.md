@@ -60,7 +60,7 @@ To install:
 Note that the framework binary must be "trimmed" prior to App Store submission. See the [Deployment](#deployment) section for more information.
 
 # iOS/tvOS
-The iOS and tvOS Kilo frameworks contain a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via `init(session:serverURL:)`, which takes the following arguments:
+The Kilo framework contains a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via `init(session:serverURL:)`, which takes the following arguments:
 
 * `session` - a `URLSession` instance that is used to create service requests
 * `serverURL` - the base URL of the service
