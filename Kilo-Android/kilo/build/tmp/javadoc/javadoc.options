@@ -1,7 +1,0 @@
--classpath '/Users/greg/work/Kilo/Kilo-Android/kilo/build/classes/java/main:/Users/greg/work/Kilo/Kilo-Android/kilo/build/resources/main'
--d '/Users/greg/work/Kilo/Kilo-Android/kilo/build/docs/javadoc'
--doctitle 'kilo 1.2 API'
--quiet 
--windowtitle 'kilo 1.2 API'
-'/Users/greg/work/Kilo/Kilo-Android/kilo/src/main/java/org/gkbrown/kilo/WebServiceException.java'
-'/Users/greg/work/Kilo/Kilo-Android/kilo/src/main/java/org/gkbrown/kilo/WebServiceProxy.java'

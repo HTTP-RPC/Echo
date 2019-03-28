@@ -17,6 +17,20 @@ import Kilo
 import Lima
 
 class ViewController: UITableViewController {
+    struct Response: Decodable {
+        struct AttachmentInfo: Decodable, Equatable {
+            let bytes: Int
+            let checksum: Int
+        }
+
+        let string: String
+        let strings: [String]
+        let number: Int
+        let flag: Bool
+        let date: Date
+        let attachmentInfo: [AttachmentInfo]
+    }
+
     var getCell: UITableViewCell!
     var postURLEncodedCell: UITableViewCell!
     var postMultipartCell: UITableViewCell!
@@ -90,22 +104,7 @@ class ViewController: UITableViewController {
                 error: error, cell: self.getCell)
         }
 
-        // POST
-        struct Response: Decodable {
-            struct AttachmentInfo: Decodable, Equatable {
-                let bytes: Int
-                let checksum: Int
-            }
-
-            let string: String
-            let strings: [String]
-            let number: Int
-            let flag: Bool
-            let date: Date
-            let attachmentInfo: [AttachmentInfo]
-        }
-
-        // URL-encoded form data
+        // POST (URL-encoded)
         webServiceProxy.invoke(.post, path: "test", arguments: [
             "string": "héllo",
             "strings": ["a", "b", "c"],
@@ -122,7 +121,7 @@ class ViewController: UITableViewController {
                 error: error, cell: self.postURLEncodedCell)
         }
 
-        // Multi-part form data
+        // POST (multi-part)
         webServiceProxy.encoding = .multipartFormData
 
         webServiceProxy.invoke(.post, path: "test", arguments: [
@@ -145,7 +144,7 @@ class ViewController: UITableViewController {
                 error: error, cell: self.postMultipartCell)
         }
 
-        // Custom post
+        // POST (custom)
         webServiceProxy.invoke(.post, path: "test", arguments: [
             "name": testImageURL.lastPathComponent
         ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in

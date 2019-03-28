@@ -14,7 +14,8 @@
 
 package org.gkbrown.kilo;
 
-import org.httprpc.io.JSONDecoder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,6 +47,67 @@ public class WebServiceProxyTest {
 
     private static final int EOF = -1;
 
+    public static class Response {
+        public static class AttachmentInfo {
+            private int bytes = 0;
+            private int checksum = 0;
+
+            public int getBytes() {
+                return bytes;
+            }
+
+            public int getChecksum() {
+                return checksum;
+            }
+        }
+
+        private String string = null;
+        private List<String> strings = null;
+        private int number = 0;
+        private boolean flag = false;
+        private Date date = null;
+        private String localDate = null;
+        private String localTime = null;
+        private String localDateTime = null;
+        private List<AttachmentInfo> attachmentInfo = null;
+
+        public String getString() {
+            return string;
+        }
+
+        public List<String> getStrings() {
+            return strings;
+        }
+
+        public int getNumber() {
+            return number;
+        }
+
+        public boolean getFlag() {
+            return flag;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public String getLocalDate() {
+            return localDate;
+        }
+
+        public String getLocalTime() {
+            return localTime;
+        }
+
+        public String getLocalDateTime() {
+            return localDateTime;
+        }
+
+        public List<AttachmentInfo> getAttachmentInfo() {
+            return attachmentInfo;
+        }
+    }
+
     @Test
     public void testGet() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test"));
@@ -61,11 +123,11 @@ public class WebServiceProxyTest {
             entry("localDateTime", localDateTime)
         ));
 
-        Map<String, ?> result = webServiceProxy.invoke((inputStream, contentType) -> new JSONDecoder().read(inputStream));
+        Map<String, ?> result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Map.class));
 
         Assert.assertTrue("GET", result.get("string").equals("héllo+gøodbye")
             && result.get("strings").equals(listOf("a", "b", "c"))
-            && result.get("number").equals(123L)
+            && result.get("number").equals(123)
             && result.get("flag").equals(true)
             && result.get("date").equals(date.getTime())
             && result.get("localDate").equals(localDate.toString())
@@ -80,7 +142,7 @@ public class WebServiceProxyTest {
         webServiceProxy.setArguments(mapOf(
             entry("string", "héllo+gøodbye"),
             entry("strings", listOf("a", "b", "c")),
-            entry("number", 123L),
+            entry("number", 123),
             entry("flag", true),
             entry("date", date),
             entry("localDate", localDate),
@@ -88,17 +150,17 @@ public class WebServiceProxyTest {
             entry("localDateTime", localDateTime)
         ));
 
-        Map<String, ?> result = webServiceProxy.invoke((inputStream, contentType) -> new JSONDecoder().read(inputStream));
+        Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
 
-        Assert.assertTrue("POST (URL-encoded)", result.get("string").equals("héllo+gøodbye")
-            && result.get("strings").equals(listOf("a", "b", "c"))
-            && result.get("number").equals(123L)
-            && result.get("flag").equals(true)
-            && result.get("date").equals(date.getTime())
-            && result.get("localDate").equals(localDate.toString())
-            && result.get("localTime").equals(localTime.toString())
-            && result.get("localDateTime").equals(localDateTime.toString())
-            && result.get("attachmentInfo").equals(listOf()));
+        Assert.assertTrue("POST (multipart)", result.getString().equals("héllo+gøodbye")
+            && result.getStrings().equals(listOf("a", "b", "c"))
+            && result.getNumber() == 123
+            && result.getFlag() == true
+            && result.getDate().equals(date)
+            && result.getLocalDate().equals(localDate.toString())
+            && result.getLocalTime().equals(localTime.toString())
+            && result.getLocalDateTime().equals(localDateTime.toString())
+            && result.getAttachmentInfo().size() == 0);
     }
 
     @Test
@@ -113,7 +175,7 @@ public class WebServiceProxyTest {
         webServiceProxy.setArguments(mapOf(
             entry("string", "héllo+gøodbye"),
             entry("strings", listOf("a", "b", "c")),
-            entry("number", 123L),
+            entry("number", 123),
             entry("flag", true),
             entry("date", date),
             entry("localDate", localDate),
@@ -122,27 +184,20 @@ public class WebServiceProxyTest {
             entry("attachments", listOf(textTestURL, imageTestURL))
         ));
 
-        Map<String, ?> result = webServiceProxy.invoke((inputStream, contentType) -> new JSONDecoder().read(inputStream));
+        Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
 
-        Assert.assertTrue("POST (multipart)", result.get("string").equals("héllo+gøodbye")
-            && result.get("strings").equals(listOf("a", "b", "c"))
-            && result.get("number").equals(123L)
-            && result.get("flag").equals(true)
-            && result.get("date").equals(date.getTime())
-            && result.get("localDate").equals(localDate.toString())
-            && result.get("localTime").equals(localTime.toString())
-            && result.get("localDateTime").equals(localDateTime.toString())
-            && result.get("attachmentInfo").equals(listOf(
-                mapOf(
-                    entry("bytes", 26L),
-                    entry("checksum", 2412L)
-                ),
-                mapOf(
-                    entry("bytes", 10392L),
-                    entry("checksum", 1038036L)
-                )
-            ))
-        );
+        Assert.assertTrue("POST (multipart)", result.getString().equals("héllo+gøodbye")
+            && result.getStrings().equals(listOf("a", "b", "c"))
+            && result.getNumber() == 123
+            && result.getFlag() == true
+            && result.getDate().equals(date)
+            && result.getLocalDate().equals(localDate.toString())
+            && result.getLocalTime().equals(localTime.toString())
+            && result.getLocalDateTime().equals(localDateTime.toString())
+            && result.getAttachmentInfo().get(0).getBytes() == 26
+            && result.getAttachmentInfo().get(0).getChecksum() == 2412
+            && result.getAttachmentInfo().get(1).getBytes() == 10392
+            && result.getAttachmentInfo().get(1).getChecksum() == 1038036);
     }
 
     @Test

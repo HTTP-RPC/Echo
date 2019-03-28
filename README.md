@@ -1,12 +1,20 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
 [![CocoaPods](https://img.shields.io/cocoapods/v/Kilo.svg)](https://cocoapods.org/pods/Kilo)
 
-# Introduction
-Kilo is an open-source framework for consuming REST services in iOS or tvOS. It is extremely lightweight and provides a convenient, callback-based interface that makes it easy to interact with remote APIs.
+TODO Maven
 
-For example, the following code snippet shows how a client application might access a simple service that returns a friendly greeting. The request is executed asynchronously, and the result is printed when the call returns:
+# Introduction
+Kilo is an open-source framework for consuming REST services in iOS/tvOS and Android. It is extremely lightweight and provides a simple, intuitive API that makes it easy to interact with services regardless of target device or operating system.
+
+The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+
+![](README/kilo.png)
+
+For example, the following code snippet shows how an iOS client might access a simple service that returns a friendly greeting:
 
 ```swift
+let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: URL(string: "http://localhost:8080")!)
+
 webServiceProxy.invoke(.get, path: "/hello") { (result: String?, error: Error?) in
     if let greeting = result {
         print(greeting) // "Hello, World!"
@@ -14,9 +22,15 @@ webServiceProxy.invoke(.get, path: "/hello") { (result: String?, error: Error?) 
 }
 ```
 
-The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+In Java, the code might look like this (using the [Jackson](https://github.com/FasterXML/jackson) `ObjectMapper` class to deserialize the response):
 
-![](README/kilo.png)
+```java
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/hello"));
+
+String greeting = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, String.class));
+
+System.out.println(greeting); // "Hello, World!"
+```
 
 This guide introduces the Kilo framework and provides an overview of its key features.
 
@@ -25,11 +39,13 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 
 # Contents
 * [Getting Kilo](#getting-kilo)
-* [WebServiceProxy Class](#webserviceproxy-class)
-* [Deployment](#deployment)
+* [iOS/tvOS](#ios/tvos)
+* [Android](#android)
 * [Additional Information](#additional-information)
 
 # Getting Kilo
+TODO Android
+
 Kilo is distributed as a universal binary that will run in the iOS simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 10 or tvOS 10 or later is required. 
 
 To install:
@@ -43,8 +59,8 @@ To install:
 
 Note that the framework binary must be "trimmed" prior to App Store submission. See the [Deployment](#deployment) section for more information.
 
-# WebServiceProxy Class
-The Kilo framework contains a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via `init(session:serverURL:)`, which takes the following arguments:
+# iOS/tvOS
+The iOS and tvOS Kilo frameworks contain a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via `init(session:serverURL:)`, which takes the following arguments:
 
 * `session` - a `URLSession` instance that is used to create service requests
 * `serverURL` - the base URL of the service
@@ -118,7 +134,7 @@ webServiceProxy.invoke(.get, path: "/math/sum", arguments: [
 }
 ```
 
-# Deployment
+## Deployment
 The Kilo framework is a universal binary that must be "trimmed" prior to submission to the App Store:
 
 * Place the _[trim.sh](Xcode/trim.sh)_ script in your project root directory
@@ -126,6 +142,9 @@ The Kilo framework is a universal binary that must be "trimmed" prior to submiss
 * Create a new "Run Script" build phase after the "Embed Frameworks" phase
 * Rename the new build phase to "Trim Framework Executables" or similar (optional)
 * Invoke the script (e.g. `"${SRCROOT}/trim.sh" Kilo`)
+
+# Android
+TODO
 
 # Additional Information
 This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/Kilo/tree/development/Kilo-iOS/KiloTest).
