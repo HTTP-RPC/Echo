@@ -14,6 +14,7 @@
 
 package org.gkbrown.kilo;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Assert;
@@ -115,37 +116,6 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testGreeting() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "greeting"));
-
-        String result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, String.class));
-
-        Assert.assertEquals(result, "Hello, World!");
-    }
-
-    @Test
-    public void testSum() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
-
-        webServiceProxy.setArguments(mapOf(entry("a", 2), entry("b", 4)));
-
-        Number result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Number.class));
-
-        Assert.assertEquals(6, result.intValue());
-    }
-
-    @Test
-    public void testSumValues() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
-
-        webServiceProxy.setArguments(mapOf(entry("values", listOf(1, 2, 3))));
-
-        Number result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Number.class));
-
-        Assert.assertEquals(6, result.intValue());
-    }
-
-    @Test
     public void testGet() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
 
@@ -170,6 +140,20 @@ public class WebServiceProxyTest {
             && result.get("localDate").equals(localDate.toString())
             && result.get("localTime").equals(localTime.toString())
             && result.get("localDateTime").equals(localDateTime.toString()));
+    }
+
+    @Test
+    public void testGetFibonacci() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/fibonacci"));
+
+        webServiceProxy.setArguments(mapOf(
+            entry("count", 8)
+        ));
+
+        List<Integer> result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream,
+            new TypeReference<List<Integer>>(){}));
+
+        Assert.assertEquals("GET (Fibonacci)", result, listOf(0, 1, 1, 2, 3, 5, 8, 13));
     }
 
     @Test

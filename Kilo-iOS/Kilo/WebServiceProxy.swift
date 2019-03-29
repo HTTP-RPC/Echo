@@ -83,7 +83,7 @@ public class WebServiceProxy {
         arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
-            return try JSONSerialization.jsonObject(with: content, options: [.allowFragments]) as? T
+            return try JSONSerialization.jsonObject(with: content, options: []) as? T
         }, resultHandler: resultHandler)
     }
 

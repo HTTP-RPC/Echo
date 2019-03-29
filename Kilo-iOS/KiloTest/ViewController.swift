@@ -32,6 +32,7 @@ class ViewController: UITableViewController {
     }
 
     var getCell: UITableViewCell!
+    var getFibonacciCell: UITableViewCell!
     var postURLEncodedCell: UITableViewCell!
     var postMultipartCell: UITableViewCell!
     var postCustomCell: UITableViewCell!
@@ -41,9 +42,6 @@ class ViewController: UITableViewController {
     var timeoutCell: UITableViewCell!
     var cancelCell: UITableViewCell!
     var errorCell: UITableViewCell!
-    var greetingCell: UITableViewCell!
-    var sumCell: UITableViewCell!
-    var sumValuesCell: UITableViewCell!
 
     var cells: [UITableViewCell]!
 
@@ -51,10 +49,8 @@ class ViewController: UITableViewController {
         super.loadView()
 
         cells = [
-            UITableViewCell(style: .value1, text: "Greeting") { self.greetingCell = $0 },
-            UITableViewCell(style: .value1, text: "Sum") { self.sumCell = $0 },
-            UITableViewCell(style: .value1, text: "Sum Values") { self.sumValuesCell = $0 },
             UITableViewCell(style: .value1, text: "GET") { self.getCell = $0 },
+            UITableViewCell(style: .value1, text: "GET (Fibonacci)") { self.getFibonacciCell = $0 },
             UITableViewCell(style: .value1, text: "POST (URL-encoded)") { self.postURLEncodedCell = $0 },
             UITableViewCell(style: .value1, text: "POST (multipart)") { self.postMultipartCell = $0 },
             UITableViewCell(style: .value1, text: "POST (custom)") { self.postCustomCell = $0 },
@@ -94,26 +90,6 @@ class ViewController: UITableViewController {
         let testTextURL = Bundle.main.url(forResource: "test", withExtension: "txt")!
         let testImageURL = Bundle.main.url(forResource: "test", withExtension: "jpg")!
 
-        // Greeting
-        webServiceProxy.invoke(.get, path: "greeting") { (result: Any?, error: Error?) in
-            self.validate(result as? String == "Hello, World!", error: error, cell: self.greetingCell)
-        }
-
-        // Sum
-        webServiceProxy.invoke(.get, path: "math/sum", arguments: [
-            "a": 2,
-            "b": 4
-        ]) { (result: Any?, error: Error?) in
-            self.validate(result as? Int == 6, error: error, cell: self.sumCell)
-        }
-
-        // Sum values
-        webServiceProxy.invoke(.get, path: "math/sum", arguments: [
-            "values": [1, 2, 3]
-        ]) { (result: Any?, error: Error?) in
-            self.validate(result as? Int == 6, error: error, cell: self.sumValuesCell)
-        }
-
         // GET
         webServiceProxy.invoke(.get, path: "test", arguments: [
             "string": "héllo+gøodbye",
@@ -127,6 +103,14 @@ class ViewController: UITableViewController {
                 && result?["number"] as? Int == 123
                 && result?["flag"] as? Bool == true
                 && result?["date"] as? Int64 == Int64(now.timeIntervalSince1970 * 1000),
+                error: error, cell: self.getCell)
+        }
+
+        // GET (Fibonacci)
+        webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
+            "count": 8,
+        ]) { (result: [Int]?, error: Error?) in
+            self.validate(result == [0, 1, 1, 2, 3, 5, 8, 13],
                 error: error, cell: self.getCell)
         }
 

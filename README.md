@@ -1,36 +1,14 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
 [![CocoaPods](https://img.shields.io/cocoapods/v/Kilo.svg)](https://cocoapods.org/pods/Kilo)
 
-TODO Maven
+TODO Maven tag
 
 # Introduction
-Kilo is an open-source framework for consuming REST services in iOS/tvOS and Android. It is extremely lightweight and provides a simple, intuitive API that makes it easy to interact with services regardless of target device or operating system.
+Kilo is an open-source framework for consuming REST services in iOS/tvOS and Android. It is extremely lightweight and provides a simple, intuitive API that makes it easy to interact with services regardless of target device or operating system. 
 
 The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
 ![](README/kilo.png)
-
-For example, the following code snippet shows how an iOS client might access a simple service that returns a friendly greeting:
-
-```swift
-let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: URL(string: "http://localhost:8080")!)
-
-webServiceProxy.invoke(.get, path: "/hello") { (result: Any?, error: Error?) in
-    if let greeting = result as? String {
-        print(greeting) // "Hello, World!"
-    }
-}
-```
-
-In Java, the code might look like this (using the [Jackson](https://github.com/FasterXML/jackson) `ObjectMapper` class to deserialize the response):
-
-```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "greeting"));
-
-String greeting = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, String.class));
-
-System.out.println(greeting); // "Hello, World!"
-```
 
 This guide introduces the Kilo framework and provides an overview of its key features.
 
@@ -69,15 +47,18 @@ A service operation is initiated via one of the following methods:
 
 ```swift
 public func invoke<T>(_ method: Method, path: String,
-    arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
+    arguments: [String: Any] = [:], 
+    content: Data? = nil, contentType: String? = nil,
     resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? { ... }
 
 public func invoke<T: Decodable>(_ method: Method, path: String,
-    arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
+    arguments: [String: Any] = [:], 
+    content: Data? = nil, contentType: String? = nil,
     resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? { ... }
 
 public func invoke<T>(_ method: Method, path: String,
-    arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
+    arguments: [String: Any] = [:], 
+    content: Data? = nil, contentType: String? = nil,
     responseHandler: @escaping (_ content: Data, _ contentType: String?) throws -> T?,
     resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? { ... }
 ```
@@ -113,6 +94,8 @@ If the server returns an error response, a localized description of the error wi
 
 ## Example
 The following code snippet demonstrates how the `WebServiceProxy` class might be used to access the operations of a simple math service:
+
+TODO Use Fibonacci example
 
 ```swift
 // Create service proxy
