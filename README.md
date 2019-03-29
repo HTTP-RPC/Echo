@@ -15,8 +15,8 @@ For example, the following code snippet shows how an iOS client might access a s
 ```swift
 let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: URL(string: "http://localhost:8080")!)
 
-webServiceProxy.invoke(.get, path: "/hello") { (result: String?, error: Error?) in
-    if let greeting = result {
+webServiceProxy.invoke(.get, path: "/hello") { (result: Any?, error: Error?) in
+    if let greeting = result as? String {
         print(greeting) // "Hello, World!"
     }
 }
@@ -25,7 +25,7 @@ webServiceProxy.invoke(.get, path: "/hello") { (result: String?, error: Error?) 
 In Java, the code might look like this (using the [Jackson](https://github.com/FasterXML/jackson) `ObjectMapper` class to deserialize the response):
 
 ```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/hello"));
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "greeting"));
 
 String greeting = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, String.class));
 
@@ -122,14 +122,14 @@ let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: URL
 webServiceProxy.invoke(.get, path: "/math/sum", arguments: [
     "a": 2,
     "b": 4
-]) { (result: Int?, error: Error?) in
+]) { (result: Any?, error: Error?) in
     // result is 6
 }
 
 // Get sum of all values
 webServiceProxy.invoke(.get, path: "/math/sum", arguments: [
     "values": [1, 2, 3, 4]
-]) { (result: Int?, error: Error?) in
+]) { (result: Any?, error: Error?) in
     // result is 10
 }
 ```

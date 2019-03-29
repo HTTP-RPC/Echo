@@ -39,11 +39,13 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 public class WebServiceProxyTest {
-    private static Date date = new Date();
+    private Date date = new Date();
 
-    private static LocalDate localDate = LocalDate.now();
-    private static LocalTime localTime = LocalTime.now();
-    private static LocalDateTime localDateTime = LocalDateTime.now();
+    private LocalDate localDate = LocalDate.now();
+    private LocalTime localTime = LocalTime.now();
+    private LocalDateTime localDateTime = LocalDateTime.now();
+
+    private URL serverURL;
 
     private static final int EOF = -1;
 
@@ -108,9 +110,44 @@ public class WebServiceProxyTest {
         }
     }
 
+    public WebServiceProxyTest() throws Exception {
+        serverURL = new URL("http://localhost:8080/httprpc-test/");
+    }
+
+    @Test
+    public void testGreeting() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "greeting"));
+
+        String result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, String.class));
+
+        Assert.assertEquals(result, "Hello, World!");
+    }
+
+    @Test
+    public void testSum() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
+
+        webServiceProxy.setArguments(mapOf(entry("a", 2), entry("b", 4)));
+
+        Number result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Number.class));
+
+        Assert.assertEquals(6, result.intValue());
+    }
+
+    @Test
+    public void testSumValues() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
+
+        webServiceProxy.setArguments(mapOf(entry("values", listOf(1, 2, 3))));
+
+        Number result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Number.class));
+
+        Assert.assertEquals(6, result.intValue());
+    }
+
     @Test
     public void testGet() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", "héllo+gøodbye"),
@@ -137,7 +174,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testURLEncodedPost() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-test/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", "héllo+gøodbye"),
@@ -168,7 +205,7 @@ public class WebServiceProxyTest {
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-test/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
         webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
 
@@ -202,7 +239,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomPost() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-test/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
@@ -226,7 +263,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPut() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL("http://localhost:8080/httprpc-test/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL(serverURL, "test"));
 
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
 
@@ -261,7 +298,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testDelete() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL("http://localhost:8080/httprpc-test/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL(serverURL, "test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("id", 101)
@@ -274,7 +311,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testUnauthorized() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test/unauthorized"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/unauthorized"));
 
         int status;
         try {
@@ -290,7 +327,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testError() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test/error"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/error"));
 
         boolean error;
         try {
@@ -306,7 +343,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testTimeout() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
 
         webServiceProxy.setConnectTimeout(3000);
         webServiceProxy.setReadTimeout(3000);
