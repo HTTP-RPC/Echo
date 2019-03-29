@@ -111,7 +111,7 @@ class ViewController: UITableViewController {
             "count": 8,
         ]) { (result: [Int]?, error: Error?) in
             self.validate(result == [0, 1, 1, 2, 3, 5, 8, 13],
-                error: error, cell: self.getCell)
+                error: error, cell: self.getFibonacciCell)
         }
 
         // POST (URL-encoded)
