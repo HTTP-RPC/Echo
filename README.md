@@ -47,7 +47,7 @@ The Android version can be downloaded [here](https://github.com/gk-brown/Kilo/re
 Java 8 or later is required.
 
 # iOS/tvOS
-The Kilo framework contains a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via `init(session:serverURL:)`, which takes the following arguments:
+The iOS/tvOS version of the Kilo framework contains a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via `init(session:serverURL:)`, which takes the following arguments:
 
 * `session` - a `URLSession` instance that is used to create service requests
 * `serverURL` - the base URL of the service
@@ -102,7 +102,7 @@ Note that, while service requests are typically processed on a background thread
 If the server returns an error response, a localized description of the error will be provided in the localized description of the error parameter. Further, if the error is returned with a content type of "text/plain", the response body will be returned in the error's debug description.
 
 ## Example
-The following code snippet demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
+The following Swift code demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
 
 ```swift
 let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: serverURL)
@@ -125,20 +125,41 @@ The Kilo framework is a universal binary that must be "trimmed" prior to submiss
 * Invoke the script (e.g. `"${SRCROOT}/trim.sh" Kilo`)
 
 # Android
-TODO Document Android API
+Like the iOS/tvOS version, the Android version of the Kilo framework includes a `WebServiceProxy` class that is used to issue API requests to the server. Additionally, the `WebServiceException` class is provided to represent HTTP errors returned by a service.
+
+Service proxies are initialized via a constructor that takes the following arguments:
+
+* `method` - the HTTP method to execute
+* `url` - an instance of `java.net.URL` representing the target of the operation
+
+Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
+
+The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part encoding, `URL` and `Iterable<URL>` values represent file uploads, and behave similarly to `<input type="file">` tags in HTML forms.
+
+Service operations are invoked via the following method. The provided `responseHandler` is used to deserialize the response returned by the server (for example, using the `ObjectMapper` class provided by the [Jackson](https://github.com/FasterXML/jackson) framework):
+
+```java
+public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
+``` 
+
+Unlike the iOS/tvOS version, the method is executed synchronously. As a result, service proxies should only be used on a background thread (for example, within an `AsyncTask` implementation).
+
+If the server returns an error response, a `WebServiceException` will be thrown. The response code can be retrieved via the exception's `getStatus()` method. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
+
+For example, the following Java code demonstrates how the `WebServiceProxy` class might be used to access the Fibonacci service discussed earlier:
 
 ```java
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/fibonacci"));
 
 // GET test/fibonacci?count=8
-webServiceProxy.setArguments(mapOf(
-    entry("count", 8)
-));
+webServiceProxy.setArguments(Collections.singletonMap("count", 8));
 
 // [0, 1, 1, 2, 3, 5, 8, 13]
 List<Integer> result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream,
     new TypeReference<List<Integer>>(){}));
 ```
+
+In Kotlin, the code might look like this:
 
 ```kotlin
 val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test/fibonacci"))
