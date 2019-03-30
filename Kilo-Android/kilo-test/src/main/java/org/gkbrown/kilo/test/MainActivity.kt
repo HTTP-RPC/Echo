@@ -24,7 +24,7 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.*
+import java.util.Date
 import org.gkbrown.kilo.WebServiceException
 import org.gkbrown.kilo.WebServiceProxy
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -57,10 +57,7 @@ class MainActivity : AppCompatActivity() {
         val attachmentInfo: List<AttachmentInfo>? = null
     }
 
-    class AttachmentInfo {
-        val bytes = 0
-        val checksum = 0
-    }
+    data class AttachmentInfo(val bytes: Int = 0, val checksum: Long = 0)
 
     val date = Date()
 
@@ -155,7 +152,9 @@ class MainActivity : AppCompatActivity() {
 
             webServiceProxy.encoding = WebServiceProxy.Encoding.MULTIPART_FORM_DATA
 
-            // TODO Attachments
+            val textTestURL = javaClass.getResource("/assets/test.txt")
+            val imageTestURL = javaClass.getResource("/assets/test.jpg")
+
             webServiceProxy.arguments = mapOf(
                 "string" to "héllo+gøodbye",
                 "strings" to listOf("a", "b", "c"),
@@ -164,7 +163,8 @@ class MainActivity : AppCompatActivity() {
                 "date" to date,
                 "localDate" to localDate,
                 "localTime" to localTime,
-                "localDateTime" to localDateTime
+                "localDateTime" to localDateTime,
+                "attachments" to listOf(textTestURL, imageTestURL)
             )
 
             val result = webServiceProxy.invoke { inputStream, _ -> ObjectMapper().readValue(inputStream, Response::class.java) }
@@ -177,7 +177,10 @@ class MainActivity : AppCompatActivity() {
                 && result.localDate == localDate.toString()
                 && result.localTime == localTime.toString()
                 && result.localDateTime == localDateTime.toString()
-                && result.attachmentInfo?.isEmpty() ?: true
+                && result.attachmentInfo == listOf(
+                    AttachmentInfo(26, 2412),
+                    AttachmentInfo(10392, 1038036)
+                )
         }.execute()
 
         // POST (custom)
