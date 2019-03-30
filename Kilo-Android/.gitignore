@@ -1,7 +1,7 @@
 .gradle
 gradle.properties
 local.properties
-.idea/caches
-.idea/libraries
+.idea/caches/**
+.idea/libraries/**
 .idea/workspace.xml
 **/out
