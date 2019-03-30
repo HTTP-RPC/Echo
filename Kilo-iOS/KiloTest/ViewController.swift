@@ -18,17 +18,17 @@ import Lima
 
 class ViewController: UITableViewController {
     struct Response: Decodable {
-        struct AttachmentInfo: Decodable, Equatable {
-            let bytes: Int
-            let checksum: Int
-        }
-
         let string: String
         let strings: [String]
         let number: Int
         let flag: Bool
         let date: Date
         let attachmentInfo: [AttachmentInfo]
+    }
+
+    struct AttachmentInfo: Decodable, Equatable {
+        let bytes: Int
+        let checksum: Int
     }
 
     var getCell: UITableViewCell!
@@ -150,8 +150,8 @@ class ViewController: UITableViewController {
                 && result?.flag == true
                 && result?.date == now
                 && result?.attachmentInfo == [
-                    Response.AttachmentInfo(bytes: 26, checksum: 2412),
-                    Response.AttachmentInfo(bytes: 10392, checksum: 1038036)
+                    AttachmentInfo(bytes: 26, checksum: 2412),
+                    AttachmentInfo(bytes: 10392, checksum: 1038036)
                 ],
                 cell: self.postMultipartCell)
         }
