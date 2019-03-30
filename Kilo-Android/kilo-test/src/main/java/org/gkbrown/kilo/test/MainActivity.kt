@@ -14,6 +14,7 @@
 
 package org.gkbrown.kilo.test
 
+import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -29,6 +30,7 @@ import org.gkbrown.kilo.WebServiceException
 import org.gkbrown.kilo.WebServiceProxy
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
     class TestTask(val checkBox: CheckBox, val test: () -> Boolean) : AsyncTask<Unit, Unit, Boolean>() {
@@ -185,14 +187,70 @@ class MainActivity : AppCompatActivity() {
 
         // POST (custom)
         TestTask(postCustomCheckBox) {
-            // TODO
-            false
+            val webServiceProxy = WebServiceProxy("POST", URL(serverURL, "test"))
+
+            val imageTestURL = javaClass.getResource("/assets/test.jpg")
+
+            webServiceProxy.setRequestHandler { outputStream ->
+                imageTestURL.openStream().use { inputStream ->
+                    var b = inputStream.read()
+
+                    while (b != EOF) {
+                        outputStream.write(b)
+
+                        b = inputStream.read()
+                    }
+                }
+            }
+
+            webServiceProxy.arguments = mapOf(
+                "name" to imageTestURL.file
+            )
+
+            val image = webServiceProxy.invoke { inputStream, contentType -> BitmapFactory.decodeStream(inputStream) }
+
+            image != null
         }.execute()
 
         // PUT
         TestTask(putCheckBox) {
-            // TODO
-            false
+            val webServiceProxy = WebServiceProxy("PUT", URL(serverURL, "test"))
+
+            val textTestURL = javaClass.getResource("/assets/test.txt")
+
+            webServiceProxy.setRequestHandler { outputStream ->
+                textTestURL.openStream().use { inputStream ->
+                    var b = inputStream.read()
+
+                    while (b != EOF) {
+                        outputStream.write(b)
+
+                        b = inputStream.read()
+                    }
+                }
+            }
+
+            webServiceProxy.arguments = mapOf(
+                "id" to 101
+            )
+
+            val text = webServiceProxy.invoke { inputStream, contentType ->
+                val inputStreamReader = InputStreamReader(inputStream)
+
+                val textBuilder = StringBuilder()
+
+                var c = inputStreamReader.read()
+
+                while (c != EOF) {
+                    textBuilder.append(c.toChar())
+
+                    c = inputStreamReader.read()
+                }
+
+                textBuilder.toString()
+            }
+
+            text != null
         }.execute()
 
         // DELETE

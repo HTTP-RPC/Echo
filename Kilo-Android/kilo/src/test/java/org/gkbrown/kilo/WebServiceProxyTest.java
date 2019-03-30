@@ -230,7 +230,7 @@ public class WebServiceProxyTest {
         webServiceProxy.setRequestHandler((outputStream) -> {
             try (InputStream inputStream = imageTestURL.openStream()) {
                 int b;
-                while ((b = inputStream.read()) != -1) {
+                while ((b = inputStream.read()) != EOF) {
                     outputStream.write(b);
                 }
             }
