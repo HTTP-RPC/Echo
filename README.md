@@ -1,7 +1,6 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
 [![CocoaPods](https://img.shields.io/cocoapods/v/Kilo.svg)](https://cocoapods.org/pods/Kilo)
-
-TODO Maven tag
+[![Maven Central](https://img.shields.io/maven-central/v/org.gkbrown/kilo.svg)](http://repo1.maven.org/maven2/org/gkbrown/kilo/)
 
 # Introduction
 Kilo is an open-source framework for consuming REST services in iOS/tvOS and Android. It is extremely lightweight and provides a simple, intuitive API that makes it easy to interact with services regardless of target device or operating system. 
@@ -22,9 +21,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [Additional Information](#additional-information)
 
 # Getting Kilo
-TODO Android
-
-Kilo is distributed as a universal binary that will run in the iOS simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 10 or tvOS 10 or later is required. 
+The iOS/tvOS version of Kilo is distributed as a universal binary that will run in the simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 10 or tvOS 10 or later is required. 
 
 To install:
 
@@ -36,6 +33,18 @@ To install:
 * In the dialog that appears, ensure that "Copy items if needed" is checked and click "Finish"
 
 Note that the framework binary must be "trimmed" prior to App Store submission. See the [Deployment](#deployment) section for more information.
+
+The Android version can be downloaded [here](https://github.com/gk-brown/Kilo/releases). It is also available via Maven:
+
+```xml
+<dependency>
+    <groupId>org.gkbrown</groupId>
+    <artifactId>kilo</artifactId>
+    <version>...</version>
+</dependency>
+```
+
+Java 8 or later is required.
 
 # iOS/tvOS
 The Kilo framework contains a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via `init(session:serverURL:)`, which takes the following arguments:
@@ -96,9 +105,9 @@ If the server returns an error response, a localized description of the error wi
 The following code snippet demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
 
 ```swift
-let webServiceProxy = WebServiceProxy(session: URLSession.shared, 
-    serverURL: URL(string: "http://localhost:8080")!)
+let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: serverURL)
 
+// GET test/fibonacci?count=8
 webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
     "count": 8
 ]) { (result: [Int]?, error: Error?) in
@@ -116,7 +125,32 @@ The Kilo framework is a universal binary that must be "trimmed" prior to submiss
 * Invoke the script (e.g. `"${SRCROOT}/trim.sh" Kilo`)
 
 # Android
-TODO
+TODO Document Android API
+
+```java
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/fibonacci"));
+
+// GET test/fibonacci?count=8
+webServiceProxy.setArguments(mapOf(
+    entry("count", 8)
+));
+
+// [0, 1, 1, 2, 3, 5, 8, 13]
+List<Integer> result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream,
+    new TypeReference<List<Integer>>(){}));
+```
+
+```kotlin
+val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test/fibonacci"))
+
+// GET test/fibonacci?count=8
+webServiceProxy.arguments = mapOf(
+    "count" to 8
+)
+
+// [0, 1, 1, 2, 3, 5, 8, 13]
+val result = webServiceProxy.invoke { inputStream, _ -> ObjectMapper().readValue(inputStream, List::class.java) }
+```
 
 # Additional Information
-This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/Kilo/tree/development/Kilo-iOS/KiloTest).
+This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/Kilo/tree/master/).
