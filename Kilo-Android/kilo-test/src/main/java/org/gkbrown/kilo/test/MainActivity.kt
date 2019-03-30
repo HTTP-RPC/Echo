@@ -86,6 +86,48 @@ class MainActivity : AppCompatActivity() {
 
             result == listOf(0, 1, 1, 2, 3, 5, 8, 13)
         }.execute()
+
+        // POST (URL-encoded)
+        TestTask(postURLEncodedCheckBox) {
+            // TODO
+            false
+        }.execute()
+
+        // POST (multipart)
+        TestTask(postMultipartCheckBox) {
+            // TODO
+            false
+        }.execute()
+
+        // POST (custom)
+        TestTask(postCustomCheckBox) {
+            // TODO
+            false
+        }.execute()
+
+        // PUT
+        TestTask(putCheckBox) {
+            // TODO
+            false
+        }.execute()
+
+        // DELETE
+        TestTask(deleteCheckBox) {
+            // TODO
+            false
+        }.execute()
+
+        // Error
+        TestTask(errorCheckBox) {
+            // TODO
+            false
+        }.execute()
+
+        // Timeout
+        TestTask(timeoutCheckBox) {
+            // TODO
+            false
+        }.execute()
     }
 }
 
