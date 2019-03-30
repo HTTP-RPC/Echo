@@ -50,6 +50,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <CheckBox android:id="@+id/unauthorizedCheckBox"
+            android:text="Unauthorized"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <CheckBox android:id="@+id/errorCheckBox"
             android:text="Error"
             android:enabled="false"

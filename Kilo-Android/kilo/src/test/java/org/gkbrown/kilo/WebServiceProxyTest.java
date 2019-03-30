@@ -51,19 +51,6 @@ public class WebServiceProxyTest {
     private static final int EOF = -1;
 
     public static class Response {
-        public static class AttachmentInfo {
-            private int bytes = 0;
-            private int checksum = 0;
-
-            public int getBytes() {
-                return bytes;
-            }
-
-            public int getChecksum() {
-                return checksum;
-            }
-        }
-
         private String string = null;
         private List<String> strings = null;
         private int number = 0;
@@ -108,6 +95,19 @@ public class WebServiceProxyTest {
 
         public List<AttachmentInfo> getAttachmentInfo() {
             return attachmentInfo;
+        }
+    }
+
+    public static class AttachmentInfo {
+        private int bytes = 0;
+        private int checksum = 0;
+
+        public int getBytes() {
+            return bytes;
+        }
+
+        public int getChecksum() {
+            return checksum;
         }
     }
 

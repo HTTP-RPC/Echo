@@ -38,6 +38,7 @@ class ViewController: UITableViewController {
     var postCustomCell: UITableViewCell!
     var putCell: UITableViewCell!
     var patchCell: UITableViewCell!
+    var unauthorizedCell: UITableViewCell!
     var deleteCell: UITableViewCell!
     var timeoutCell: UITableViewCell!
     var cancelCell: UITableViewCell!
@@ -57,6 +58,7 @@ class ViewController: UITableViewController {
             UITableViewCell(style: .value1, text: "PUT") { self.putCell = $0 },
             UITableViewCell(style: .value1, text: "PATCH") { self.patchCell = $0 },
             UITableViewCell(style: .value1, text: "DELETE") { self.deleteCell = $0 },
+            UITableViewCell(style: .value1, text: "Unauthorized") { self.unauthorizedCell = $0 },
             UITableViewCell(style: .value1, text: "Error") { self.errorCell = $0 },
             UITableViewCell(style: .value1, text: "Cancel") { self.cancelCell = $0 },
             UITableViewCell(style: .value1, text: "Timeout") { self.timeoutCell = $0 }
@@ -103,7 +105,7 @@ class ViewController: UITableViewController {
                 && result?["number"] as? Int == 123
                 && result?["flag"] as? Bool == true
                 && result?["date"] as? Int64 == Int64(now.timeIntervalSince1970 * 1000),
-                error: error, cell: self.getCell)
+                cell: self.getCell)
         }
 
         // GET (Fibonacci)
@@ -111,7 +113,7 @@ class ViewController: UITableViewController {
             "count": 8
         ]) { (result: [Int]?, error: Error?) in
             self.validate(result == [0, 1, 1, 2, 3, 5, 8, 13],
-                error: error, cell: self.getFibonacciCell)
+                cell: self.getFibonacciCell)
         }
 
         // POST (URL-encoded)
@@ -128,7 +130,7 @@ class ViewController: UITableViewController {
                 && result?.flag == true
                 && result?.date == now
                 && result?.attachmentInfo == [],
-                error: error, cell: self.postURLEncodedCell)
+                cell: self.postURLEncodedCell)
         }
 
         // POST (multi-part)
@@ -151,7 +153,7 @@ class ViewController: UITableViewController {
                     Response.AttachmentInfo(bytes: 26, checksum: 2412),
                     Response.AttachmentInfo(bytes: 10392, checksum: 1038036)
                 ],
-                error: error, cell: self.postMultipartCell)
+                cell: self.postMultipartCell)
         }
 
         // POST (custom)
@@ -160,7 +162,7 @@ class ViewController: UITableViewController {
         ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
             return UIImage(data: content)
         }) { (result: UIImage?, error: Error?) in
-            self.validate(result != nil, error: error, cell: self.postCustomCell)
+            self.validate(result != nil, cell: self.postCustomCell)
         }
 
         // PUT
@@ -169,7 +171,7 @@ class ViewController: UITableViewController {
         ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
         }) { (result: String?, error: Error?) in
-            self.validate(result != nil, error: error, cell: self.putCell)
+            self.validate(result != nil, cell: self.putCell)
         }
 
         // PATCH
@@ -178,21 +180,28 @@ class ViewController: UITableViewController {
         ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
         }) { (result: String?, error: Error?) in
-            self.validate(result != nil, error: error, cell: self.patchCell)
+            self.validate(result != nil, cell: self.patchCell)
         }
 
         // DELETE
         webServiceProxy.invoke(.delete, path: "test", arguments: [
             "id": 101
         ]) { (_: Any?, error: Error?) in
-            self.validate(error == nil, error: error, cell: self.deleteCell)
+            self.validate(error == nil, cell: self.deleteCell)
+        }
+
+        // Unauthorized
+        webServiceProxy.invoke(.get, path: "test/unauthorized") { (_: Any?, error: Error?) in
+            let status = (error as NSError?)?.code ?? 200
+
+            self.validate(status == 403, cell: self.unauthorizedCell)
         }
 
         // Error
         webServiceProxy.invoke(.get, path: "test/error") { (_: Any?, error: Error?) in
-            self.errorCell.detailTextLabel?.text = error?.localizedDescription
+            print(error?.localizedDescription ?? "")
 
-            self.validate(error != nil, error: error, cell: self.errorCell)
+            self.validate(error != nil, cell: self.errorCell)
         }
 
         // Timeout
@@ -200,7 +209,7 @@ class ViewController: UITableViewController {
             "value": 123,
             "delay": 6000
         ]) { (_: Any?, error: Error?) in
-            self.validate(error != nil, error: error, cell: self.timeoutCell)
+            self.validate(error != nil, cell: self.timeoutCell)
         }
 
         // Cancel
@@ -208,7 +217,7 @@ class ViewController: UITableViewController {
             "value": 123,
             "delay": 6000
         ]) { (_: Any?, error: Error?) in
-            self.validate(error != nil, error: error, cell: self.cancelCell)
+            self.validate(error != nil, cell: self.cancelCell)
         }
 
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
@@ -232,7 +241,7 @@ class ViewController: UITableViewController {
         return true
     }
 
-    func validate(_ condition: Bool, error: Error?, cell: UITableViewCell) {
+    func validate(_ condition: Bool, cell: UITableViewCell) {
         if (condition) {
             cell.accessoryType = UITableViewCell.AccessoryType.checkmark
         } else {
