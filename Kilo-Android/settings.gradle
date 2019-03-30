@@ -1,4 +1,3 @@
-include ':kilo-test'
 rootProject.name = 'Kilo'
 
 include  'kilo', 'kilo-test'
