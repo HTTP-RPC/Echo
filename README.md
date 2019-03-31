@@ -47,9 +47,9 @@ The Android version can be downloaded [here](https://github.com/gk-brown/Kilo/re
 Java 8 or later is required.
 
 # iOS/tvOS
-The iOS/tvOS version of the Kilo framework contains a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via `init(session:serverURL:)`, which takes the following arguments:
+The iOS/tvOS version of the Kilo framework contains a single class named `WebServiceProxy` that is used to issue API requests to the server. Service proxies are initialized via the `init(session:serverURL:)` method, which takes the following arguments:
 
-* `session` - a `URLSession` instance that is used to create service requests
+* `session` - a `URLSession` instance
 * `serverURL` - the base URL of the service
 
 A service operation is initiated via one of the following methods:
