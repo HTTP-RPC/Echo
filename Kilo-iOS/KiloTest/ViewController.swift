@@ -99,21 +99,21 @@ class ViewController: UITableViewController {
             "number": 123,
             "flag": true,
             "date": now
-        ]) { (result: [String: Any]?, error: Error?) in
-            self.validate(result?["string"] as? String == "héllo+gøodbye"
+        ]) { [weak self] (result: [String: Any]?, _: Error?) in
+            self?.validate(result?["string"] as? String == "héllo+gøodbye"
                 && result?["strings"] as? [String] == ["a", "b", "c"]
                 && result?["number"] as? Int == 123
                 && result?["flag"] as? Bool == true
                 && result?["date"] as? Int64 == Int64(now.timeIntervalSince1970 * 1000),
-                cell: self.getCell)
+                cell: self?.getCell)
         }
 
         // GET (Fibonacci)
         webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
             "count": 8
-        ]) { (result: [Int]?, error: Error?) in
-            self.validate(result == [0, 1, 1, 2, 3, 5, 8, 13],
-                cell: self.getFibonacciCell)
+        ]) { [weak self] (result: [Int]?, error: Error?) in
+            self?.validate(result == [0, 1, 1, 2, 3, 5, 8, 13],
+                cell: self?.getFibonacciCell)
         }
 
         // POST (URL-encoded)
@@ -123,14 +123,14 @@ class ViewController: UITableViewController {
             "number": 123,
             "flag": true,
             "date": now
-        ]) { (result: Response?, error: Error?) in
-            self.validate(result?.string == "héllo"
+        ]) { [weak self] (result: Response?, _: Error?) in
+            self?.validate(result?.string == "héllo"
                 && result?.strings == ["a", "b", "c"]
                 && result?.number == 123
                 && result?.flag == true
                 && result?.date == now
                 && result?.attachmentInfo == [],
-                cell: self.postURLEncodedCell)
+                cell: self?.postURLEncodedCell)
         }
 
         // POST (multi-part)
@@ -143,8 +143,8 @@ class ViewController: UITableViewController {
             "flag": true,
             "date": now,
             "attachments": [testTextURL, testImageURL]
-        ]) { (result: Response?, error: Error?) in
-            self.validate(result?.string == "héllo"
+        ]) { [weak self] (result: Response?, _: Error?) in
+            self?.validate(result?.string == "héllo"
                 && result?.strings == ["a", "b", "c"]
                 && result?.number == 123
                 && result?.flag == true
@@ -153,7 +153,7 @@ class ViewController: UITableViewController {
                     AttachmentInfo(bytes: 26, checksum: 2412),
                     AttachmentInfo(bytes: 10392, checksum: 1038036)
                 ],
-                cell: self.postMultipartCell)
+                cell: self?.postMultipartCell)
         }
 
         // POST (custom)
@@ -161,8 +161,8 @@ class ViewController: UITableViewController {
             "name": testImageURL.lastPathComponent
         ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
             return UIImage(data: content)
-        }) { (result: UIImage?, error: Error?) in
-            self.validate(result != nil, cell: self.postCustomCell)
+        }) { [weak self] (result: UIImage?, _: Error?) in
+            self?.validate(result != nil, cell: self?.postCustomCell)
         }
 
         // PUT
@@ -170,8 +170,8 @@ class ViewController: UITableViewController {
             "id": 101
         ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
-        }) { (result: String?, error: Error?) in
-            self.validate(result != nil, cell: self.putCell)
+        }) { [weak self] (result: String?, _: Error?) in
+            self?.validate(result != nil, cell: self?.putCell)
         }
 
         // PATCH
@@ -179,45 +179,45 @@ class ViewController: UITableViewController {
             "id": 101
         ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
-        }) { (result: String?, error: Error?) in
-            self.validate(result != nil, cell: self.patchCell)
+        }) { [weak self] (result: String?, _: Error?) in
+            self?.validate(result != nil, cell: self?.patchCell)
         }
 
         // DELETE
         webServiceProxy.invoke(.delete, path: "test", arguments: [
             "id": 101
-        ]) { (_: Any?, error: Error?) in
-            self.validate(error == nil, cell: self.deleteCell)
+        ]) { [weak self] (_: Any?, error: Error?) in
+            self?.validate(error == nil, cell: self?.deleteCell)
         }
 
         // Unauthorized
-        webServiceProxy.invoke(.get, path: "test/unauthorized") { (_: Any?, error: Error?) in
+        webServiceProxy.invoke(.get, path: "test/unauthorized") { [weak self] (_: Any?, error: Error?) in
             let status = (error as NSError?)?.code ?? 200
 
-            self.validate(status == 403, cell: self.unauthorizedCell)
+            self?.validate(status == 403, cell: self?.unauthorizedCell)
         }
 
         // Error
-        webServiceProxy.invoke(.get, path: "test/error") { (_: Any?, error: Error?) in
+        webServiceProxy.invoke(.get, path: "test/error") { [weak self] (_: Any?, error: Error?) in
             print(error?.localizedDescription ?? "")
 
-            self.validate(error != nil, cell: self.errorCell)
+            self?.validate(error != nil, cell: self?.errorCell)
         }
 
         // Timeout
         webServiceProxy.invoke(.get, path: "test", arguments: [
             "value": 123,
             "delay": 6000
-        ]) { (_: Any?, error: Error?) in
-            self.validate(error != nil, cell: self.timeoutCell)
+        ]) { [weak self] (_: Any?, error: Error?) in
+            self?.validate(error != nil, cell: self?.timeoutCell)
         }
 
         // Cancel
         let task = webServiceProxy.invoke(.get, path: "test", arguments: [
             "value": 123,
             "delay": 6000
-        ]) { (_: Any?, error: Error?) in
-            self.validate(error != nil, cell: self.cancelCell)
+        ]) { [weak self] (_: Any?, error: Error?) in
+            self?.validate(error != nil, cell: self?.cancelCell)
         }
 
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
@@ -241,11 +241,11 @@ class ViewController: UITableViewController {
         return true
     }
 
-    func validate(_ condition: Bool, cell: UITableViewCell) {
+    func validate(_ condition: Bool, cell: UITableViewCell?) {
         if (condition) {
-            cell.accessoryType = UITableViewCell.AccessoryType.checkmark
+            cell?.accessoryType = UITableViewCell.AccessoryType.checkmark
         } else {
-            cell.textLabel?.textColor = UIColor.red
+            cell?.textLabel?.textColor = UIColor.red
         }
     }
 }
