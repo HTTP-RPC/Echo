@@ -115,17 +115,18 @@ class MainActivity : AppCompatActivity() {
                 "localDateTime" to localDateTime
             )
 
-            webServiceProxy.invoke(Map::class.java)
+            webServiceProxy.invoke(Response::class.java)
         }, resultHandler = { activity, result, _ ->
             if (result != null) {
-                activity?.getCheckBox?.isChecked = result["string"] == "héllo+gøodbye"
-                    && result["strings"] == listOf("a", "b", "c")
-                    && result["number"] == 123
-                    && result["flag"] == true
-                    && result["date"] == date.time
-                    && result["localDate"] == localDate.toString()
-                    && result["localTime"] == localTime.toString()
-                    && result["localDateTime"] == localDateTime.toString()
+                activity?.getCheckBox?.isChecked = result.string == "héllo+gøodbye"
+                    && result.strings == listOf("a", "b", "c")
+                    && result.number == 123
+                    && result.flag == true
+                    && result.date == date
+                    && result.localDate == localDate.toString()
+                    && result.localTime == localTime.toString()
+                    && result.localDateTime == localDateTime.toString()
+                    && result.attachmentInfo == null
             }
         })
 
@@ -287,7 +288,7 @@ class MainActivity : AppCompatActivity() {
                 "id" to 101
             )
 
-            webServiceProxy.invoke<Unit>(null)
+            webServiceProxy.invoke()
         }, resultHandler = { activity, _, exception ->
             activity?.deleteCheckBox?.isChecked = (exception == null)
         })

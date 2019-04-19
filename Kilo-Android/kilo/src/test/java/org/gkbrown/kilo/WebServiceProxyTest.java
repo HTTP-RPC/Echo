@@ -16,10 +16,10 @@ package org.gkbrown.kilo;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,8 +36,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
 
 public class WebServiceProxyTest {
     private Date date = new Date();
@@ -130,16 +128,17 @@ public class WebServiceProxyTest {
             entry("localDateTime", localDateTime)
         ));
 
-        Map<String, ?> result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Map.class));
+        Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
 
-        Assert.assertTrue("GET", result.get("string").equals("héllo+gøodbye")
-            && result.get("strings").equals(listOf("a", "b", "c"))
-            && result.get("number").equals(123)
-            && result.get("flag").equals(true)
-            && result.get("date").equals(date.getTime())
-            && result.get("localDate").equals(localDate.toString())
-            && result.get("localTime").equals(localTime.toString())
-            && result.get("localDateTime").equals(localDateTime.toString()));
+        Assert.assertTrue("GET", result.getString().equals("héllo+gøodbye")
+            && result.getStrings().equals(listOf("a", "b", "c"))
+            && result.getNumber() == 123
+            && result.getFlag() == true
+            && result.getDate().equals(date)
+            && result.getLocalDate().equals(localDate.toString())
+            && result.getLocalTime().equals(localTime.toString())
+            && result.getLocalDateTime().equals(localDateTime.toString())
+            && result.getAttachmentInfo() == null);
     }
 
     @Test
@@ -288,7 +287,7 @@ public class WebServiceProxyTest {
             entry("id", 101)
         ));
 
-        webServiceProxy.invoke(null);
+        webServiceProxy.invoke();
 
         Assert.assertTrue("DELETE", true);
     }

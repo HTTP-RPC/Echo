@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3705419620DFF5EC00A4D54B /* Kilo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37D49B0420DFCC4700410E0A /* Kilo.framework */; };
+		3722F4032268C2B100D8D278 /* WebServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3722F4022268C2B100D8D278 /* WebServiceError.swift */; };
 		3760E24820E17178005D501B /* WebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3760E24720E17178005D501B /* WebServiceProxy.swift */; };
 		376EBFDC20DFE0010035CF3C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 376EBFDB20DFE0010035CF3C /* Assets.xcassets */; };
 		376EBFE720DFE05C0035CF3C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376EBFE520DFE05C0035CF3C /* AppDelegate.swift */; };
@@ -33,6 +34,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3722F4022268C2B100D8D278 /* WebServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebServiceError.swift; path = "../../Kilo-iOS/Kilo/WebServiceError.swift"; sourceTree = "<group>"; };
 		3760E24720E17178005D501B /* WebServiceProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebServiceProxy.swift; path = "../../Kilo-iOS/Kilo/WebServiceProxy.swift"; sourceTree = "<group>"; };
 		376EBFD220DFE0000035CF3C /* KiloTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KiloTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		376EBFDB20DFE0010035CF3C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 		37D49B0620DFCC4700410E0A /* Kilo */ = {
 			isa = PBXGroup;
 			children = (
+				3722F4022268C2B100D8D278 /* WebServiceError.swift */,
 				3760E24720E17178005D501B /* WebServiceProxy.swift */,
 				37D49B0820DFCC4700410E0A /* Info.plist */,
 			);
@@ -237,6 +240,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3722F4032268C2B100D8D278 /* WebServiceError.swift in Sources */,
 				3760E24820E17178005D501B /* WebServiceProxy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -23,7 +23,7 @@ class ViewController: UITableViewController {
         let number: Int
         let flag: Bool
         let date: Date
-        let attachmentInfo: [AttachmentInfo]
+        let attachmentInfo: [AttachmentInfo]?
     }
 
     struct AttachmentInfo: Decodable, Equatable {
@@ -56,11 +56,9 @@ class ViewController: UITableViewController {
             UITableViewCell(style: .value1, text: "POST (multipart)") { self.postMultipartCell = $0 },
             UITableViewCell(style: .value1, text: "POST (custom)") { self.postCustomCell = $0 },
             UITableViewCell(style: .value1, text: "PUT") { self.putCell = $0 },
-            UITableViewCell(style: .value1, text: "PATCH") { self.patchCell = $0 },
             UITableViewCell(style: .value1, text: "DELETE") { self.deleteCell = $0 },
             UITableViewCell(style: .value1, text: "Unauthorized") { self.unauthorizedCell = $0 },
             UITableViewCell(style: .value1, text: "Error") { self.errorCell = $0 },
-            UITableViewCell(style: .value1, text: "Cancel") { self.cancelCell = $0 },
             UITableViewCell(style: .value1, text: "Timeout") { self.timeoutCell = $0 }
         ]
     }
@@ -99,12 +97,13 @@ class ViewController: UITableViewController {
             "number": 123,
             "flag": true,
             "date": now
-        ]) { [weak self] (result: [String: Any]?, _: Error?) in
-            self?.validate(result?["string"] as? String == "héllo+gøodbye"
-                && result?["strings"] as? [String] == ["a", "b", "c"]
-                && result?["number"] as? Int == 123
-                && result?["flag"] as? Bool == true
-                && result?["date"] as? Int64 == Int64(now.timeIntervalSince1970 * 1000),
+        ]) { [weak self] (result: Response?, _: Error?) in
+            self?.validate(result?.string == "héllo+gøodbye"
+                && result?.strings == ["a", "b", "c"]
+                && result?.number == 123
+                && result?.flag == true
+                && result?.date == now
+                && result?.attachmentInfo == nil,
                 cell: self?.getCell)
         }
 
@@ -118,13 +117,13 @@ class ViewController: UITableViewController {
 
         // POST (URL-encoded)
         webServiceProxy.invoke(.post, path: "test", arguments: [
-            "string": "héllo",
+            "string": "héllo+gøodbye",
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
             "date": now
         ]) { [weak self] (result: Response?, _: Error?) in
-            self?.validate(result?.string == "héllo"
+            self?.validate(result?.string == "héllo+gøodbye"
                 && result?.strings == ["a", "b", "c"]
                 && result?.number == 123
                 && result?.flag == true
@@ -137,14 +136,14 @@ class ViewController: UITableViewController {
         webServiceProxy.encoding = .multipartFormData
 
         webServiceProxy.invoke(.post, path: "test", arguments: [
-            "string": "héllo",
+            "string": "héllo+gøodbye",
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
             "date": now,
             "attachments": [testTextURL, testImageURL]
         ]) { [weak self] (result: Response?, _: Error?) in
-            self?.validate(result?.string == "héllo"
+            self?.validate(result?.string == "héllo+gøodbye"
                 && result?.strings == ["a", "b", "c"]
                 && result?.number == 123
                 && result?.flag == true
@@ -174,25 +173,16 @@ class ViewController: UITableViewController {
             self?.validate(result != nil, cell: self?.putCell)
         }
 
-        // PATCH
-        webServiceProxy.invoke(.patch, path: "test", arguments: [
-            "id": 101
-        ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
-            return String(data: content, encoding: .utf8)
-        }) { [weak self] (result: String?, _: Error?) in
-            self?.validate(result != nil, cell: self?.patchCell)
-        }
-
         // DELETE
         webServiceProxy.invoke(.delete, path: "test", arguments: [
             "id": 101
-        ]) { [weak self] (_: Any?, error: Error?) in
+        ]) { [weak self] (_: Void?, error: Error?) in
             self?.validate(error == nil, cell: self?.deleteCell)
         }
 
         // Unauthorized
         webServiceProxy.invoke(.get, path: "test/unauthorized") { [weak self] (_: Any?, error: Error?) in
-            let status = (error as NSError?)?.code ?? 200
+            let status = (error as? WebServiceError)?.statusCode ?? 200
 
             self?.validate(status == 403, cell: self?.unauthorizedCell)
         }
@@ -210,18 +200,6 @@ class ViewController: UITableViewController {
             "delay": 6000
         ]) { [weak self] (_: Any?, error: Error?) in
             self?.validate(error != nil, cell: self?.timeoutCell)
-        }
-
-        // Cancel
-        let task = webServiceProxy.invoke(.get, path: "test", arguments: [
-            "value": 123,
-            "delay": 6000
-        ]) { [weak self] (_: Any?, error: Error?) in
-            self?.validate(error != nil, cell: self?.cancelCell)
-        }
-
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
-            task?.cancel()
         }
     }
 

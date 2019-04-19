@@ -34,9 +34,18 @@ public class WebServiceProxy {
         case get = "GET"
         case post = "POST"
         case put = "PUT"
-        case patch = "PATCH"
         case delete = "DELETE"
     }
+
+    /**
+     Response handler type alias.
+     */
+    public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T?
+
+    /**
+     Result handler type alias.
+     */
+    public typealias ResultHandler<T> = (_ result: T?, _ error: Error?) -> Void
 
     /**
      The URL session the service proxy will use to issue HTTP requests.
@@ -74,17 +83,13 @@ public class WebServiceProxy {
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
-     - parameter resultHandler: A callback that will be invoked upon completion of the request.
-
-     - returns: A URL session task representing the invocation request, or `nil` if the task could not be created.
+     - parameter resultHandler: A callback that will be invoked upon completion of the request to handle the result.
      */
-    @discardableResult
-    public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
-        resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
-        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
-            return try JSONSerialization.jsonObject(with: content, options: []) as? T
-        }, resultHandler: resultHandler)
+    public func invoke(_ method: Method, path: String,
+        arguments: [String: Any] = [:],
+        content: Data? = nil, contentType: String? = nil,
+        resultHandler: @escaping ResultHandler<Void>) {
+        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { _, _ in }, resultHandler: resultHandler)
     }
 
     /**
@@ -95,15 +100,13 @@ public class WebServiceProxy {
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
-     - parameter resultHandler: A callback that will be invoked upon completion of the request.
-
-     - returns: A URL session task representing the invocation request, or `nil` if the task could not be created.
+     - parameter resultHandler: A callback that will be invoked upon completion of the request to handle the result.
      */
-    @discardableResult
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
-        resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
-        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, contentType in
+        arguments: [String: Any] = [:],
+        content: Data? = nil, contentType: String? = nil,
+        resultHandler: @escaping ResultHandler<T>) {
+        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, _ in
             let jsonDecoder = JSONDecoder()
             
             jsonDecoder.dateDecodingStrategy = .millisecondsSince1970
@@ -120,19 +123,16 @@ public class WebServiceProxy {
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
-     - parameter responseHandler: A callback that will be invoked upon completion of the request.
-     - parameter resultHandler: A callback that will be invoked upon completion of the request.
-
-     - returns: A URL session task representing the invocation request, or `nil` if the task could not be created.
+     - parameter responseHandler: A callback that will be invoked upon completion of the request to handle the response.
+     - parameter resultHandler: A callback that will be invoked upon completion of the request to handle the result.
      */
-    @discardableResult
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
-        responseHandler: @escaping (_ content: Data, _ contentType: String?) throws -> T?,
-        resultHandler: @escaping (_ result: T?, _ error: Error?) -> Void) -> URLSessionTask? {
+        arguments: [String: Any] = [:],
+        content: Data? = nil, contentType: String? = nil,
+        responseHandler: @escaping ResponseHandler<T>,
+        resultHandler: @escaping ResultHandler<T>) {
         let query = (method != .post || content != nil) ? encodeQuery(for: arguments) : ""
 
-        let task: URLSessionDataTask?
         if let url = URL(string: path + (query.isEmpty ? "" : "?" + query), relativeTo: serverURL) {
             var urlRequest = URLRequest(url: url)
 
@@ -159,53 +159,47 @@ public class WebServiceProxy {
                 }
             }
 
-            task = session.dataTask(with: urlRequest) { data, urlResponse, error in
+            let task = session.dataTask(with: urlRequest) { data, urlResponse, error in
+                let result: T?, fault: Error?
                 if let httpURLResponse = urlResponse as? HTTPURLResponse {
                     do {
-                        let result: T?
-                        if (httpURLResponse.statusCode / 100 == 2) {
+                        let statusCode = httpURLResponse.statusCode
+
+                        if (statusCode / 100 == 2) {
                             if let content = data, !content.isEmpty {
                                 result = try responseHandler(content, httpURLResponse.mimeType)
                             } else {
                                 result = nil
                             }
+
+                            fault = nil
                         } else {
-                            guard let errorDomain = Bundle(for: WebServiceProxy.self).bundleIdentifier else {
-                                fatalError()
-                            }
-
-                            var userInfo = [
-                                NSLocalizedDescriptionKey: HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode)
-                            ]
-
+                            let errorDescription: String?
                             if let content = data, let contentType = httpURLResponse.mimeType, contentType.hasPrefix("text/") {
-                                userInfo[NSDebugDescriptionErrorKey] = String(data: content, encoding: .utf8)
+                                errorDescription = String(data: content, encoding: .utf8)
+                            } else {
+                                errorDescription = HTTPURLResponse.localizedString(forStatusCode: statusCode)
                             }
 
-                            throw NSError(domain: errorDomain, code: httpURLResponse.statusCode, userInfo: userInfo)
-                        }
-
-                        OperationQueue.main.addOperation {
-                            resultHandler(result, nil)
+                            result = nil
+                            fault = WebServiceError(errorDescription: errorDescription, statusCode: statusCode)
                         }
                     } catch {
-                        OperationQueue.main.addOperation {
-                            resultHandler(nil, error)
-                        }
+                        result = nil
+                        fault = error
                     }
                 } else {
-                    OperationQueue.main.addOperation {
-                        resultHandler(nil, error)
-                    }
+                    result = nil
+                    fault = error
+                }
+
+                OperationQueue.main.addOperation {
+                    resultHandler(result, fault)
                 }
             }
-        } else {
-            task = nil
+
+            task.resume()
         }
-
-        task?.resume()
-
-        return task
     }
 
     func encodeQuery(for arguments: [String: Any]) -> String {

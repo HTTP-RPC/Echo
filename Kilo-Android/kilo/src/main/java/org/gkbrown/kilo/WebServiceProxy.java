@@ -286,6 +286,16 @@ public class WebServiceProxy {
     /**
      * Invokes the service method.
      *
+     * @throws IOException
+     * If an exception occurs while executing the operation.
+     */
+    public void invoke() throws IOException {
+        invoke(null);
+    }
+
+    /**
+     * Invokes the service method.
+     *
      * @param <T>
      * The result type.
      *
