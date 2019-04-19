@@ -40,12 +40,12 @@ public class WebServiceProxy {
     /**
      Response handler type alias.
      */
-    public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T?
+    public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
 
     /**
      Result handler type alias.
      */
-    public typealias ResultHandler<T> = (_ result: T?, _ error: Error?) -> Void
+    public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
 
     /**
      The URL session the service proxy will use to issue HTTP requests.
@@ -83,7 +83,7 @@ public class WebServiceProxy {
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
-     - parameter resultHandler: A callback that will be invoked upon completion of the request to handle the result.
+     - parameter resultHandler: A callback that will be invoked to handle the result.
      */
     public func invoke(_ method: Method, path: String,
         arguments: [String: Any] = [:],
@@ -100,7 +100,7 @@ public class WebServiceProxy {
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
-     - parameter resultHandler: A callback that will be invoked upon completion of the request to handle the result.
+     - parameter resultHandler: A callback that will be invoked to handle the result.
      */
     public func invoke<T: Decodable>(_ method: Method, path: String,
         arguments: [String: Any] = [:],
@@ -123,8 +123,8 @@ public class WebServiceProxy {
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
-     - parameter responseHandler: A callback that will be invoked upon completion of the request to handle the response.
-     - parameter resultHandler: A callback that will be invoked upon completion of the request to handle the result.
+     - parameter responseHandler: A callback that will be invoked to handle the response.
+     - parameter resultHandler: A callback that will be invoked to handle the result.
      */
     public func invoke<T>(_ method: Method, path: String,
         arguments: [String: Any] = [:],
@@ -160,41 +160,33 @@ public class WebServiceProxy {
             }
 
             let task = session.dataTask(with: urlRequest) { data, urlResponse, error in
-                let result: T?, fault: Error?
-                if let httpURLResponse = urlResponse as? HTTPURLResponse {
+                let result: Result<T, Error>
+                if let content = data, let httpURLResponse = urlResponse as? HTTPURLResponse {
                     do {
                         let statusCode = httpURLResponse.statusCode
+                        let contentType = httpURLResponse.mimeType
 
                         if (statusCode / 100 == 2) {
-                            if let content = data, !content.isEmpty {
-                                result = try responseHandler(content, httpURLResponse.mimeType)
-                            } else {
-                                result = nil
-                            }
-
-                            fault = nil
+                            result = .success(try responseHandler(content, contentType))
                         } else {
                             let errorDescription: String?
-                            if let content = data, let contentType = httpURLResponse.mimeType, contentType.hasPrefix("text/") {
+                            if contentType?.hasPrefix("text/") ?? false {
                                 errorDescription = String(data: content, encoding: .utf8)
                             } else {
                                 errorDescription = HTTPURLResponse.localizedString(forStatusCode: statusCode)
                             }
 
-                            result = nil
-                            fault = WebServiceError(errorDescription: errorDescription, statusCode: statusCode)
+                            result = .failure(WebServiceError(errorDescription: errorDescription, statusCode: statusCode))
                         }
                     } catch {
-                        result = nil
-                        fault = error
+                        result = .failure(error)
                     }
                 } else {
-                    result = nil
-                    fault = error
+                    result = .failure(error!)
                 }
 
                 OperationQueue.main.addOperation {
-                    resultHandler(result, fault)
+                    resultHandler(result)
                 }
             }
 

@@ -79,16 +79,16 @@ All three variants accept the following arguments:
 * `arguments` - a dictionary containing the method arguments as key/value pairs
 * `content` - an optional `Data` instance representing the body of the request
 * `contentType` - an optional string value containing the MIME type of the content
-* `resultHandler` - a callback that will be invoked upon completion of the method:
+* `resultHandler` - a callback that will be invoked upon completion of the request
 
 The first version executes a service method that does not return a value. The second deserializes the response using `JSONDecoder`, with a date decoding strategy of `millisecondsSince1970`. The third version accepts an additional `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
 
 Response and result handler callbacks are defined as follows:
 
 ```swift
-public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T?
+public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
 
-public typealias ResultHandler<T> = (_ result: T?, _ error: Error?) -> Void
+public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
 ```
 
 ## Arguments
@@ -115,7 +115,7 @@ let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: ser
 // GET test/fibonacci?count=8
 webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
     "count": 8
-]) { (result: [Int]?, error: Error?) in
+]) { [weak self] (result: Result<[Int], Error>) in
     // [0, 1, 1, 2, 3, 5, 8, 13]
 }
 ```
