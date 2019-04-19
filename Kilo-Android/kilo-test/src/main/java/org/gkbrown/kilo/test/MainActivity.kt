@@ -34,29 +34,36 @@ import java.util.*
 
 class BackgroundTask<A: Activity, R>(activity: A,
     private val task: () -> R,
-    private val resultHandler: (activity: A?, result: R?, exception: Exception?) -> Unit
+    private val resultHandler: (activity: A?, result: Result<R>) -> Unit
 ) : AsyncTask<Unit, Unit, R?>() {
     private val activityReference = WeakReference<A>(activity)
 
-    private var result: R? = null
+    private var value: R? = null
     private var exception: Exception? = null
 
     override fun doInBackground(vararg params: Unit?): R? {
         try {
-            result = task()
+            value = task()
         } catch (exception: Exception) {
             this.exception = exception
         }
 
-        return result
+        return value
     }
 
-    override fun onPostExecute(result: R?) {
-        resultHandler(activityReference.get(), result, exception)
+    override fun onPostExecute(value: R?) {
+        val result: Result<R>
+        if (exception == null) {
+            result = Result.success(value!!)
+        } else {
+            result = Result.failure(exception!!)
+        }
+
+        resultHandler(activityReference.get(), result)
     }
 }
 
-fun <A: Activity, R> A.doInBackground(task: () -> R, resultHandler: (activity: A?, result: R?, exception: Exception?) -> Unit) {
+fun <A: Activity, R> A.doInBackground(task: () -> R, resultHandler: (activity: A?, result: Result<R>) -> Unit) {
     BackgroundTask(this, task, resultHandler).execute()
 }
 
@@ -116,17 +123,19 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke(Response::class.java)
-        }) { activity, result, _ ->
+        }) { activity, result ->
+            val value = result.getOrNull()
+
             if (result != null) {
-                activity?.getCheckBox?.isChecked = result.string == "héllo+gøodbye"
-                    && result.strings == listOf("a", "b", "c")
-                    && result.number == 123
-                    && result.flag == true
-                    && result.date == date
-                    && result.localDate == localDate.toString()
-                    && result.localTime == localTime.toString()
-                    && result.localDateTime == localDateTime.toString()
-                    && result.attachmentInfo == null
+                activity?.getCheckBox?.isChecked = value?.string == "héllo+gøodbye"
+                    && value?.strings == listOf("a", "b", "c")
+                    && value?.number == 123
+                    && value?.flag == true
+                    && value?.date == date
+                    && value?.localDate == localDate.toString()
+                    && value?.localTime == localTime.toString()
+                    && value?.localDateTime == localDateTime.toString()
+                    && value?.attachmentInfo == null
             }
         }
 
@@ -139,8 +148,10 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke(List::class.java)
-        }) { activity, result, _ ->
-            activity?.getFibonacciCheckBox?.isChecked = (result == listOf(0, 1, 1, 2, 3, 5, 8, 13))
+        }) { activity, result ->
+            val value = result.getOrNull()
+
+            activity?.getFibonacciCheckBox?.isChecked = (value == listOf(0, 1, 1, 2, 3, 5, 8, 13))
         }
 
         // POST (URL-encoded)
@@ -159,17 +170,19 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke(Response::class.java)
-        }) { activity, result, _ ->
-            if (result != null) {
-                activity?.postURLEncodedCheckBox?.isChecked = result.string == "héllo+gøodbye"
-                    && result.strings == listOf("a", "b", "c")
-                    && result.number == 123
-                    && result.flag == true
-                    && result.date == date
-                    && result.localDate == localDate.toString()
-                    && result.localTime == localTime.toString()
-                    && result.localDateTime == localDateTime.toString()
-                    && result.attachmentInfo?.isEmpty() ?: true
+        }) { activity, result ->
+            val value = result.getOrNull()
+
+            if (value != null) {
+                activity?.postURLEncodedCheckBox?.isChecked = value.string == "héllo+gøodbye"
+                    && value.strings == listOf("a", "b", "c")
+                    && value.number == 123
+                    && value.flag == true
+                    && value.date == date
+                    && value.localDate == localDate.toString()
+                    && value.localTime == localTime.toString()
+                    && value.localDateTime == localDateTime.toString()
+                    && value.attachmentInfo?.isEmpty() ?: true
             }
         }
 
@@ -195,17 +208,19 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke(Response::class.java)
-        }) { activity, result, _ ->
-            if (result != null) {
-                activity?.postMultipartCheckBox?.isChecked = result.string == "héllo+gøodbye"
-                    && result.strings == listOf("a", "b", "c")
-                    && result.number == 123
-                    && result.flag == true
-                    && result.date == date
-                    && result.localDate == localDate.toString()
-                    && result.localTime == localTime.toString()
-                    && result.localDateTime == localDateTime.toString()
-                    && result.attachmentInfo == listOf(
+        }) { activity, result ->
+            val value = result.getOrNull()
+
+            if (value != null) {
+                activity?.postMultipartCheckBox?.isChecked = value.string == "héllo+gøodbye"
+                    && value.strings == listOf("a", "b", "c")
+                    && value.number == 123
+                    && value.flag == true
+                    && value.date == date
+                    && value.localDate == localDate.toString()
+                    && value.localTime == localTime.toString()
+                    && value.localDateTime == localDateTime.toString()
+                    && value.attachmentInfo == listOf(
                     AttachmentInfo(26, 2412),
                     AttachmentInfo(10392, 1038036)
                 )
@@ -235,8 +250,10 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke { inputStream, _ -> BitmapFactory.decodeStream(inputStream) }
-        }) { activity, result, _ ->
-            activity?.postCustomCheckBox?.isChecked = (result != null)
+        }) { activity, result ->
+            val value = result.getOrNull()
+
+            activity?.postCustomCheckBox?.isChecked = (value != null)
         }
 
         // PUT
@@ -276,8 +293,10 @@ class MainActivity : AppCompatActivity() {
 
                 textBuilder.toString()
             }
-        }) { activity, result, _ ->
-            activity?.putCheckBox?.isChecked = (result != null)
+        }) { activity, result ->
+            val value = result.getOrNull()
+
+            activity?.putCheckBox?.isChecked = (value != null)
         }
 
         // DELETE
@@ -289,14 +308,18 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke()
-        }) { activity, _, exception ->
+        }) { activity, result ->
+            val exception = result.exceptionOrNull()
+
             activity?.deleteCheckBox?.isChecked = (exception == null)
         }
 
         // Unauthorized
         doInBackground({
             WebServiceProxy("GET", URL(serverURL, "test/unauthorized")).invoke<Unit>(null)
-        }) { activity, _, exception ->
+        }) { activity, result ->
+            val exception = result.exceptionOrNull()
+
             if (exception is WebServiceException) {
                 activity?.unauthorizedCheckBox?.isChecked = (exception.status == HttpURLConnection.HTTP_FORBIDDEN)
             }
@@ -305,7 +328,9 @@ class MainActivity : AppCompatActivity() {
         // Error
         doInBackground({
             WebServiceProxy("GET", URL(serverURL, "test/error")).invoke<Unit>(null)
-        }) { activity, _, exception ->
+        }) { activity, result ->
+            val exception = result.exceptionOrNull()
+
             print(exception?.message ?: "")
 
             activity?.errorCheckBox?.isChecked = (exception != null)
@@ -324,7 +349,9 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke<Any>(null)
-        }) { activity, _, exception ->
+        }) { activity, result ->
+            val exception = result.exceptionOrNull()
+            
             activity?.timeoutCheckBox?.isChecked = (exception != null)
         }
     }
