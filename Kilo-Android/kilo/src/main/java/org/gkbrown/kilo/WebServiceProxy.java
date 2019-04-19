@@ -35,7 +35,7 @@ import java.util.UUID;
  */
 public class WebServiceProxy {
     /**
-     * Enumeration representing a request encoding.
+     * Encoding options for POST requests.
      */
     public enum Encoding {
         APPLICATION_X_WWW_FORM_URLENCODED,

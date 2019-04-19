@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // GET
-        doInBackground(task = {
+        doInBackground({
             val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test"))
 
             webServiceProxy.arguments = mapOf(
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke(Response::class.java)
-        }, resultHandler = { activity, result, _ ->
+        }) { activity, result, _ ->
             if (result != null) {
                 activity?.getCheckBox?.isChecked = result.string == "héllo+gøodbye"
                     && result.strings == listOf("a", "b", "c")
@@ -128,10 +128,10 @@ class MainActivity : AppCompatActivity() {
                     && result.localDateTime == localDateTime.toString()
                     && result.attachmentInfo == null
             }
-        })
+        }
 
         // GET (Fibonacci)
-        doInBackground(task = {
+        doInBackground({
             val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test/fibonacci"))
 
             webServiceProxy.arguments = mapOf(
@@ -139,12 +139,12 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke(List::class.java)
-        }, resultHandler = { activity, result, _ ->
+        }) { activity, result, _ ->
             activity?.getFibonacciCheckBox?.isChecked = (result == listOf(0, 1, 1, 2, 3, 5, 8, 13))
-        })
+        }
 
         // POST (URL-encoded)
-        doInBackground(task = {
+        doInBackground({
             val webServiceProxy = WebServiceProxy("POST", URL(serverURL, "test"))
 
             webServiceProxy.arguments = mapOf(
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke(Response::class.java)
-        }, resultHandler = { activity, result, _ ->
+        }) { activity, result, _ ->
             if (result != null) {
                 activity?.postURLEncodedCheckBox?.isChecked = result.string == "héllo+gøodbye"
                     && result.strings == listOf("a", "b", "c")
@@ -171,10 +171,10 @@ class MainActivity : AppCompatActivity() {
                     && result.localDateTime == localDateTime.toString()
                     && result.attachmentInfo?.isEmpty() ?: true
             }
-        })
+        }
 
         // POST (multipart)
-        doInBackground(task = {
+        doInBackground({
             val webServiceProxy = WebServiceProxy("POST", URL(serverURL, "test"))
 
             webServiceProxy.encoding = WebServiceProxy.Encoding.MULTIPART_FORM_DATA
@@ -195,7 +195,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke(Response::class.java)
-        }, resultHandler = { activity, result, _ ->
+        }) { activity, result, _ ->
             if (result != null) {
                 activity?.postMultipartCheckBox?.isChecked = result.string == "héllo+gøodbye"
                     && result.strings == listOf("a", "b", "c")
@@ -210,10 +210,10 @@ class MainActivity : AppCompatActivity() {
                     AttachmentInfo(10392, 1038036)
                 )
             }
-        })
+        }
 
         // POST (custom)
-        doInBackground(task = {
+        doInBackground({
             val webServiceProxy = WebServiceProxy("POST", URL(serverURL, "test"))
 
             val imageTestURL = javaClass.getResource("/assets/test.jpg") ?: throw RuntimeException()
@@ -235,12 +235,12 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke { inputStream, _ -> BitmapFactory.decodeStream(inputStream) }
-        }, resultHandler = { activity, result, _ ->
+        }) { activity, result, _ ->
             activity?.postCustomCheckBox?.isChecked = (result != null)
-        })
+        }
 
         // PUT
-        doInBackground(task = {
+        doInBackground({
             val webServiceProxy = WebServiceProxy("PUT", URL(serverURL, "test"))
 
             val textTestURL = javaClass.getResource("/assets/test.txt") ?: throw RuntimeException()
@@ -276,12 +276,12 @@ class MainActivity : AppCompatActivity() {
 
                 textBuilder.toString()
             }
-        }, resultHandler = { activity, result, _ ->
+        }) { activity, result, _ ->
             activity?.putCheckBox?.isChecked = (result != null)
-        })
+        }
 
         // DELETE
-        doInBackground(task = {
+        doInBackground({
             val webServiceProxy = WebServiceProxy("DELETE", URL(serverURL, "test"))
 
             webServiceProxy.arguments = mapOf(
@@ -289,30 +289,30 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke()
-        }, resultHandler = { activity, _, exception ->
+        }) { activity, _, exception ->
             activity?.deleteCheckBox?.isChecked = (exception == null)
-        })
+        }
 
         // Unauthorized
-        doInBackground(task = {
+        doInBackground({
             WebServiceProxy("GET", URL(serverURL, "test/unauthorized")).invoke<Unit>(null)
-        }, resultHandler = { activity, _, exception ->
+        }) { activity, _, exception ->
             if (exception is WebServiceException) {
                 activity?.unauthorizedCheckBox?.isChecked = (exception.status == HttpURLConnection.HTTP_FORBIDDEN)
             }
-        })
+        }
 
         // Error
-        doInBackground(task = {
+        doInBackground({
             WebServiceProxy("GET", URL(serverURL, "test/error")).invoke<Unit>(null)
-        }, resultHandler = { activity, _, exception ->
+        }) { activity, _, exception ->
             print(exception?.message ?: "")
 
             activity?.errorCheckBox?.isChecked = (exception != null)
-        })
+        }
 
         // Timeout
-        doInBackground(task = {
+        doInBackground({
             val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test"))
 
             webServiceProxy.connectTimeout = 3000
@@ -324,8 +324,8 @@ class MainActivity : AppCompatActivity() {
             )
 
             webServiceProxy.invoke<Any>(null)
-        }, resultHandler = { activity, _, exception ->
+        }) { activity, _, exception ->
             activity?.timeoutCheckBox?.isChecked = (exception != null)
-        })
+        }
     }
 }

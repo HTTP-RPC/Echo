@@ -16,7 +16,7 @@ import Foundation
 import MobileCoreServices
 
 /**
- Web service invocation proxy.
+ Web service proxy class.
  */
 public class WebServiceProxy {
     /**

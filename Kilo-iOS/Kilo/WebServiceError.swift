@@ -14,7 +14,17 @@
 
 import Foundation
 
+/**
+ Thrown to indicate that a service operation returned an error.
+ */
 public struct WebServiceError: LocalizedError {
+    /**
+     The error message returned by the service.
+     */
     public let errorDescription: String?
+
+    /**
+     The HTTP status code returned by the service.
+     */
     public let statusCode: Int
 }
