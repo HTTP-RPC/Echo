@@ -244,7 +244,7 @@ class ViewController: UITableViewController {
             let valid: Bool
             switch (result) {
             case .failure(let error):
-                valid = (((error as? WebServiceError)?.statusCode ?? -1) == 403)
+                valid = (error as? WebServiceError)?.statusCode == 403
 
             default:
                 valid = false
@@ -258,9 +258,9 @@ class ViewController: UITableViewController {
             let valid: Bool
             switch (result) {
             case .failure(let error):
-                print(error.localizedDescription)
-
                 valid = true
+
+                print(error.localizedDescription)
 
             default:
                 valid = false
