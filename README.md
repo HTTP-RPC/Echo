@@ -133,7 +133,7 @@ The Kilo framework is a universal binary that must be "trimmed" prior to submiss
 The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single constructor that accepts the following arguments:
 
 * `method` - the HTTP method to execute
-* `url` - an instance of `java.net.URL` representing the target of the operation
+* `url` - the URL of the requested resource
 
 Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
 
@@ -163,7 +163,7 @@ If a service returns an error response, an exception will be thrown. If the cont
 `WebServiceProxy` executes service operations synchronously. As a result, service proxies should only be used on a background thread (for example, within an `AsyncTask` implementation).
 
 ## Example
-The following Java code demonstrates how the `WebServiceProxy` class might be used to access the Fibonacci service discussed earlier:
+The following Java code demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
 
 ```java
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/fibonacci"));
@@ -191,4 +191,4 @@ val result = webServiceProxy.invoke { inputStream, _ -> ObjectMapper().readValue
 ```
 
 # Additional Information
-This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/Kilo/tree/master/).
+This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/gk-brown/Kilo/tree/master/).
