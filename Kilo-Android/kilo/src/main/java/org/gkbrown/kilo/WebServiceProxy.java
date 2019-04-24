@@ -550,4 +550,11 @@ public class WebServiceProxy {
             return argument;
         }
     }
+
+    /**
+     * Cancels an outstanding request.
+     */
+    public synchronized void cancel() {
+        // TODO Set a canceled flag
+    }
 }

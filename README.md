@@ -91,6 +91,8 @@ public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) 
 public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
 ```
 
+Each method returns an instance of `URLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
+
 ## Arguments
 Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (determined via the service proxy's `encoding` property). However, if a custom body is specified via the `content` parameter, `POST` arguments will be sent in the query string.
 
@@ -161,6 +163,9 @@ If a service returns an error response, an exception will be thrown. If the cont
 
 ## Threading Considerations
 `WebServiceProxy` executes service operations synchronously. As a result, service proxies should only be used on a background thread (for example, within an `AsyncTask` implementation).
+
+## Canceling Requests
+TODO
 
 ## Example
 The following Java code demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:

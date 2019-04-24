@@ -62,6 +62,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <CheckBox android:id="@+id/cancelCheckBox"
+            android:text="Cancel"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <CheckBox android:id="@+id/timeoutCheckBox"
             android:text="Timeout"
             android:enabled="false"

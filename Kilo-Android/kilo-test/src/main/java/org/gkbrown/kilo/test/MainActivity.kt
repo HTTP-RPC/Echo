@@ -107,21 +107,21 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // GET
+        val getProxy = WebServiceProxy("GET", URL(serverURL, "test"))
+
+        getProxy.arguments = mapOf(
+            "string" to "héllo+gøodbye",
+            "strings" to listOf("a", "b", "c"),
+            "number" to 123,
+            "flag" to true,
+            "date" to date,
+            "localDate" to localDate,
+            "localTime" to localTime,
+            "localDateTime" to localDateTime
+        )
+
         doInBackground({
-            val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test"))
-
-            webServiceProxy.arguments = mapOf(
-                "string" to "héllo+gøodbye",
-                "strings" to listOf("a", "b", "c"),
-                "number" to 123,
-                "flag" to true,
-                "date" to date,
-                "localDate" to localDate,
-                "localTime" to localTime,
-                "localDateTime" to localDateTime
-            )
-
-            webServiceProxy.invoke(Response::class.java)
+            getProxy.invoke(Response::class.java)
         }) { activity, result ->
             result.onSuccess { value ->
                 validate(value.string == "héllo+gøodbye"
@@ -139,14 +139,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         // GET (Fibonacci)
+        val getFibonacciProxy = WebServiceProxy("GET", URL(serverURL, "test/fibonacci"))
+
+        getFibonacciProxy.arguments = mapOf(
+            "count" to 8
+        )
+
         doInBackground({
-            val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test/fibonacci"))
-
-            webServiceProxy.arguments = mapOf(
-                "count" to 8
-            )
-
-            webServiceProxy.invoke(List::class.java)
+            getFibonacciProxy.invoke(List::class.java)
         }) { activity, result ->
             result.onSuccess { value ->
                 validate(value == listOf(0, 1, 1, 2, 3, 5, 8, 13), activity?.getFibonacciCheckBox)
@@ -156,21 +156,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         // POST (URL-encoded)
+        val postURLEncodedProxy = WebServiceProxy("POST", URL(serverURL, "test"))
+
+        postURLEncodedProxy.arguments = mapOf(
+            "string" to "héllo+gøodbye",
+            "strings" to listOf("a", "b", "c"),
+            "number" to 123,
+            "flag" to true,
+            "date" to date,
+            "localDate" to localDate,
+            "localTime" to localTime,
+            "localDateTime" to localDateTime
+        )
+
         doInBackground({
-            val webServiceProxy = WebServiceProxy("POST", URL(serverURL, "test"))
-
-            webServiceProxy.arguments = mapOf(
-                "string" to "héllo+gøodbye",
-                "strings" to listOf("a", "b", "c"),
-                "number" to 123,
-                "flag" to true,
-                "date" to date,
-                "localDate" to localDate,
-                "localTime" to localTime,
-                "localDateTime" to localDateTime
-            )
-
-            webServiceProxy.invoke(Response::class.java)
+            postURLEncodedProxy.invoke(Response::class.java)
         }) { activity, result ->
             result.onSuccess { value ->
                 validate(value.string == "héllo+gøodbye"
@@ -188,27 +188,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         // POST (multipart)
+        val textTestURL = javaClass.getResource("/assets/test.txt")
+        val imageTestURL = javaClass.getResource("/assets/test.jpg")
+
+        val postMultipartProxy = WebServiceProxy("POST", URL(serverURL, "test"))
+
+        postMultipartProxy.encoding = WebServiceProxy.Encoding.MULTIPART_FORM_DATA
+
+        postMultipartProxy.arguments = mapOf(
+            "string" to "héllo+gøodbye",
+            "strings" to listOf("a", "b", "c"),
+            "number" to 123,
+            "flag" to true,
+            "date" to date,
+            "localDate" to localDate,
+            "localTime" to localTime,
+            "localDateTime" to localDateTime,
+            "attachments" to listOf(textTestURL, imageTestURL)
+        )
+
         doInBackground({
-            val webServiceProxy = WebServiceProxy("POST", URL(serverURL, "test"))
-
-            webServiceProxy.encoding = WebServiceProxy.Encoding.MULTIPART_FORM_DATA
-
-            val textTestURL = javaClass.getResource("/assets/test.txt")
-            val imageTestURL = javaClass.getResource("/assets/test.jpg")
-
-            webServiceProxy.arguments = mapOf(
-                "string" to "héllo+gøodbye",
-                "strings" to listOf("a", "b", "c"),
-                "number" to 123,
-                "flag" to true,
-                "date" to date,
-                "localDate" to localDate,
-                "localTime" to localTime,
-                "localDateTime" to localDateTime,
-                "attachments" to listOf(textTestURL, imageTestURL)
-            )
-
-            webServiceProxy.invoke(Response::class.java)
+            postMultipartProxy.invoke(Response::class.java)
         }) { activity, result ->
             result.onSuccess { value ->
                 validate(value.string == "héllo+gøodbye"
@@ -229,28 +229,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         // POST (custom)
-        doInBackground({
-            val webServiceProxy = WebServiceProxy("POST", URL(serverURL, "test"))
+        val postCustomProxy = WebServiceProxy("POST", URL(serverURL, "test"))
 
-            val imageTestURL = javaClass.getResource("/assets/test.jpg") ?: throw RuntimeException()
+        postCustomProxy.setRequestHandler { outputStream ->
+            imageTestURL.openStream().use { inputStream ->
+                var b = inputStream.read()
 
-            webServiceProxy.setRequestHandler { outputStream ->
-                imageTestURL.openStream().use { inputStream ->
-                    var b = inputStream.read()
+                while (b != EOF) {
+                    outputStream.write(b)
 
-                    while (b != EOF) {
-                        outputStream.write(b)
-
-                        b = inputStream.read()
-                    }
+                    b = inputStream.read()
                 }
             }
+        }
 
-            webServiceProxy.arguments = mapOf(
-                "name" to imageTestURL.file
-            )
+        postCustomProxy.arguments = mapOf(
+            "name" to imageTestURL.file
+        )
 
-            webServiceProxy.invoke { inputStream, _ -> BitmapFactory.decodeStream(inputStream) }
+        doInBackground({
+            postCustomProxy.invoke { inputStream, _ -> BitmapFactory.decodeStream(inputStream) }
         }) { activity, result ->
             result.onSuccess { value ->
                 validate(value != null, activity?.postCustomCheckBox)
@@ -260,28 +258,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         // PUT
-        doInBackground({
-            val webServiceProxy = WebServiceProxy("PUT", URL(serverURL, "test"))
+        val putProxy = WebServiceProxy("PUT", URL(serverURL, "test"))
 
-            val textTestURL = javaClass.getResource("/assets/test.txt") ?: throw RuntimeException()
+        putProxy.setRequestHandler { outputStream ->
+            textTestURL.openStream().use { inputStream ->
+                var b = inputStream.read()
 
-            webServiceProxy.setRequestHandler { outputStream ->
-                textTestURL.openStream().use { inputStream ->
-                    var b = inputStream.read()
+                while (b != EOF) {
+                    outputStream.write(b)
 
-                    while (b != EOF) {
-                        outputStream.write(b)
-
-                        b = inputStream.read()
-                    }
+                    b = inputStream.read()
                 }
             }
+        }
 
-            webServiceProxy.arguments = mapOf(
-                "id" to 101
-            )
+        putProxy.arguments = mapOf(
+            "id" to 101
+        )
 
-            webServiceProxy.invoke { inputStream, _ ->
+        doInBackground({
+            putProxy.invoke { inputStream, _ ->
                 val inputStreamReader = InputStreamReader(inputStream)
 
                 val textBuilder = StringBuilder()
@@ -305,14 +301,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         // DELETE
+        val deleteProxy = WebServiceProxy("DELETE", URL(serverURL, "test"))
+
+        deleteProxy.arguments = mapOf(
+            "id" to 101
+        )
+
         doInBackground({
-            val webServiceProxy = WebServiceProxy("DELETE", URL(serverURL, "test"))
-
-            webServiceProxy.arguments = mapOf(
-                "id" to 101
-            )
-
-            webServiceProxy.invoke()
+            deleteProxy.invoke()
         }) { activity, result ->
             result.onSuccess { value ->
                 validate(true, activity?.deleteCheckBox)
@@ -322,8 +318,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Unauthorized
+        val unauthorizedProxy = WebServiceProxy("GET", URL(serverURL, "test/unauthorized"))
+
         doInBackground({
-            WebServiceProxy("GET", URL(serverURL, "test/unauthorized")).invoke<Unit>(null)
+            unauthorizedProxy.invoke()
         }) { activity, result ->
             result.onSuccess {
                 validate(false, activity?.unauthorizedCheckBox)
@@ -333,8 +331,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Error
+        val errorProxy = WebServiceProxy("GET", URL(serverURL, "test/error"))
+
         doInBackground({
-            WebServiceProxy("GET", URL(serverURL, "test/error")).invoke<Unit>(null)
+            errorProxy.invoke()
         }) { activity, result ->
             result.onSuccess {
                 validate(false, activity?.errorCheckBox)
@@ -345,19 +345,42 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Timeout
+        // Cancel
+        val cancelProxy = WebServiceProxy("GET", URL(serverURL, "test"))
+
+        cancelProxy.connectTimeout = 500
+        cancelProxy.readTimeout = 4000
+
+        cancelProxy.arguments = mapOf(
+            "value" to 123,
+            "delay" to 6000
+        )
+
         doInBackground({
-            val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test"))
+            cancelProxy.invoke()
+        }) { activity, result ->
+            result.onSuccess {
+                validate(false, activity?.cancelCheckBox)
+            }.onFailure { exception ->
+                validate(true, activity?.cancelCheckBox)
+            }
+        }
 
-            webServiceProxy.connectTimeout = 3000
-            webServiceProxy.readTimeout = 3000
+        // TODO Cancel request after 2 seconds
 
-            webServiceProxy.arguments = mapOf(
-                "value" to 123,
-                "delay" to 6000
-            )
+        // Timeout
+        val timeoutProxy = WebServiceProxy("GET", URL(serverURL, "test"))
 
-            webServiceProxy.invoke<Any>(null)
+        timeoutProxy.connectTimeout = 500
+        timeoutProxy.readTimeout = 4000
+
+        timeoutProxy.arguments = mapOf(
+            "value" to 123,
+            "delay" to 6000
+        )
+
+        doInBackground({
+            timeoutProxy.invoke()
         }) { activity, result ->
             result.onSuccess {
                 validate(false, activity?.timeoutCheckBox)

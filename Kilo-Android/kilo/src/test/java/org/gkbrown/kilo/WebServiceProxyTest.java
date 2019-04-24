@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -109,12 +110,12 @@ public class WebServiceProxyTest {
         }
     }
 
-    public WebServiceProxyTest() throws Exception {
+    public WebServiceProxyTest() throws IOException {
         serverURL = new URL("http://localhost:8080/httprpc-test/");
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
 
         webServiceProxy.setArguments(mapOf(
@@ -142,7 +143,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testGetFibonacci() throws Exception {
+    public void testGetFibonacci() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/fibonacci"));
 
         webServiceProxy.setArguments(mapOf(
@@ -156,7 +157,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testURLEncodedPost() throws Exception {
+    public void testURLEncodedPost() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
         webServiceProxy.setArguments(mapOf(
@@ -184,7 +185,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testMultipartPost() throws Exception {
+    public void testMultipartPost() throws IOException {
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
@@ -221,7 +222,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCustomPost() throws Exception {
+    public void testCustomPost() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
@@ -245,7 +246,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testPut() throws Exception {
+    public void testPut() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL(serverURL, "test"));
 
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
@@ -280,7 +281,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void testDelete() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL(serverURL, "test"));
 
         webServiceProxy.setArguments(mapOf(
@@ -293,12 +294,12 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testUnauthorized() throws Exception {
+    public void testUnauthorized() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/unauthorized"));
 
         int status;
         try {
-            webServiceProxy.invoke(null);
+            webServiceProxy.invoke();
 
             status = HttpURLConnection.HTTP_OK;
         } catch (WebServiceException exception) {
@@ -309,7 +310,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testError() throws Exception {
+    public void testError() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/error"));
 
         boolean error;
@@ -325,11 +326,16 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testTimeout() throws Exception {
+    public void testCancel() throws IOException {
+        // TODO
+    }
+
+    @Test
+    public void testTimeout() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
 
-        webServiceProxy.setConnectTimeout(3000);
-        webServiceProxy.setReadTimeout(3000);
+        webServiceProxy.setConnectTimeout(1000);
+        webServiceProxy.setReadTimeout(4000);
 
         webServiceProxy.setArguments(mapOf(
             entry("value", 123),
@@ -338,7 +344,7 @@ public class WebServiceProxyTest {
 
         boolean timeout;
         try {
-            webServiceProxy.invoke(null);
+            webServiceProxy.invoke();
 
             timeout = false;
         } catch (SocketTimeoutException exception) {

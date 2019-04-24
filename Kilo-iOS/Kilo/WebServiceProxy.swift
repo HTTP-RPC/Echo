@@ -84,11 +84,14 @@ public class WebServiceProxy {
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter resultHandler: A callback that will be invoked to handle the result.
+
+     - returns: A URL session task representing the invocation request, or `nil` if the task could not be created.
      */
+    @discardableResult
     public func invoke(_ method: Method, path: String,
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
-        resultHandler: @escaping ResultHandler<Void>) {
+        resultHandler: @escaping ResultHandler<Void>) -> URLSessionDataTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { _, _ in }, resultHandler: resultHandler)
     }
 
@@ -101,11 +104,14 @@ public class WebServiceProxy {
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter resultHandler: A callback that will be invoked to handle the result.
+
+     - returns: A URL session task representing the invocation request, or `nil` if the task could not be created.
      */
+    @discardableResult
     public func invoke<T: Decodable>(_ method: Method, path: String,
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
-        resultHandler: @escaping ResultHandler<T>) {
+        resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, _ in
             let jsonDecoder = JSONDecoder()
             
@@ -125,14 +131,18 @@ public class WebServiceProxy {
      - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter responseHandler: A callback that will be invoked to handle the response.
      - parameter resultHandler: A callback that will be invoked to handle the result.
+
+     - returns: A URL session task representing the invocation request, or `nil` if the task could not be created.
      */
+    @discardableResult
     public func invoke<T>(_ method: Method, path: String,
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>,
-        resultHandler: @escaping ResultHandler<T>) {
+        resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
         let query = (method != .post || content != nil) ? encodeQuery(for: arguments) : ""
 
+        let task: URLSessionDataTask?
         if let url = URL(string: path + (query.isEmpty ? "" : "?" + query), relativeTo: serverURL) {
             var urlRequest = URLRequest(url: url)
 
@@ -159,7 +169,7 @@ public class WebServiceProxy {
                 }
             }
 
-            let task = session.dataTask(with: urlRequest) { data, urlResponse, error in
+            task = session.dataTask(with: urlRequest) { data, urlResponse, error in
                 let result: Result<T, Error>
                 if let content = data, let httpURLResponse = urlResponse as? HTTPURLResponse {
                     do {
@@ -189,9 +199,13 @@ public class WebServiceProxy {
                     resultHandler(result)
                 }
             }
-
-            task.resume()
+        } else {
+            task = nil
         }
+
+        task?.resume()
+
+        return task
     }
 
     func encodeQuery(for arguments: [String: Any]) -> String {
