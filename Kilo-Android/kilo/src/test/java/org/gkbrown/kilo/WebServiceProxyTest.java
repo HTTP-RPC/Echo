@@ -315,7 +315,7 @@ public class WebServiceProxyTest {
 
         boolean error;
         try {
-            webServiceProxy.invoke(null);
+            webServiceProxy.invoke();
 
             error = false;
         } catch (WebServiceException exception) {
@@ -326,15 +326,10 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCancel() throws IOException {
-        // TODO
-    }
-
-    @Test
     public void testTimeout() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
 
-        webServiceProxy.setConnectTimeout(1000);
+        webServiceProxy.setConnectTimeout(500);
         webServiceProxy.setReadTimeout(4000);
 
         webServiceProxy.setArguments(mapOf(
@@ -344,11 +339,11 @@ public class WebServiceProxyTest {
 
         boolean timeout;
         try {
-            webServiceProxy.invoke();
+            webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Integer.class));
 
             timeout = false;
-        } catch (SocketTimeoutException exception) {
-            timeout = true;
+        } catch (IOException exception) {
+            timeout = (exception instanceof SocketTimeoutException);
         }
 
         Assert.assertTrue("Timeout", timeout);

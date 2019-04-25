@@ -28,6 +28,7 @@ import org.gkbrown.kilo.WebServiceProxy
 import java.io.InputStreamReader
 import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -70,6 +71,7 @@ fun <T> WebServiceProxy.invoke(type: Class<T>): T {
     return invoke { inputStream, _ -> ObjectMapper().readValue(inputStream, type) }
 }
 
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class MainActivity : AppCompatActivity() {
     class Response {
         val string: String? = null
@@ -310,7 +312,7 @@ class MainActivity : AppCompatActivity() {
         doInBackground({
             deleteProxy.invoke()
         }) { activity, result ->
-            result.onSuccess { value ->
+            result.onSuccess {
                 validate(true, activity?.deleteCheckBox)
             }.onFailure {
                 validate(false, activity?.deleteCheckBox)
@@ -345,29 +347,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Cancel
-        val cancelProxy = WebServiceProxy("GET", URL(serverURL, "test"))
-
-        cancelProxy.connectTimeout = 500
-        cancelProxy.readTimeout = 4000
-
-        cancelProxy.arguments = mapOf(
-            "value" to 123,
-            "delay" to 6000
-        )
-
-        doInBackground({
-            cancelProxy.invoke()
-        }) { activity, result ->
-            result.onSuccess {
-                validate(false, activity?.cancelCheckBox)
-            }.onFailure { exception ->
-                validate(true, activity?.cancelCheckBox)
-            }
-        }
-
-        // TODO Cancel request after 2 seconds
-
         // Timeout
         val timeoutProxy = WebServiceProxy("GET", URL(serverURL, "test"))
 
@@ -380,17 +359,17 @@ class MainActivity : AppCompatActivity() {
         )
 
         doInBackground({
-            timeoutProxy.invoke()
+            timeoutProxy.invoke(Integer::class.java)
         }) { activity, result ->
             result.onSuccess {
                 validate(false, activity?.timeoutCheckBox)
             }.onFailure { exception ->
-                validate(true, activity?.timeoutCheckBox)
+                validate(exception is SocketTimeoutException, activity?.timeoutCheckBox)
             }
         }
     }
 
-    fun validate(valid: Boolean, checkBox: CheckBox?) {
+    private fun validate(valid: Boolean, checkBox: CheckBox?) {
         checkBox?.isChecked = valid
 
         if (!valid) {

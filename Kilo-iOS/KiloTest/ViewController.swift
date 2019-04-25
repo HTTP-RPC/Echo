@@ -41,7 +41,6 @@ class ViewController: UITableViewController {
     var unauthorizedCell: UITableViewCell!
     var deleteCell: UITableViewCell!
     var timeoutCell: UITableViewCell!
-    var cancelCell: UITableViewCell!
     var errorCell: UITableViewCell!
 
     var cells: [UITableViewCell]!
@@ -59,7 +58,6 @@ class ViewController: UITableViewController {
             UITableViewCell(style: .value1, text: "DELETE") { self.deleteCell = $0 },
             UITableViewCell(style: .value1, text: "Unauthorized") { self.unauthorizedCell = $0 },
             UITableViewCell(style: .value1, text: "Error") { self.errorCell = $0 },
-            UITableViewCell(style: .value1, text: "Cancel") { self.cancelCell = $0 },
             UITableViewCell(style: .value1, text: "Timeout") { self.timeoutCell = $0 }
         ]
     }
@@ -270,35 +268,14 @@ class ViewController: UITableViewController {
             self?.validate(valid, cell: self?.errorCell)
         }
 
-        // Cancel
-        let task = webServiceProxy.invoke(.get, path: "test", arguments: [
-            "value": 123,
-            "delay": 6000
-        ]) { [weak self] (result: Result<Void, Error>) in
-            let valid: Bool
-            switch (result) {
-            case .failure:
-                valid = true
-
-            default:
-                valid = false
-            }
-
-            self?.validate(valid, cell: self?.cancelCell)
-        }
-
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
-            task?.cancel()
-        }
-
         // Timeout
         webServiceProxy.invoke(.get, path: "test", arguments: [
             "value": 123,
             "delay": 6000
-        ]) { [weak self] (result: Result<Void, Error>) in
+        ]) { [weak self] (result: Result<Int, Error>) in
             let valid: Bool
             switch (result) {
-            case .failure:
+            case .failure(let error):
                 valid = true
 
             default:

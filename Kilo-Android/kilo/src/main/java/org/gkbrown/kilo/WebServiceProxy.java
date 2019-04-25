@@ -14,12 +14,9 @@
 
 package org.gkbrown.kilo;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -93,56 +90,6 @@ public class WebServiceProxy {
         public T decodeResponse(InputStream inputStream, String contentType) throws IOException;
     }
 
-    // Monitored input stream
-    private class MonitoredInputStream extends BufferedInputStream {
-        public MonitoredInputStream(InputStream inputStream) {
-            super(inputStream);
-        }
-
-        @Override
-        public int read() throws IOException {
-            if (canceled) {
-                throw new InterruptedIOException();
-            }
-
-            return super.read();
-        }
-
-        @Override
-        public int read(byte b[], int off, int len) throws IOException {
-            if (canceled) {
-                throw new InterruptedIOException();
-            }
-
-            return super.read(b, off, len);
-        }
-    }
-
-    // Monitored output stream
-    private class MonitoredOutputStream extends BufferedOutputStream {
-        public MonitoredOutputStream(OutputStream outputStream) {
-            super(outputStream);
-        }
-
-        @Override
-        public void write(int b) throws IOException {
-            if (canceled) {
-                throw new InterruptedIOException();
-            }
-
-            super.write(b);
-        }
-
-        @Override
-        public void write(byte b[], int off, int len) throws IOException {
-            if (canceled) {
-                throw new InterruptedIOException();
-            }
-
-            super.write(b, off, len);
-        }
-    }
-
     private String method;
     private URL url;
 
@@ -157,8 +104,6 @@ public class WebServiceProxy {
     private int readTimeout = 0;
 
     private String multipartBoundary = UUID.randomUUID().toString();
-
-    private volatile boolean canceled = false;
 
     private static final String UTF_8 = "UTF-8";
 
@@ -457,7 +402,7 @@ public class WebServiceProxy {
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", requestHandler.getContentType());
 
-            try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+            try (OutputStream outputStream = connection.getOutputStream()) {
                 requestHandler.encodeRequest(outputStream);
             }
         }
@@ -470,7 +415,7 @@ public class WebServiceProxy {
         T result;
         if (responseCode / 100 == 2) {
             if (responseCode % 100 < 4 && responseHandler != null) {
-                try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
+                try (InputStream inputStream = connection.getInputStream()) {
                     result = responseHandler.decodeResponse(inputStream, contentType);
                 }
             } else {
@@ -481,7 +426,7 @@ public class WebServiceProxy {
             if (contentType != null && contentType.startsWith("text/plain")) {
                 StringBuilder messageBuilder = new StringBuilder(1024);
 
-                try (InputStream inputStream = new MonitoredInputStream(connection.getErrorStream());
+                try (InputStream inputStream = connection.getErrorStream();
                     InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName(UTF_8))) {
                     int c;
                     while ((c = reader.read()) != EOF) {
@@ -587,7 +532,7 @@ public class WebServiceProxy {
         writer.flush();
     }
 
-    private static Iterable<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
+    private static Iterable<?> getParameterValues(Object argument) {
         Iterable<?> values;
         if (argument instanceof Iterable<?>) {
             values = (Iterable<?>)getParameterValue(argument);
@@ -604,12 +549,5 @@ public class WebServiceProxy {
         } else {
             return argument;
         }
-    }
-
-    /**
-     * Cancels an outstanding request.
-     */
-    public synchronized void cancel() {
-        canceled = true;
     }
 }
