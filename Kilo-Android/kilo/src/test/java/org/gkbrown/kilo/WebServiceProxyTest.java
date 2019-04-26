@@ -16,8 +16,8 @@ package org.gkbrown.kilo;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -131,7 +131,7 @@ public class WebServiceProxyTest {
 
         Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
 
-        Assert.assertTrue("GET", result.getString().equals("héllo+gøodbye")
+        Assertions.assertTrue(result.getString().equals("héllo+gøodbye")
             && result.getStrings().equals(listOf("a", "b", "c"))
             && result.getNumber() == 123
             && result.getFlag() == true
@@ -153,7 +153,7 @@ public class WebServiceProxyTest {
         List<Integer> result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream,
             new TypeReference<List<Integer>>(){}));
 
-        Assert.assertEquals("GET (Fibonacci)", result, listOf(0, 1, 1, 2, 3, 5, 8, 13));
+        Assertions.assertEquals(result, listOf(0, 1, 1, 2, 3, 5, 8, 13));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class WebServiceProxyTest {
 
         Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
 
-        Assert.assertTrue("POST (multipart)", result.getString().equals("héllo+gøodbye")
+        Assertions.assertTrue(result.getString().equals("héllo+gøodbye")
             && result.getStrings().equals(listOf("a", "b", "c"))
             && result.getNumber() == 123
             && result.getFlag() == true
@@ -207,7 +207,7 @@ public class WebServiceProxyTest {
 
         Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
 
-        Assert.assertTrue("POST (multipart)", result.getString().equals("héllo+gøodbye")
+        Assertions.assertTrue(result.getString().equals("héllo+gøodbye")
             && result.getStrings().equals(listOf("a", "b", "c"))
             && result.getNumber() == 123
             && result.getFlag() == true
@@ -242,7 +242,7 @@ public class WebServiceProxyTest {
 
         BufferedImage image = webServiceProxy.invoke((inputStream, contentType) -> ImageIO.read(inputStream));
 
-        Assert.assertNotNull("POST (custom)", image);
+        Assertions.assertNotNull(image);
     }
 
     @Test
@@ -277,7 +277,7 @@ public class WebServiceProxyTest {
             return textBuilder.toString();
         });
 
-        Assert.assertNotNull("PUT", text);
+        Assertions.assertNotNull(text);
     }
 
     @Test
@@ -290,7 +290,7 @@ public class WebServiceProxyTest {
 
         webServiceProxy.invoke();
 
-        Assert.assertTrue("DELETE", true);
+        Assertions.assertTrue(true);
     }
 
     @Test
@@ -306,7 +306,7 @@ public class WebServiceProxyTest {
             status = exception.getStatus();
         }
 
-        Assert.assertEquals("Unauthorized", HttpURLConnection.HTTP_FORBIDDEN, status);
+        Assertions.assertEquals(HttpURLConnection.HTTP_FORBIDDEN, status);
     }
 
     @Test
@@ -322,7 +322,7 @@ public class WebServiceProxyTest {
             error = true;
         }
 
-        Assert.assertTrue("Error", error);
+        Assertions.assertTrue(error);
     }
 
     @Test
@@ -346,7 +346,7 @@ public class WebServiceProxyTest {
             timeout = (exception instanceof SocketTimeoutException);
         }
 
-        Assert.assertTrue("Timeout", timeout);
+        Assertions.assertTrue(timeout);
     }
 
     @SafeVarargs
