@@ -13,7 +13,6 @@
 //
 
 import Foundation
-import MobileCoreServices
 
 /**
  Web service proxy class.

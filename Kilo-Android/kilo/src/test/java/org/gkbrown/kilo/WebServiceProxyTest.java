@@ -297,16 +297,16 @@ public class WebServiceProxyTest {
     public void testUnauthorized() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/unauthorized"));
 
-        int status;
+        int statusCode;
         try {
             webServiceProxy.invoke();
 
-            status = HttpURLConnection.HTTP_OK;
+            statusCode = HttpURLConnection.HTTP_OK;
         } catch (WebServiceException exception) {
-            status = exception.getStatus();
+            statusCode = exception.getStatusCode();
         }
 
-        Assertions.assertEquals(HttpURLConnection.HTTP_FORBIDDEN, status);
+        Assertions.assertEquals(HttpURLConnection.HTTP_FORBIDDEN, statusCode);
     }
 
     @Test

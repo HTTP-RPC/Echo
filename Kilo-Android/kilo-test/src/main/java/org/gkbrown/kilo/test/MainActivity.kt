@@ -71,7 +71,6 @@ fun <T> WebServiceProxy.invoke(type: Class<T>): T {
     return invoke { inputStream, _ -> ObjectMapper().readValue(inputStream, type) }
 }
 
-@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class MainActivity : AppCompatActivity() {
     class Response {
         val string: String? = null
@@ -190,8 +189,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         // POST (multipart)
-        val textTestURL = javaClass.getResource("/assets/test.txt")
-        val imageTestURL = javaClass.getResource("/assets/test.jpg")
+        val textTestURL = javaClass.getResource("/assets/test.txt")!!
+        val imageTestURL = javaClass.getResource("/assets/test.jpg")!!
 
         val postMultipartProxy = WebServiceProxy("POST", URL(serverURL, "test"))
 
@@ -328,7 +327,7 @@ class MainActivity : AppCompatActivity() {
             result.onSuccess {
                 validate(false, activity?.unauthorizedCheckBox)
             }.onFailure { exception ->
-                validate((exception as? WebServiceException)?.status == HttpURLConnection.HTTP_FORBIDDEN, activity?.unauthorizedCheckBox)
+                validate((exception as? WebServiceException)?.statusCode == HttpURLConnection.HTTP_FORBIDDEN, activity?.unauthorizedCheckBox)
             }
         }
 

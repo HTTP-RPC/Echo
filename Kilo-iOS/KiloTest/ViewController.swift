@@ -275,7 +275,7 @@ class ViewController: UITableViewController {
         ]) { [weak self] (result: Result<Int, Error>) in
             let valid: Bool
             switch (result) {
-            case .failure(let error):
+            case .failure:
                 valid = true
 
             default:

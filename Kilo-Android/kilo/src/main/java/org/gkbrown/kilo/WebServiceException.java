@@ -22,7 +22,7 @@ import java.io.IOException;
 public class WebServiceException extends IOException {
     private static final long serialVersionUID = 0;
 
-    private int status;
+    private int statusCode;
 
     /**
      * Constructs a new web service exception.
@@ -30,13 +30,13 @@ public class WebServiceException extends IOException {
      * @param message
      * The error message returned by the service.
      *
-     * @param status
+     * @param statusCode
      * The HTTP status code returned by the service.
      */
-    public WebServiceException(String message, int status) {
+    public WebServiceException(String message, int statusCode) {
         super(message);
 
-        this.status = status;
+        this.statusCode = statusCode;
     }
 
     /**
@@ -45,7 +45,7 @@ public class WebServiceException extends IOException {
      * @return
      * The HTTP status code returned by the service.
      */
-    public int getStatus() {
-        return status;
+    public int getStatusCode() {
+        return statusCode;
     }
 }
