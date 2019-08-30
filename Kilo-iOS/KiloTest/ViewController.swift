@@ -189,7 +189,7 @@ class ViewController: UITableViewController {
         // POST (custom)
         webServiceProxy.invoke(.post, path: "test", arguments: [
             "name": testImageURL.lastPathComponent
-        ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
+        ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType, headers in
             return UIImage(data: content)
         }) { [weak self] (result: Result<UIImage?, Error>) in
             let valid: Bool
@@ -207,7 +207,7 @@ class ViewController: UITableViewController {
         // PUT
         webServiceProxy.invoke(.put, path: "test", arguments: [
             "id": 101
-        ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
+        ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType, headers in
             return String(data: content, encoding: .utf8)
         }) { [weak self] (result: Result<String?, Error>) in
             let valid: Bool

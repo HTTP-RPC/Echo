@@ -26,6 +26,8 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -87,7 +89,7 @@ public class WebServiceProxy {
          * @return
          * The decoded value.
          */
-        public T decodeResponse(InputStream inputStream, String contentType) throws IOException;
+        public T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
     }
 
     private String method;
@@ -415,8 +417,22 @@ public class WebServiceProxy {
         T result;
         if (responseCode / 100 == 2) {
             if (responseCode % 100 < 4 && responseHandler != null) {
+                HashMap<String, String> headers = new HashMap<>();
+
+                for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
+                    String key = entry.getKey();
+
+                    if (key != null) {
+                        List<String> values = entry.getValue();
+
+                        if (!values.isEmpty()) {
+                            headers.put(entry.getKey(), values.get(0));
+                        }
+                    }
+                }
+
                 try (InputStream inputStream = connection.getInputStream()) {
-                    result = responseHandler.decodeResponse(inputStream, contentType);
+                    result = responseHandler.decodeResponse(inputStream, contentType, headers);
                 }
             } else {
                 result = null;

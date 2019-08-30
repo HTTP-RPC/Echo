@@ -68,7 +68,7 @@ fun <A: Activity, R> A.doInBackground(task: () -> R, resultHandler: (activity: A
 }
 
 fun <T> WebServiceProxy.invoke(type: Class<T>): T {
-    return invoke { inputStream, _ -> ObjectMapper().readValue(inputStream, type) }
+    return invoke { inputStream, _, _ -> ObjectMapper().readValue(inputStream, type) }
 }
 
 class MainActivity : AppCompatActivity() {
@@ -249,7 +249,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         doInBackground({
-            postCustomProxy.invoke { inputStream, _ -> BitmapFactory.decodeStream(inputStream) }
+            postCustomProxy.invoke { inputStream, _, _ -> BitmapFactory.decodeStream(inputStream) }
         }) { activity, result ->
             result.onSuccess { value ->
                 validate(value != null, activity?.postCustomCheckBox)
@@ -278,7 +278,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         doInBackground({
-            putProxy.invoke { inputStream, _ ->
+            putProxy.invoke { inputStream, _, headers ->
                 val inputStreamReader = InputStreamReader(inputStream)
 
                 val textBuilder = StringBuilder()

@@ -39,7 +39,7 @@ public class WebServiceProxy {
     /**
      Response handler type alias.
      */
-    public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
+    public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?, _ headers: [String: String]) throws -> T
 
     /**
      Result handler type alias.
@@ -60,6 +60,11 @@ public class WebServiceProxy {
      The encoding used to submit POST requests.
      */
     public var encoding: Encoding
+
+    /**
+     * The header dictionary.
+     */
+    public var headers: [String: String] = [:]
 
     /**
      Creates a new web service proxy.
@@ -88,7 +93,7 @@ public class WebServiceProxy {
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping ResultHandler<Void>) {
-        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { _, _ in }, resultHandler: resultHandler)
+        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { _, _, _ in }, resultHandler: resultHandler)
     }
 
     /**
@@ -105,7 +110,7 @@ public class WebServiceProxy {
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping ResultHandler<T>) {
-        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, _ in
+        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, _, _ in
             let jsonDecoder = JSONDecoder()
             
             jsonDecoder.dateDecodingStrategy = .millisecondsSince1970
@@ -137,6 +142,10 @@ public class WebServiceProxy {
 
             urlRequest.httpMethod = method.rawValue
 
+            for (key, value) in headers {
+                urlRequest.setValue(value, forHTTPHeaderField: key)
+            }
+
             switch method {
             case .post where content == nil:
                 switch encoding {
@@ -166,7 +175,13 @@ public class WebServiceProxy {
                         let contentType = httpURLResponse.mimeType
 
                         if (statusCode / 100 == 2) {
-                            result = .success(try responseHandler(content, contentType))
+                            var headers: [String: String] = [:]
+
+                            for (key, value) in httpURLResponse.allHeaderFields {
+                                headers[String(describing: key)] = String(describing: value)
+                            }
+
+                            result = .success(try responseHandler(content, contentType, headers))
                         } else {
                             let errorDescription: String?
                             if contentType?.hasPrefix("text/") ?? false {
