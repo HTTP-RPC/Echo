@@ -21,7 +21,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [Additional Information](#additional-information)
 
 # Getting Kilo
-The iOS/tvOS version of the Kilo framework is distributed as a universal binary that will run in the simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 10 or tvOS 10 or later is required. 
+The iOS/tvOS version of the Kilo framework is distributed as a universal binary that will run in the simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 11 or tvOS 11 or later is required. 
 
 To install:
 
