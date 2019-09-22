@@ -83,6 +83,9 @@ public class WebServiceProxy {
          * @param contentType
          * The content type, or <tt>null</tt> if the content type is not known.
          *
+         * @param headers
+         * The response headers.
+         *
          * @throws IOException
          * If an exception occurs.
          *
