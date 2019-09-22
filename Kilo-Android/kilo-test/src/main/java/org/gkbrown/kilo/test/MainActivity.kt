@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
     private val localTime = LocalTime.now()
     private val localDateTime = LocalDateTime.now()
 
-    private val serverURL = URL("http://10.0.2.2:8080/httprpc-test/")
+    private val serverURL = URL("http://10.0.2.2:8080/httprpc-test-1.0/")
 
     companion object {
         private const val EOF = -1

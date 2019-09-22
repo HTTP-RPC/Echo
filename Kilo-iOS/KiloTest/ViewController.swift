@@ -78,7 +78,7 @@ class ViewController: UITableViewController {
 
         let hostname = UserDefaults.standard.string(forKey: "hostname") ?? "localhost"
 
-        guard let serverURL = URL(string: "http://\(hostname):8080/httprpc-test/") else {
+        guard let serverURL = URL(string: "http://\(hostname):8080/httprpc-test-1.0/") else {
             return
         }
 

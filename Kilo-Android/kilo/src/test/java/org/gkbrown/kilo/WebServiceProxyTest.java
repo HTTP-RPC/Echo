@@ -111,7 +111,7 @@ public class WebServiceProxyTest {
     }
 
     public WebServiceProxyTest() throws IOException {
-        serverURL = new URL("http://localhost:8080/httprpc-test/");
+        serverURL = new URL("http://localhost:8080/httprpc-test-1.0/");
     }
 
     @Test
@@ -129,7 +129,7 @@ public class WebServiceProxyTest {
             entry("localDateTime", localDateTime)
         ));
 
-        Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
+        Response result = webServiceProxy.invoke((inputStream, contentType, headers) -> new ObjectMapper().readValue(inputStream, Response.class));
 
         Assertions.assertTrue(result.getString().equals("héllo+gøodbye")
             && result.getStrings().equals(listOf("a", "b", "c"))
@@ -150,7 +150,7 @@ public class WebServiceProxyTest {
             entry("count", 8)
         ));
 
-        List<Integer> result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream,
+        List<Integer> result = webServiceProxy.invoke((inputStream, contentType, headers) -> new ObjectMapper().readValue(inputStream,
             new TypeReference<List<Integer>>(){}));
 
         Assertions.assertEquals(result, listOf(0, 1, 1, 2, 3, 5, 8, 13));
@@ -171,7 +171,7 @@ public class WebServiceProxyTest {
             entry("localDateTime", localDateTime)
         ));
 
-        Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
+        Response result = webServiceProxy.invoke((inputStream, contentType, headers) -> new ObjectMapper().readValue(inputStream, Response.class));
 
         Assertions.assertTrue(result.getString().equals("héllo+gøodbye")
             && result.getStrings().equals(listOf("a", "b", "c"))
@@ -205,7 +205,7 @@ public class WebServiceProxyTest {
             entry("attachments", listOf(textTestURL, imageTestURL))
         ));
 
-        Response result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Response.class));
+        Response result = webServiceProxy.invoke((inputStream, contentType, headers) -> new ObjectMapper().readValue(inputStream, Response.class));
 
         Assertions.assertTrue(result.getString().equals("héllo+gøodbye")
             && result.getStrings().equals(listOf("a", "b", "c"))
@@ -240,7 +240,7 @@ public class WebServiceProxyTest {
             entry("name", imageTestURL.getFile())
         ));
 
-        BufferedImage image = webServiceProxy.invoke((inputStream, contentType) -> ImageIO.read(inputStream));
+        BufferedImage image = webServiceProxy.invoke((inputStream, contentType, headers) -> ImageIO.read(inputStream));
 
         Assertions.assertNotNull(image);
     }
@@ -264,7 +264,7 @@ public class WebServiceProxyTest {
             entry("id", 101)
         ));
 
-        String text = webServiceProxy.invoke((inputStream, contentType) -> {
+        String text = webServiceProxy.invoke((inputStream, contentType, headers) -> {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 
             StringBuilder textBuilder = new StringBuilder();
@@ -339,7 +339,7 @@ public class WebServiceProxyTest {
 
         boolean timeout;
         try {
-            webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream, Integer.class));
+            webServiceProxy.invoke((inputStream, contentType, headers) -> new ObjectMapper().readValue(inputStream, Integer.class));
 
             timeout = false;
         } catch (IOException exception) {
