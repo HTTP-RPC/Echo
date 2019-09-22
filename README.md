@@ -11,9 +11,6 @@ The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wi
 
 This guide introduces the Kilo framework and provides an overview of its key features.
 
-# Feedback
-Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_brown@icloud.com?subject=Kilo) with any questions, comments, or suggestions. Also, if you like using Kilo, please consider [starring](https://github.com/gk-brown/Kilo/stargazers) it!
-
 # Contents
 * [Getting Kilo](#getting-kilo)
 * [iOS/tvOS](#ios/tvos)
