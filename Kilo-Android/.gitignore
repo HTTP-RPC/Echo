@@ -1,8 +1,0 @@
-.gradle
-gradle.properties
-local.properties
-.idea/caches/**
-.idea/libraries/**
-.idea/workspace.xml
-build
-**/out

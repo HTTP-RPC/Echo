@@ -1,5 +1,0 @@
-rootProject.name = 'Kilo'
-
-include  'kilo', 'kilo-test'
-
-enableFeaturePreview('STABLE_PUBLISHING')

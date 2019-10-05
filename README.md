@@ -1,11 +1,8 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
 [![CocoaPods](https://img.shields.io/cocoapods/v/Kilo.svg)](https://cocoapods.org/pods/Kilo)
-[![Maven Central](https://img.shields.io/maven-central/v/org.gkbrown/kilo.svg)](http://repo1.maven.org/maven2/org/gkbrown/kilo/)
 
 # Introduction
-Kilo is an open-source framework for consuming REST services in iOS/tvOS and Android. It is extremely lightweight and provides a simple, intuitive API that makes it easy to interact with services regardless of target device or operating system. 
-
-The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+Kilo is an open-source framework for consuming REST services in iOS and tvOS. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
 ![](README/kilo.png)
 
@@ -13,12 +10,11 @@ This guide introduces the Kilo framework and provides an overview of its key fea
 
 # Contents
 * [Getting Kilo](#getting-kilo)
-* [iOS/tvOS](#ios/tvos)
-* [Android](#android)
+* [WebServiceProxy](#webserviceproxy)
 * [Additional Information](#additional-information)
 
 # Getting Kilo
-The iOS/tvOS version of the Kilo framework is distributed as a universal binary that will run in the simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 11 or tvOS 11 or later is required. 
+Kilo is distributed as a universal binary that will run in the iOS simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 11 or tvOS 11 or later is required. 
 
 To install:
 
@@ -31,19 +27,7 @@ To install:
 
 Note that the framework binary must be "trimmed" prior to App Store submission. See the [Deployment](#deployment) section for more information.
 
-The Android version can be downloaded [here](https://github.com/gk-brown/Kilo/releases). It is also available via Maven:
-
-```xml
-<dependency>
-    <groupId>org.gkbrown</groupId>
-    <artifactId>kilo</artifactId>
-    <version>...</version>
-</dependency>
-```
-
-Java 8 or later is required.
-
-# iOS/tvOS
+# WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single initializer that accepts the following arguments:
 
 * `session` - a `URLSession` instance
@@ -83,7 +67,7 @@ The first version executes a service method that does not return a value. The se
 Response and result handler callbacks are defined as follows:
 
 ```swift
-public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
+public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?, _ headers: [String: String]) throws -> T
 
 public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
 ```
@@ -125,67 +109,6 @@ The Kilo framework is a universal binary that must be "trimmed" prior to submiss
 * Create a new "Run Script" build phase after the "Embed Frameworks" phase
 * Rename the new build phase to "Trim Framework Executables" or similar (optional)
 * Invoke the script (e.g. `"${SRCROOT}/trim.sh" Kilo`)
-
-# Android
-The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single constructor that accepts the following arguments:
-
-* `method` - the HTTP method to execute
-* `url` - the URL of the requested resource
-
-Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
-
-The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part encoding, `URL` and `Iterable<URL>` values represent file uploads, and behave similarly to `<input type="file">` tags in HTML forms.
-
-Service operations are initiated via one of the following methods:
-
-```java
-public void invoke() throws IOException { ... }
-
-public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
-``` 
-
-The first version executes a service method that does not return a value. The second accepts a `responseHandler` callback that is used to deserialize the response returned by the server (for example, using the `ObjectMapper` class provided by the [Jackson](https://github.com/FasterXML/jackson) framework). 
-
-`ResponseHandler` is a functional interface that is defined as follows:
-
-```java
-public interface ResponseHandler<T> {
-    public T decodeResponse(InputStream inputStream, String contentType) throws IOException;
-}
-```
-
-If a service returns an error response, an exception will be thrown. If the content type of the response is "text/plain", the body of the response will be provided in the exception message.
-
-## Threading Considerations
-`WebServiceProxy` executes service operations synchronously. As a result, service proxies should only be used on a background thread (for example, within an `AsyncTask` implementation).
-
-## Example
-The following Java code demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
-
-```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/fibonacci"));
-
-// GET test/fibonacci?count=8
-webServiceProxy.setArguments(Collections.singletonMap("count", 8));
-
-// [0, 1, 1, 2, 3, 5, 8, 13]
-List<Integer> result = webServiceProxy.invoke((inputStream, contentType) -> new ObjectMapper().readValue(inputStream,
-    new TypeReference<List<Integer>>(){}));
-```
-
-In Kotlin, the code might look like this:
-
-```kotlin
-val webServiceProxy = WebServiceProxy("GET", URL(serverURL, "test/fibonacci"))
-
-// GET test/fibonacci?count=8
-webServiceProxy.arguments = mapOf(
-    "count" to 8
-)
-
-// [0, 1, 1, 2, 3, 5, 8, 13]
-val result = webServiceProxy.invoke { inputStream, _ -> ObjectMapper().readValue(inputStream, List::class.java) }
-```
 
 # Additional Information
 This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/gk-brown/Kilo/tree/master/).
