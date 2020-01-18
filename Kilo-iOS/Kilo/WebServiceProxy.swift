@@ -88,11 +88,14 @@ public class WebServiceProxy {
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter resultHandler: A callback that will be invoked to handle the result.
+
+     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
      */
+    @discardableResult
     public func invoke(_ method: Method, path: String,
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
-        resultHandler: @escaping ResultHandler<Void>) {
+        resultHandler: @escaping ResultHandler<Void>) -> URLSessionDataTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { _, _, _ in }, resultHandler: resultHandler)
     }
 
@@ -105,11 +108,14 @@ public class WebServiceProxy {
      - parameter content: The request content, or `nil` for the default content.
      - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter resultHandler: A callback that will be invoked to handle the result.
+
+     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
      */
+    @discardableResult
     public func invoke<T: Decodable>(_ method: Method, path: String,
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
-        resultHandler: @escaping ResultHandler<T>) {
+        resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
         return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, _, _ in
             let jsonDecoder = JSONDecoder()
             
@@ -129,83 +135,90 @@ public class WebServiceProxy {
      - parameter contentType: The request content type, or `nil` for the default content type.
      - parameter responseHandler: A callback that will be invoked to handle the response.
      - parameter resultHandler: A callback that will be invoked to handle the result.
+
+     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
      */
+    @discardableResult
     public func invoke<T>(_ method: Method, path: String,
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>,
-        resultHandler: @escaping ResultHandler<T>) {
+        resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
         let query = (method != .post || content != nil) ? encodeQuery(for: arguments) : ""
 
-        if let url = URL(string: path + (query.isEmpty ? "" : "?" + query), relativeTo: serverURL) {
-            var urlRequest = URLRequest(url: url)
-
-            urlRequest.httpMethod = method.rawValue
-
-            for (key, value) in headers {
-                urlRequest.setValue(value, forHTTPHeaderField: key)
-            }
-
-            switch method {
-            case .post where content == nil:
-                switch encoding {
-                case .applicationXWWWFormURLEncoded:
-                    urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-                    urlRequest.httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
-
-                case .multipartFormData:
-                    let multipartBoundary = UUID().uuidString
-
-                    urlRequest.setValue("multipart/form-data; boundary=\(multipartBoundary)", forHTTPHeaderField: "Content-Type")
-                    urlRequest.httpBody = encodeMultipartFormData(for: arguments, multipartBoundary: multipartBoundary)
-                }
-
-            default:
-                if (content != nil) {
-                    urlRequest.setValue(contentType ?? "application/octet-stream", forHTTPHeaderField: "Content-Type")
-                    urlRequest.httpBody = content
-                }
-            }
-
-            let task = session.dataTask(with: urlRequest) { data, urlResponse, error in
-                let result: Result<T, Error>
-                if let content = data, let httpURLResponse = urlResponse as? HTTPURLResponse {
-                    do {
-                        let statusCode = httpURLResponse.statusCode
-                        let contentType = httpURLResponse.mimeType
-
-                        if (statusCode / 100 == 2) {
-                            var headers: [String: String] = [:]
-
-                            for (key, value) in httpURLResponse.allHeaderFields {
-                                headers[String(describing: key)] = String(describing: value)
-                            }
-
-                            result = .success(try responseHandler(content, contentType, headers))
-                        } else {
-                            let errorDescription: String?
-                            if contentType?.hasPrefix("text/") ?? false {
-                                errorDescription = String(data: content, encoding: .utf8)
-                            } else {
-                                errorDescription = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-                            }
-
-                            result = .failure(WebServiceError(errorDescription: errorDescription, statusCode: statusCode))
-                        }
-                    } catch {
-                        result = .failure(error)
-                    }
-                } else {
-                    result = .failure(error!)
-                }
-
-                OperationQueue.main.addOperation {
-                    resultHandler(result)
-                }
-            }
-
-            task.resume()
+        guard let url = URL(string: path + (query.isEmpty ? "" : "?" + query), relativeTo: serverURL) else {
+            return nil
         }
+
+        var urlRequest = URLRequest(url: url)
+
+        urlRequest.httpMethod = method.rawValue
+
+        for (key, value) in headers {
+            urlRequest.setValue(value, forHTTPHeaderField: key)
+        }
+
+        switch method {
+        case .post where content == nil:
+            switch encoding {
+            case .applicationXWWWFormURLEncoded:
+                urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                urlRequest.httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
+
+            case .multipartFormData:
+                let multipartBoundary = UUID().uuidString
+
+                urlRequest.setValue("multipart/form-data; boundary=\(multipartBoundary)", forHTTPHeaderField: "Content-Type")
+                urlRequest.httpBody = encodeMultipartFormData(for: arguments, multipartBoundary: multipartBoundary)
+            }
+
+        default:
+            if (content != nil) {
+                urlRequest.setValue(contentType ?? "application/octet-stream", forHTTPHeaderField: "Content-Type")
+                urlRequest.httpBody = content
+            }
+        }
+
+        let task = session.dataTask(with: urlRequest) { data, urlResponse, error in
+            let result: Result<T, Error>
+            if let content = data, let httpURLResponse = urlResponse as? HTTPURLResponse {
+                do {
+                    let statusCode = httpURLResponse.statusCode
+                    let contentType = httpURLResponse.mimeType
+
+                    if (statusCode / 100 == 2) {
+                        var headers: [String: String] = [:]
+
+                        for (key, value) in httpURLResponse.allHeaderFields {
+                            headers[String(describing: key)] = String(describing: value)
+                        }
+
+                        result = .success(try responseHandler(content, contentType, headers))
+                    } else {
+                        let errorDescription: String?
+                        if contentType?.hasPrefix("text/") ?? false {
+                            errorDescription = String(data: content, encoding: .utf8)
+                        } else {
+                            errorDescription = HTTPURLResponse.localizedString(forStatusCode: statusCode)
+                        }
+
+                        result = .failure(WebServiceError(errorDescription: errorDescription, statusCode: statusCode))
+                    }
+                } catch {
+                    result = .failure(error)
+                }
+            } else {
+                result = .failure(error!)
+            }
+
+            OperationQueue.main.addOperation {
+                resultHandler(result)
+            }
+        }
+
+        task.resume()
+
+        return task
     }
 
     func encodeQuery(for arguments: [String: Any]) -> String {
