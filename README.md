@@ -39,18 +39,18 @@ Service operations are initiated via one of the following methods:
 public func invoke(_ method: Method, path: String,
     arguments: [String: Any] = [:],
     content: Data? = nil, contentType: String? = nil,
-    resultHandler: @escaping ResultHandler<Void>) { ... }
+    resultHandler: @escaping ResultHandler<Void>) -> URLSessionDataTask? { ... }
 
 public func invoke<T: Decodable>(_ method: Method, path: String,
     arguments: [String: Any] = [:],
     content: Data? = nil, contentType: String? = nil,
-    resultHandler: @escaping ResultHandler<T>) { ... }
+    resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? { ... }
 
 public func invoke<T>(_ method: Method, path: String,
     arguments: [String: Any] = [:],
     content: Data? = nil, contentType: String? = nil,
     responseHandler: @escaping ResponseHandler<T>,
-    resultHandler: @escaping ResultHandler<T>) { ... }
+    resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? { ... }
 ```
 
 All three variants accept the following arguments:
@@ -71,6 +71,8 @@ public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?, 
 
 public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
 ```
+
+All three methods return an instance of `URLSessionDataTask` representing the invocation request. This allows an application to monitor the status of outstanding requests or cancel a request, if needed.
 
 ## Arguments
 Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (determined via the service proxy's `encoding` property). However, if a custom body is specified via the `content` parameter, `POST` arguments will be sent in the query string.
