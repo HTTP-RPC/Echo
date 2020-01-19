@@ -222,27 +222,27 @@ public class WebServiceProxy {
     }
 
     func encodeQuery(for arguments: [String: Any]) -> String {
-        var query = ""
+        var urlQueryItems: [URLQueryItem] = []
 
         for argument in arguments {
-            guard let key = argument.key.urlEncodedString, !key.isEmpty else {
+            if (argument.key.isEmpty) {
                 continue
             }
 
             for element in argument.value as? [Any] ?? [argument.value] {
-                if (query.count > 0) {
-                    query += "&"
+                guard let value = WebServiceProxy.value(for: element)?.description else {
+                    continue
                 }
 
-                query += key + "="
-
-                if let value = WebServiceProxy.value(for: element)?.description.urlEncodedString {
-                    query += value
-                }
+                urlQueryItems.append(URLQueryItem(name: argument.key, value: value))
             }
         }
 
-        return query
+        var urlComponents = URLComponents()
+
+        urlComponents.queryItems = urlQueryItems
+
+        return urlComponents.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B") ?? ""
     }
 
     func encodeApplicationXWWWFormURLEncodedData(for arguments: [String: Any]) -> Data {
@@ -257,13 +257,9 @@ public class WebServiceProxy {
         var body = Data()
 
         for argument in arguments {
-            guard let key = argument.key.urlEncodedString, !key.isEmpty else {
-                continue
-            }
-
             for element in argument.value as? [Any] ?? [argument.value] {
                 body.append(utf8DataFor: "--\(multipartBoundary)\r\n")
-                body.append(utf8DataFor: "Content-Disposition: form-data; name=\"\(key)\"")
+                body.append(utf8DataFor: "Content-Disposition: form-data; name=\"\(argument.key)\"")
 
                 if let url = element as? URL {
                     body.append(utf8DataFor: "; filename=\"\(url.lastPathComponent)\"\r\n")
@@ -300,12 +296,6 @@ public class WebServiceProxy {
         }
 
         return value
-    }
-}
-
-extension String {
-    var urlEncodedString: String? {
-        return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.replacingOccurrences(of: "+", with: "%2B")
     }
 }
 

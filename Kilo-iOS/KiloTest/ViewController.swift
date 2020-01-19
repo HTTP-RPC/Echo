@@ -91,7 +91,7 @@ class ViewController: UITableViewController {
 
         // GET
         webServiceProxy.invoke(.get, path: "test", arguments: [
-            "string": "héllo+gøodbye",
+            "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
@@ -100,14 +100,15 @@ class ViewController: UITableViewController {
             let valid: Bool
             switch (result) {
             case .success(let value):
-                valid = (value.string == "héllo+gøodbye"
+                valid = (value.string == "héllo&gøod+bye?"
                     && value.strings == ["a", "b", "c"]
                     && value.number == 123
                     && value.flag == true
                     && value.date == now
                     && value.attachmentInfo == nil)
 
-            default:
+            case .failure(let error):
+                print(error.localizedDescription)
                 valid = false
             }
 
@@ -123,7 +124,8 @@ class ViewController: UITableViewController {
             case .success(let value):
                 valid = (value == [0, 1, 1, 2, 3, 5, 8, 13])
 
-            default:
+            case .failure(let error):
+                print(error.localizedDescription)
                 valid = false
             }
 
@@ -132,7 +134,7 @@ class ViewController: UITableViewController {
 
         // POST (URL-encoded)
         webServiceProxy.invoke(.post, path: "test", arguments: [
-            "string": "héllo+gøodbye",
+            "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
@@ -141,14 +143,15 @@ class ViewController: UITableViewController {
             let valid: Bool
             switch (result) {
             case .success(let value):
-                valid = (value.string == "héllo+gøodbye"
+                valid = (value.string == "héllo&gøod+bye?"
                     && value.strings == ["a", "b", "c"]
                     && value.number == 123
                     && value.flag == true
                     && value.date == now
                     && value.attachmentInfo == [])
 
-            default:
+            case .failure(let error):
+                print(error.localizedDescription)
                 valid = false
             }
 
@@ -159,7 +162,7 @@ class ViewController: UITableViewController {
         webServiceProxy.encoding = .multipartFormData
 
         webServiceProxy.invoke(.post, path: "test", arguments: [
-            "string": "héllo+gøodbye",
+            "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
@@ -169,7 +172,7 @@ class ViewController: UITableViewController {
             let valid: Bool
             switch (result) {
             case .success(let value):
-                valid = (value.string == "héllo+gøodbye"
+                valid = (value.string == "héllo&gøod+bye?"
                     && value.strings == ["a", "b", "c"]
                     && value.number == 123
                     && value.flag == true
@@ -179,7 +182,8 @@ class ViewController: UITableViewController {
                         AttachmentInfo(bytes: 10392, checksum: 1038036)
                     ])
 
-            default:
+            case .failure(let error):
+                print(error.localizedDescription)
                 valid = false
             }
 
@@ -197,7 +201,8 @@ class ViewController: UITableViewController {
             case .success(let value):
                 valid = (value != nil)
 
-            default:
+            case .failure(let error):
+                print(error.localizedDescription)
                 valid = false
             }
 
@@ -215,7 +220,8 @@ class ViewController: UITableViewController {
             case .success(let value):
                 valid = (value != nil)
 
-            default:
+            case .failure(let error):
+                print(error.localizedDescription)
                 valid = false
             }
 
@@ -231,7 +237,8 @@ class ViewController: UITableViewController {
             case .success:
                 valid = true
 
-            default:
+            case .failure(let error):
+                print(error.localizedDescription)
                 valid = false
             }
 
