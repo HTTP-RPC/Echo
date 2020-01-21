@@ -67,6 +67,11 @@ public class WebServiceProxy {
     public var headers: [String: String] = [:]
 
     /**
+     * Constant representing an unspecified value.
+     */
+    public static let undefined: Any = NSNull()
+
+    /**
      Creates a new web service proxy.
 
      - parameter session: The URL session the service proxy will use to issue HTTP requests.
@@ -230,7 +235,7 @@ public class WebServiceProxy {
             }
 
             for element in argument.value as? [Any] ?? [argument.value] {
-                guard let value = WebServiceProxy.value(for: element)?.description else {
+                guard let value = value(for: element) else {
                     continue
                 }
 
@@ -271,7 +276,7 @@ public class WebServiceProxy {
                 } else {
                     body.append(utf8DataFor: "\r\n\r\n")
 
-                    if let value = WebServiceProxy.value(for: element)?.description {
+                    if let value = value(for: element) {
                         body.append(utf8DataFor: value)
                     }
                 }
@@ -285,17 +290,14 @@ public class WebServiceProxy {
         return body
     }
 
-    static func value(for element: Any) -> CustomStringConvertible? {
-        let value: CustomStringConvertible?
-        if let date = element as? Date {
-            value = Int64(date.timeIntervalSince1970 * 1000)
-        } else if let customStringConvertible = element as? CustomStringConvertible {
-            value = customStringConvertible
+    func value(for element: Any) -> String? {
+        if (element is NSNull) {
+            return nil
+        } else if let date = element as? Date {
+            return String(describing: Int64(date.timeIntervalSince1970 * 1000))
         } else {
-            value = nil
+            return String(describing: element)
         }
-
-        return value
     }
 }
 
