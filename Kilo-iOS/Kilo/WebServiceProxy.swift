@@ -47,6 +47,19 @@ public class WebServiceProxy {
     public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
 
     /**
+     Creates a new web service proxy.
+
+     - parameter session: The URL session the service proxy will use to issue HTTP requests.
+     - parameter serverURL: The server URL.
+     */
+    public init(session: URLSession, serverURL: URL) {
+        self.session = session
+        self.serverURL = serverURL
+
+        encoding = .applicationXWWWFormURLEncoded
+    }
+
+    /**
      The URL session the service proxy will use to issue HTTP requests.
      */
     public private(set) var session: URLSession
@@ -70,19 +83,6 @@ public class WebServiceProxy {
      * Constant representing an unspecified value.
      */
     public static let undefined: Any = NSNull()
-
-    /**
-     Creates a new web service proxy.
-
-     - parameter session: The URL session the service proxy will use to issue HTTP requests.
-     - parameter serverURL: The server URL.
-     */
-    public init(session: URLSession, serverURL: URL) {
-        self.session = session
-        self.serverURL = serverURL
-
-        encoding = .applicationXWWWFormURLEncoded
-    }
 
     /**
      Invokes a web service method.
