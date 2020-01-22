@@ -82,7 +82,7 @@ public class WebServiceProxy {
     /**
      * Constant representing an unspecified value.
      */
-    public static let undefined: Any = NSNull()
+    public static let undefined = NSNull()
 
     /**
      Invokes a web service method.
