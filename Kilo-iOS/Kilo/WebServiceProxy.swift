@@ -50,11 +50,11 @@ public class WebServiceProxy {
      Creates a new web service proxy.
 
      - parameter session: The URL session the service proxy will use to issue HTTP requests.
-     - parameter serverURL: The server URL.
+     - parameter serviceURL: The service URL.
      */
-    public init(session: URLSession, serverURL: URL) {
+    public init(session: URLSession, serviceURL: URL) {
         self.session = session
-        self.serverURL = serverURL
+        self.serviceURL = serviceURL
 
         encoding = .applicationXWWWFormURLEncoded
     }
@@ -65,9 +65,9 @@ public class WebServiceProxy {
     public private(set) var session: URLSession
 
     /**
-     The server URL.
+     The service URL.
      */
-    public private(set) var serverURL: URL
+    public private(set) var serviceURL: URL
 
     /**
      The encoding used to submit POST requests.
@@ -151,7 +151,7 @@ public class WebServiceProxy {
         resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
         let query = (method != .post || content != nil) ? encodeQuery(for: arguments) : ""
 
-        guard let url = URL(string: path + (query.isEmpty ? "" : "?" + query), relativeTo: serverURL) else {
+        guard let url = URL(string: path + (query.isEmpty ? "" : "?" + query), relativeTo: serviceURL) else {
             return nil
         }
 

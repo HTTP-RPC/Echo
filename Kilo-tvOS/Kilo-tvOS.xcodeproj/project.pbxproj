@@ -111,8 +111,8 @@
 		37D49B0620DFCC4700410E0A /* Kilo */ = {
 			isa = PBXGroup;
 			children = (
-				3722F4022268C2B100D8D278 /* WebServiceError.swift */,
 				3760E24720E17178005D501B /* WebServiceProxy.swift */,
+				3722F4022268C2B100D8D278 /* WebServiceError.swift */,
 				37D49B0820DFCC4700410E0A /* Info.plist */,
 			);
 			path = Kilo;
@@ -240,8 +240,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3722F4032268C2B100D8D278 /* WebServiceError.swift in Sources */,
 				3760E24820E17178005D501B /* WebServiceProxy.swift in Sources */,
+				3722F4032268C2B100D8D278 /* WebServiceError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,7 +434,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = org.gkbrown.Kilo;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -463,7 +463,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = org.gkbrown.Kilo;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

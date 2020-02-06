@@ -78,11 +78,11 @@ class ViewController: UITableViewController {
 
         let hostname = UserDefaults.standard.string(forKey: "hostname") ?? "localhost"
 
-        guard let serverURL = URL(string: "http://\(hostname):8080/httprpc-test-1.0/") else {
+        guard let serviceURL = URL(string: "http://\(hostname):8080/httprpc-test-1.0/") else {
             return
         }
 
-        let webServiceProxy = WebServiceProxy(session: session, serverURL: serverURL)
+        let webServiceProxy = WebServiceProxy(session: session, serviceURL: serviceURL)
 
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 

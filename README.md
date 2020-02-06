@@ -31,7 +31,7 @@ Note that the framework binary must be "trimmed" prior to App Store submission. 
 The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single initializer that accepts the following arguments:
 
 * `session` - a `URLSession` instance
-* `serverURL` - the base URL of the service
+* `serviceURL` - the base URL of the service
 
 Service operations are initiated via one of the following methods:
 
@@ -56,7 +56,7 @@ public func invoke<T>(_ method: Method, path: String,
 All three variants accept the following arguments:
 
 * `method` - the HTTP method to execute
-* `path` - the path to the requested resource
+* `path` - the path to the requested resource, relative to the service URL
 * `arguments` - a dictionary containing the method arguments as key/value pairs
 * `content` - an optional `Data` instance representing the body of the request
 * `contentType` - an optional string value containing the MIME type of the content
@@ -93,7 +93,7 @@ While service requests are typically processed on a background thread, result ha
 The following Swift code demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
 
 ```swift
-let webServiceProxy = WebServiceProxy(session: URLSession.shared, serverURL: serverURL)
+let webServiceProxy = WebServiceProxy(session: URLSession.shared, serviceURL: serviceURL)
 
 // GET test/fibonacci?count=8
 webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
