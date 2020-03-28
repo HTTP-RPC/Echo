@@ -138,14 +138,10 @@ final class KiloTests: XCTestCase {
 
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
         
-        let bundle = Bundle(for: type(of: self))
-        
-        guard let testTextURL = bundle.url(forResource: "test", withExtension: "txt"),
-            let testImageURL = bundle.url(forResource: "test", withExtension: "jpg") else {
-            XCTFail()
-            return
-        }
-        
+        let fileURL = URL(fileURLWithPath: #file)
+        let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
+        let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
+                
         KiloTests.webServiceProxy.encoding = .multipartFormData
 
         KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
@@ -185,12 +181,8 @@ final class KiloTests: XCTestCase {
         var valid: Bool!
         let expectation = self.expectation(description: "POST (custom)")
 
-        let bundle = Bundle(for: type(of: self))
-        
-        guard let testImageURL = bundle.url(forResource: "test", withExtension: "jpg") else {
-            XCTFail()
-            return
-        }
+        let fileURL = URL(fileURLWithPath: #file)
+        let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
 
         KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "name": testImageURL.lastPathComponent
@@ -218,12 +210,8 @@ final class KiloTests: XCTestCase {
         var valid: Bool!
         let expectation = self.expectation(description: "PUT")
         
-        let bundle = Bundle(for: type(of: self))
-        
-        guard let testTextURL = bundle.url(forResource: "test", withExtension: "txt") else {
-            XCTFail()
-            return
-        }
+        let fileURL = URL(fileURLWithPath: #file)
+        let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
 
         KiloTests.webServiceProxy.invoke(.put, path: "test", arguments: [
             "id": 101
