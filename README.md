@@ -1,31 +1,9 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
-[![CocoaPods](https://img.shields.io/cocoapods/v/Kilo.svg)](https://cocoapods.org/pods/Kilo)
 
 # Introduction
-Kilo is an open-source framework for consuming REST services in iOS and tvOS. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+Kilo is a Swift package for consuming RESTful and REST-like web services. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
-![](README/kilo.png)
-
-This guide introduces the Kilo framework and provides an overview of its key features.
-
-# Contents
-* [Getting Kilo](#getting-kilo)
-* [WebServiceProxy](#webserviceproxy)
-* [Additional Information](#additional-information)
-
-# Getting Kilo
-Kilo is distributed as a universal binary that will run in the iOS simulator as well as on an actual device. It is also available via [CocoaPods](https://cocoapods.org/pods/Kilo). Either iOS 11 or tvOS 11 or later is required. 
-
-To install:
-
-* Download the [latest release](https://github.com/gk-brown/Kilo/releases) archive and expand
-* In Xcode, select the project root node in the Project Navigator view
-* Select the application target
-* Select the "General" tab
-* Drag _Kilo.framework_ to the "Embedded Binaries" section
-* In the dialog that appears, ensure that "Copy items if needed" is checked and click "Finish"
-
-Note that the framework binary must be "trimmed" prior to App Store submission. See the [Deployment](#deployment) section for more information.
+![](kilo.png)
 
 # WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single initializer that accepts the following arguments:
@@ -87,7 +65,7 @@ The result handler is called upon completion of the operation. If successful, th
 If a service returns an error response with a content type of "text/plain", the body of the response will be provided in the error's localized description.
 
 ## Threading Considerations
-While service requests are typically processed on a background thread, result handlers are always executed on the application's main thread. This allows a result handler to update the user interface directly, rather than posting a separate update operation to the main queue. Note that response handlers are executed in the background, before the result handler is invoked.
+While service requests are typically processed on a background thread, result handlers are always executed on the main thread. This allows a result handler to update an application's user interface directly, rather than posting a separate update operation to the main queue. Note that response handlers are executed in the background, before the result handler is invoked.
 
 ## Example
 The following Swift code demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
@@ -102,15 +80,3 @@ webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
     // [0, 1, 1, 2, 3, 5, 8, 13]
 }
 ```
-
-## Deployment
-The Kilo framework is a universal binary that must be "trimmed" prior to submission to the App Store:
-
-* Place the _[trim.sh](Xcode/trim.sh)_ script in your project root directory
-* Ensure that the script has execute permission (e.g. 744)
-* Create a new "Run Script" build phase after the "Embed Frameworks" phase
-* Rename the new build phase to "Trim Framework Executables" or similar (optional)
-* Invoke the script (e.g. `"${SRCROOT}/trim.sh" Kilo`)
-
-# Additional Information
-This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/gk-brown/Kilo/tree/master/).
