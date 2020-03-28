@@ -1,10 +1,2 @@
 **/.DS_Store
-Kilo.xcworkspace/xcuserdata
-Kilo-iOS/build
-Kilo-iOS/Kilo-iOS.xcodeproj/xcuserdata/
-Kilo-iOS/Kilo-iOS.xcodeproj/project.xcworkspace/xcuserdata/
-Kilo-iOS.tar.gz
-Kilo-tvOS/build
-Kilo-tvOS/Kilo-tvOS.xcodeproj/xcuserdata/
-Kilo-tvOS/Kilo-tvOS.xcodeproj/project.xcworkspace/xcuserdata/
-Kilo-tvOS.tar.gz
+.swiftpm/xcode/package.xcworkspace/xcuserdata
