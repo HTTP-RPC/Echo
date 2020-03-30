@@ -55,17 +55,17 @@ All three methods return an instance of `URLSessionDataTask` representing the in
 ## Arguments
 Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (determined via the service proxy's `encoding` property). However, if a custom body is specified via the `content` parameter, `POST` arguments will be sent in the query string.
 
-Any value may be used as an argument. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970). The `undefined` class property of `WebServiceProxy` can be used to represent an unspecified value.
+Any value may be used as an argument. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970). `WebServiceProxy` provides an `undefined` class property that can be used to represent an unspecified value.
 
-Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
+Array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
 
 ## Return Values
-The result handler is called upon completion of the operation. If successful, the first argument will contain a deserialized representation of the content returned by the server, and the second argument will be `nil`. Otherwise, the first argument will be `nil`, and the second will be populated with an `Error` instance describing the problem that occurred. 
-
-If a service returns an error response with a content type of "text/plain", the body of the response will be provided in the error's localized description.
+The result handler is called upon completion of the operation. If successful, the result will contain a deserialized representation of the content returned by the server. Otherwise, it will contain an error describing the problem that occurred. If a service returns an error response with a content type of "text/plain", the body of the response will be provided in the error's localized description.
 
 ## Threading Considerations
-While service requests are typically processed on a background thread, result handlers are always executed on the main thread. This allows a result handler to update an application's user interface directly, rather than posting a separate update operation to the main queue. Note that response handlers are executed in the background, before the result handler is invoked.
+While service requests are typically processed on a background thread, result handlers are always executed on the main thread. This allows the callback to update an application's user interface directly, rather than posting a separate update operation to the main queue. 
+
+Response handlers are always executed in the background, before the result handler is invoked.
 
 ## Example
 The following Swift code demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
@@ -76,7 +76,13 @@ let webServiceProxy = WebServiceProxy(session: URLSession.shared, serviceURL: se
 // GET test/fibonacci?count=8
 webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
     "count": 8
-]) { [weak self] (result: Result<[Int], Error>) in
-    // [0, 1, 1, 2, 3, 5, 8, 13]
+]) { (result: Result<[Int], Error>) in
+    switch (result) {
+    case .success(let value):
+        print(value) // [0, 1, 1, 2, 3, 5, 8, 13]
+
+    case .failure(let error):
+        print(error.localizedDescription)
+    }
 }
 ```
