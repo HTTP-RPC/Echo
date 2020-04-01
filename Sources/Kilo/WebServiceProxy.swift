@@ -38,11 +38,17 @@ public class WebServiceProxy {
 
     /**
      Response handler type alias.
+     
+     - parameter content: The response content.
+     - parameter contentType: The response content type, or `nil` if the content type is not known.
+     - parameter headers: The response headers.
      */
     public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?, _ headers: [String: String]) throws -> T
 
     /**
      Result handler type alias.
+     
+     - parameter result: The result of the method invocation.
      */
     public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
 
@@ -55,8 +61,6 @@ public class WebServiceProxy {
     public init(session: URLSession, serviceURL: URL) {
         self.session = session
         self.serviceURL = serviceURL
-
-        encoding = .applicationXWWWFormURLEncoded
     }
 
     /**
@@ -72,7 +76,7 @@ public class WebServiceProxy {
     /**
      The encoding used to submit POST requests.
      */
-    public var encoding: Encoding
+    public var encoding: Encoding = .applicationXWWWFormURLEncoded
 
     /**
      * The header dictionary.

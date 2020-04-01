@@ -5,6 +5,25 @@ Kilo is a Swift package for consuming RESTful and REST-like web services. The pr
 
 ![](kilo.png)
 
+For example, the following Swift code uses Kilo's `WebServiceProxy` class to access a simple web service that returns the first _n_ values in the Fibonacci sequence:
+
+```swift
+let webServiceProxy = WebServiceProxy(session: URLSession.shared, serviceURL: serviceURL)
+
+// GET test/fibonacci?count=8
+webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
+    "count": 8
+]) { (result: Result<[Int], Error>) in
+    switch (result) {
+    case .success(let value):
+        print(value) // [0, 1, 1, 2, 3, 5, 8, 13]
+
+    case .failure(let error):
+        print(error.localizedDescription)
+    }
+}
+```
+
 # WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single initializer that accepts the following arguments:
 
@@ -40,7 +59,7 @@ All three variants accept the following arguments:
 * `contentType` - an optional string value containing the MIME type of the content
 * `resultHandler` - a callback that will be invoked upon completion of the request
 
-The first version executes a service method that does not return a value. The second deserializes the response using `JSONDecoder`, with a date decoding strategy of `millisecondsSince1970`. The third version accepts an additional `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
+The first version executes a service method that does not return a value. The second deserializes the response using `JSONDecoder`, with a date decoding strategy of `millisecondsSince1970`. The third version accepts an additional `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`). 
 
 Response and result handler callbacks are defined as follows:
 
@@ -55,7 +74,7 @@ All three methods return an instance of `URLSessionDataTask` representing the in
 ## Arguments
 Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (determined via the service proxy's `encoding` property). However, if a custom body is specified via the `content` parameter, `POST` arguments will be sent in the query string.
 
-Any value may be used as an argument. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970). `WebServiceProxy` provides an `undefined` class property that can be used to represent an unspecified value.
+Any value may be used as an argument. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970). The `undefined` property of the `WebServiceProxy` class can be used to represent unspecified or unknown values.
 
 Array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
 
@@ -67,22 +86,5 @@ While service requests are typically processed on a background thread, result ha
 
 Response handlers are always executed in the background, before the result handler is invoked.
 
-## Example
-The following Swift code demonstrates how the `WebServiceProxy` class might be used to access a service that returns the first _n_ values in the Fibonacci sequence:
-
-```swift
-let webServiceProxy = WebServiceProxy(session: URLSession.shared, serviceURL: serviceURL)
-
-// GET test/fibonacci?count=8
-webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
-    "count": 8
-]) { (result: Result<[Int], Error>) in
-    switch (result) {
-    case .success(let value):
-        print(value) // [0, 1, 1, 2, 3, 5, 8, 13]
-
-    case .failure(let error):
-        print(error.localizedDescription)
-    }
-}
-```
+# Additional Information
+For more information, see the [test cases](https://github.com/gk-brown/Kilo/blob/master/Tests/KiloTests/KiloTests.swift).
