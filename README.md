@@ -1,7 +1,5 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
 
-**NOTE** The Java version of Kilo is now part of the [HTTP-RPC](https://github.com/gk-brown/HTTP-RPC) project. See the project [README](https://github.com/gk-brown/HTTP-RPC#webserviceproxy) for more information.
-
 # Introduction
 Kilo is a Swift package for consuming RESTful and REST-like web services. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
