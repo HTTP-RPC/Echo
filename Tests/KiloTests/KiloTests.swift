@@ -15,7 +15,14 @@ final class KiloTests: XCTestCase {
         let bytes: Int
         let checksum: Int
     }
-
+    
+    struct Body: Decodable {
+        let string: String
+        let strings: [String]
+        let number: Int
+        let flag: Bool
+    }
+    
     let timeout = 5.0
     
     static var webServiceProxy: WebServiceProxy!
@@ -177,9 +184,48 @@ final class KiloTests: XCTestCase {
         XCTAssert(valid)
     }
     
-    func testCustomPost() {
+    func testCustomBodyPost() {
         var valid: Bool!
-        let expectation = self.expectation(description: "POST (custom)")
+        let expectation = self.expectation(description: "POST (custom body)")
+
+        let body: [String: Any] = [
+            "string": "héllo&gøod+bye?",
+            "strings": ["a", "b", "c"],
+            "number": 123,
+            "flag": true
+        ]
+
+        guard let content = try? JSONSerialization.data(withJSONObject: body) else {
+            XCTFail()
+            return
+        }
+        
+        KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
+            "id": 101
+        ], content: content) { (result: Result<Body, Error>) in
+            switch (result) {
+            case .success(let value):
+                valid = (value.string == body["string"] as? String
+                    && value.strings == body["strings"] as? [String]
+                    && value.number == body["number"] as? Int
+                    && value.flag == body["flag"] as? Bool)
+
+            case .failure(let error):
+                print(error.localizedDescription)
+                valid = false
+            }
+
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: timeout)
+        
+        XCTAssert(valid)
+    }
+    
+    func testCustomImagePost() {
+        var valid: Bool!
+        let expectation = self.expectation(description: "POST (custom image)")
 
         let fileURL = URL(fileURLWithPath: #file)
         let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
