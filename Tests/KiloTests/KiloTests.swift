@@ -202,7 +202,7 @@ final class KiloTests: XCTestCase {
         
         KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "id": 101
-        ], content: content) { (result: Result<Body, Error>) in
+        ], content: content, contentType: "application/json") { (result: Result<Body, Error>) in
             switch (result) {
             case .success(let value):
                 valid = (value.string == body["string"] as? String

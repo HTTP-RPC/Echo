@@ -105,7 +105,7 @@ public class WebServiceProxy {
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping ResultHandler<Void>) -> URLSessionDataTask? {
-        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { _, _, _ in }, resultHandler: resultHandler)
+        return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _, _ in }, resultHandler: resultHandler)
     }
 
     /**
@@ -125,7 +125,7 @@ public class WebServiceProxy {
         arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
-        return invoke(method, path: path, arguments: arguments, content: content, responseHandler: { content, _, _ in
+        return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _, _ in
             let jsonDecoder = JSONDecoder()
             
             jsonDecoder.dateDecodingStrategy = .millisecondsSince1970
