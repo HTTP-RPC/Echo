@@ -38,7 +38,7 @@ public func invoke(_ method: Method, path: String,
     resultHandler: @escaping ResultHandler<Void>) -> URLSessionDataTask? { ... }
 
 public func invoke<B: Encodable>(_ method: Method, path: String,
-    arguments: [String: Any] = [:], body: B? = nil,
+    arguments: [String: Any] = [:], body: B,
     resultHandler: @escaping ResultHandler<Void>) throws -> URLSessionDataTask? { ... }
 
 public func invoke<T: Decodable>(_ method: Method, path: String,
@@ -46,7 +46,7 @@ public func invoke<T: Decodable>(_ method: Method, path: String,
     resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? { ... }
 
 public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-    arguments: [String: Any] = [:], body: B? = nil,
+    arguments: [String: Any] = [:], body: B,
     resultHandler: @escaping ResultHandler<T>) throws -> URLSessionDataTask? { ... }
 
 public func invoke<T>(_ method: Method, path: String,
@@ -64,7 +64,7 @@ All method variants accept the following arguments:
 
 The first two versions execute a service method that does not return a value. The following two versions deserialize the response using `JSONDecoder`.
 
-Three methods accept the following arguments for specifying custom request body content:
+Three of the methods accept the following arguments for specifying custom request body content:
 
 * `content` - an optional `Data` instance representing the body of the request
 * `contentType` - an optional string value containing the MIME type of the content

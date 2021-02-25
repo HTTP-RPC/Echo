@@ -138,7 +138,7 @@ public class WebServiceProxy {
      */
     @discardableResult
     public func invoke<B: Encodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: B? = nil,
+        arguments: [String: Any] = [:], body: B,
         resultHandler: @escaping ResultHandler<Void>) throws -> URLSessionDataTask? {
         return invoke(method, path: path, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json", resultHandler: resultHandler)
     }
@@ -177,7 +177,7 @@ public class WebServiceProxy {
      */
     @discardableResult
     public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: B? = nil,
+        arguments: [String: Any] = [:], body: B,
         resultHandler: @escaping ResultHandler<T>) throws -> URLSessionDataTask? {
         return invoke(method, path: path, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json", resultHandler: resultHandler)
     }
