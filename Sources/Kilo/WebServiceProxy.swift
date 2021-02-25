@@ -87,6 +87,24 @@ public class WebServiceProxy {
      * Constant representing an unspecified value.
      */
     public static let undefined: Any = NSNull()
+    
+    // JSON encoder
+    private static let jsonEncoder: JSONEncoder = {
+        let jsonEncoder = JSONEncoder()
+        
+        jsonEncoder.dateEncodingStrategy = .millisecondsSince1970
+        
+        return jsonEncoder
+    }()
+    
+    // JSON decoder
+    private static let jsonDecoder: JSONDecoder = {
+        let jsonDecoder = JSONDecoder()
+        
+        jsonDecoder.dateDecodingStrategy = .millisecondsSince1970
+        
+        return jsonDecoder
+    }()
 
     /**
      Invokes a web service method.
@@ -102,10 +120,27 @@ public class WebServiceProxy {
      */
     @discardableResult
     public func invoke(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
-        content: Data? = nil, contentType: String? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping ResultHandler<Void>) -> URLSessionDataTask? {
         return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _, _ in }, resultHandler: resultHandler)
+    }
+
+    /**
+     Invokes a web service method.
+
+     - parameter method: The HTTP verb associated with the request.
+     - parameter path: The path associated with the request.
+     - parameter arguments: The request arguments.
+     - parameter body: The request body, or `nil` for no body.
+     - parameter resultHandler: A callback that will be invoked to handle the result.
+
+     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
+     */
+    @discardableResult
+    public func invoke<B: Encodable>(_ method: Method, path: String,
+        arguments: [String: Any] = [:], body: B? = nil,
+        resultHandler: @escaping ResultHandler<Void>) throws -> URLSessionDataTask? {
+        return invoke(method, path: path, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json", resultHandler: resultHandler)
     }
 
     /**
@@ -122,16 +157,29 @@ public class WebServiceProxy {
      */
     @discardableResult
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
-        content: Data? = nil, contentType: String? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
         return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _, _ in
-            let jsonDecoder = JSONDecoder()
-            
-            jsonDecoder.dateDecodingStrategy = .millisecondsSince1970
-
-            return try jsonDecoder.decode(T.self, from: content)
+            return try WebServiceProxy.jsonDecoder.decode(T.self, from: content)
         }, resultHandler: resultHandler)
+    }
+
+    /**
+     Invokes a web service method.
+
+     - parameter method: The HTTP verb associated with the request.
+     - parameter path: The path associated with the request.
+     - parameter arguments: The request arguments.
+     - parameter body: The request body, or `nil` for no body.
+     - parameter resultHandler: A callback that will be invoked to handle the result.
+
+     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
+     */
+    @discardableResult
+    public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
+        arguments: [String: Any] = [:], body: B? = nil,
+        resultHandler: @escaping ResultHandler<T>) throws -> URLSessionDataTask? {
+        return invoke(method, path: path, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json", resultHandler: resultHandler)
     }
 
     /**
@@ -149,8 +197,7 @@ public class WebServiceProxy {
      */
     @discardableResult
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
-        content: Data? = nil, contentType: String? = nil,
+        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>,
         resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
         let query = (method != .post || content != nil) ? encodeQuery(for: arguments) : ""

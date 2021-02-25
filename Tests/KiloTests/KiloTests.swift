@@ -23,7 +23,13 @@ final class KiloTests: XCTestCase {
         let flag: Bool
     }
     
-    let timeout = 5.0
+    struct Item: Codable {
+        let id: Int?
+        var description: String
+        var price: Double
+    }
+    
+    let timeout = 10.0
     
     static var webServiceProxy: WebServiceProxy!
     
@@ -312,6 +318,7 @@ final class KiloTests: XCTestCase {
         KiloTests.webServiceProxy.invoke(.get, path: "test/unauthorized") { (result: Result<Void, Error>) in
             switch (result) {
             case .failure(let error):
+                print(error.localizedDescription)
                 valid = (error as? WebServiceError)?.statusCode == 403
 
             default:
@@ -333,9 +340,8 @@ final class KiloTests: XCTestCase {
         KiloTests.webServiceProxy.invoke(.get, path: "test/error") { (result: Result<Void, Error>) in
             switch (result) {
             case .failure(let error):
-                valid = true
-
                 print(error.localizedDescription)
+                valid = true
 
             default:
                 valid = false
@@ -358,13 +364,78 @@ final class KiloTests: XCTestCase {
             "delay": 6000
         ]) { (result: Result<Int, Error>) in
             switch (result) {
-            case .failure:
+            case .failure(let error):
+                print(error.localizedDescription)
                 valid = true
 
             default:
                 valid = false
             }
 
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: timeout)
+        
+        XCTAssert(valid)
+    }
+    
+    func testCatalog() {
+        var valid: Bool!
+        let expectation = self.expectation(description: "Catalog")
+
+        do {
+            try KiloTests.webServiceProxy.invoke(.post, path: "catalog",
+                body: Item(id: nil, description: "abc", price: 150.00)) { (result: Result<Item, Error>) in
+                switch (result) {
+                case .success(let item):
+                    if let itemID = item.id, item.description == "abc" && item.price == 150.00 {
+                        do {
+                            try KiloTests.webServiceProxy.invoke(.put, path: "catalog/\(itemID)",
+                                body: Item(id: item.id, description: "xyz", price: 300.00)) { (result: Result<Void, Error>) in
+                                switch (result) {
+                                case .success:
+                                    KiloTests.webServiceProxy.invoke(.delete, path: "catalog/\(itemID)") { (result: Result<Void, Error>) in
+                                        switch (result) {
+                                        case .success:
+                                            valid = true
+                                        
+                                        case .failure(let error):
+                                            print(error.localizedDescription)
+                                            valid = false
+                                        }
+                                        
+                                        expectation.fulfill()
+                                    }
+                                
+                                case .failure(let error):
+                                    print(error.localizedDescription)
+                                    valid = false
+                                    
+                                    expectation.fulfill()
+                                }
+                            }
+                        } catch {
+                            valid = false
+                            
+                            expectation.fulfill()
+                        }
+                    } else {
+                        valid = false
+                    
+                        expectation.fulfill()
+                    }
+                
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    valid = false
+                    
+                    expectation.fulfill()
+                }
+            }
+        } catch {
+            valid = false
+            
             expectation.fulfill()
         }
 
