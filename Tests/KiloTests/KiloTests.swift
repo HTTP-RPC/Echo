@@ -385,17 +385,17 @@ final class KiloTests: XCTestCase {
         let expectation = self.expectation(description: "Catalog")
 
         do {
-            try KiloTests.webServiceProxy.invoke(.post, path: "catalog",
+            try KiloTests.webServiceProxy.invoke(.post, path: "catalog/items",
                 body: Item(id: nil, description: "abc", price: 150.00)) { (result: Result<Item, Error>) in
                 switch (result) {
                 case .success(let item):
                     if let itemID = item.id, item.description == "abc" && item.price == 150.00 {
                         do {
-                            try KiloTests.webServiceProxy.invoke(.put, path: "catalog/\(itemID)",
+                            try KiloTests.webServiceProxy.invoke(.put, path: "catalog/items/\(itemID)",
                                 body: Item(id: item.id, description: "xyz", price: 300.00)) { (result: Result<Void, Error>) in
                                 switch (result) {
                                 case .success:
-                                    KiloTests.webServiceProxy.invoke(.delete, path: "catalog/\(itemID)") { (result: Result<Void, Error>) in
+                                    KiloTests.webServiceProxy.invoke(.delete, path: "catalog/items/\(itemID)") { (result: Result<Void, Error>) in
                                         switch (result) {
                                         case .success:
                                             valid = true
