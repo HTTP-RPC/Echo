@@ -93,7 +93,7 @@ Any value may be used as an argument. However, `Date` instances are automaticall
 The `undefined` property of the `WebServiceProxy` class can be used to represent unspecified or unknown values.
 
 ## Return Values
-The result handler is called upon completion of the operation. If successful, the result will contain a deserialized representation of the content returned by the server. Otherwise, it will contain an error describing the problem that occurred. If a service returns an error response with a content type of "text/plain", the body of the response will be provided in the error's localized description.
+The result handler is called upon completion of the operation. If successful, the result will contain a deserialized representation of the content returned by the server. Otherwise, it will contain an error describing the problem that occurred. If the content type of the error response is "text/*", the deserialized response body will be provided in the error's localized description.
 
 ## Threading Considerations
 While service requests are typically processed on a background thread, result handlers are always executed on the main thread. This allows the callback to update an application's user interface directly, rather than posting a separate update operation to the main queue. 
