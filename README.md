@@ -1,4 +1,4 @@
-[![Releases](https://img.shields.io/github/release/gk-brown/Kilo.svg)](https://github.com/gk-brown/Kilo/releases)
+[![Releases](https://img.shields.io/github/release/HTTP-RPC/Kilo.svg)](https://github.com/HTTP-RPC/Kilo/releases)
 
 # Introduction
 Kilo is a Swift package for consuming RESTful and REST-like web services. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
@@ -101,4 +101,4 @@ While service requests are typically processed on a background thread, result ha
 Response handlers are always executed in the background, before the result handler is invoked.
 
 # Additional Information
-For more information, see the [test cases](https://github.com/gk-brown/Kilo/blob/master/Tests/KiloTests/KiloTests.swift).
+For more information, see the [test cases](https://github.com/HTTP-RPC/Kilo/blob/master/Tests/KiloTests/KiloTests.swift).
