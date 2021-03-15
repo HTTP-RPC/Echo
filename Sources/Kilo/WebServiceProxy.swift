@@ -237,7 +237,10 @@ public class WebServiceProxy {
                 urlRequest.httpBody = encodeMultipartFormData(for: arguments, multipartBoundary: multipartBoundary)
             }
         } else {
-            urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+            if (content != nil) {
+                urlRequest.setValue(contentType ?? "application/octet-stream", forHTTPHeaderField: "Content-Type")
+            }
+
             urlRequest.httpBody = content
         }
 
