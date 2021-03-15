@@ -41,12 +41,12 @@ final class KiloTests: XCTestCase {
 
         let session = URLSession(configuration: sessionConfiguration)
 
-        guard let serviceURL = URL(string: "http://localhost:8080/httprpc-test-1.0/") else {
+        guard let baseURL = URL(string: "http://localhost:8080/httprpc-test-1.0/") else {
             XCTFail()
             return
         }
         
-        webServiceProxy = WebServiceProxy(session: session, serviceURL: serviceURL)
+        webServiceProxy = WebServiceProxy(session: session, baseURL: baseURL)
     }
     
     func testGet() {
@@ -238,7 +238,7 @@ final class KiloTests: XCTestCase {
 
         KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "name": testImageURL.lastPathComponent
-        ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType, headers in
+        ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
             return content
         }) { (result: Result<Data?, Error>) in
             switch (result) {
@@ -267,7 +267,7 @@ final class KiloTests: XCTestCase {
 
         KiloTests.webServiceProxy.invoke(.put, path: "test", arguments: [
             "id": 101
-        ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType, headers in
+        ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
         }) { (result: Result<String?, Error>) in
             switch (result) {

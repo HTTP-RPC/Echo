@@ -19,14 +19,6 @@ import Foundation
  */
 public class WebServiceProxy {
     /**
-     Encoding options for POST requests.
-     */
-    public enum Encoding: Int {
-        case applicationXWWWFormURLEncoded
-        case multipartFormData
-    }
-
-    /**
      Service method options.
      */
     public enum Method: String {
@@ -37,13 +29,20 @@ public class WebServiceProxy {
     }
 
     /**
+     Encoding options for POST requests.
+     */
+    public enum Encoding: Int {
+        case applicationXWWWFormURLEncoded
+        case multipartFormData
+    }
+
+    /**
      Response handler type alias.
      
      - parameter content: The response content.
      - parameter contentType: The response content type, or `nil` if the content type is not known.
-     - parameter headers: The response headers.
      */
-    public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?, _ headers: [String: String]) throws -> T
+    public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
 
     /**
      Result handler type alias.
@@ -56,11 +55,11 @@ public class WebServiceProxy {
      Creates a new web service proxy.
 
      - parameter session: The URL session the service proxy will use to issue HTTP requests.
-     - parameter serviceURL: The service URL.
+     - parameter serviceURL: The base URL.
      */
-    public init(session: URLSession, serviceURL: URL) {
+    public init(session: URLSession, baseURL: URL) {
         self.session = session
-        self.serviceURL = serviceURL
+        self.baseURL = baseURL
     }
 
     /**
@@ -69,9 +68,9 @@ public class WebServiceProxy {
     public private(set) var session: URLSession
 
     /**
-     The service URL.
+     The base URL.
      */
-    public private(set) var serviceURL: URL
+    public private(set) var baseURL: URL
 
     /**
      The encoding used to submit POST requests.
@@ -112,8 +111,8 @@ public class WebServiceProxy {
      - parameter method: The HTTP verb associated with the request.
      - parameter path: The path associated with the request.
      - parameter arguments: The request arguments.
-     - parameter content: The request content, or `nil` for the default content.
-     - parameter contentType: The request content type, or `nil` for the default content type.
+     - parameter content: The request content, or `nil` for no content.
+     - parameter contentType: The request content type, or `nil` for no content type.
      - parameter resultHandler: A callback that will be invoked to handle the result.
 
      - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
@@ -122,7 +121,7 @@ public class WebServiceProxy {
     public func invoke(_ method: Method, path: String,
         arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping ResultHandler<Void>) -> URLSessionDataTask? {
-        return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _, _ in }, resultHandler: resultHandler)
+        return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _ in }, resultHandler: resultHandler)
     }
 
     /**
@@ -131,7 +130,7 @@ public class WebServiceProxy {
      - parameter method: The HTTP verb associated with the request.
      - parameter path: The path associated with the request.
      - parameter arguments: The request arguments.
-     - parameter body: The request body, or `nil` for no body.
+     - parameter body: The request body.
      - parameter resultHandler: A callback that will be invoked to handle the result.
 
      - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
@@ -149,8 +148,8 @@ public class WebServiceProxy {
      - parameter method: The HTTP verb associated with the request.
      - parameter path: The path associated with the request.
      - parameter arguments: The request arguments.
-     - parameter content: The request content, or `nil` for the default content.
-     - parameter contentType: The request content type, or `nil` for the default content type.
+     - parameter content: The request content, or `nil` for no content.
+     - parameter contentType: The request content type, or `nil` for no content type.
      - parameter resultHandler: A callback that will be invoked to handle the result.
 
      - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
@@ -159,7 +158,7 @@ public class WebServiceProxy {
     public func invoke<T: Decodable>(_ method: Method, path: String,
         arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
-        return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _, _ in
+        return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _ in
             return try WebServiceProxy.jsonDecoder.decode(T.self, from: content)
         }, resultHandler: resultHandler)
     }
@@ -170,7 +169,7 @@ public class WebServiceProxy {
      - parameter method: The HTTP verb associated with the request.
      - parameter path: The path associated with the request.
      - parameter arguments: The request arguments.
-     - parameter body: The request body, or `nil` for no body.
+     - parameter body: The request body.
      - parameter resultHandler: A callback that will be invoked to handle the result.
 
      - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
@@ -188,8 +187,8 @@ public class WebServiceProxy {
      - parameter method: The HTTP verb associated with the request.
      - parameter path: The path associated with the request.
      - parameter arguments: The request arguments.
-     - parameter content: The request content, or `nil` for the default content.
-     - parameter contentType: The request content type, or `nil` for the default content type.
+     - parameter content: The request content, or `nil` for no content.
+     - parameter contentType: The request content type, or `nil` for no content type.
      - parameter responseHandler: A callback that will be invoked to handle the response.
      - parameter resultHandler: A callback that will be invoked to handle the result.
 
@@ -200,13 +199,24 @@ public class WebServiceProxy {
         arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>,
         resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
-        let query = (method != .post || content != nil) ? encodeQuery(for: arguments) : ""
-
-        guard let url = URL(string: path + (query.isEmpty ? "" : "?" + query), relativeTo: serviceURL) else {
+        let url: URL?
+        if (method == .post && content == nil) {
+            url = URL(string: path, relativeTo: baseURL)
+        } else {
+            let query = encodeQuery(for: arguments)
+            
+            if (query.isEmpty) {
+                url = URL(string: path, relativeTo: baseURL)
+            } else {
+                url = URL(string: path + "?" + query, relativeTo: baseURL)
+            }
+        }
+        
+        if (url == nil) {
             return nil
         }
-
-        var urlRequest = URLRequest(url: url)
+        
+        var urlRequest = URLRequest(url: url!)
 
         urlRequest.httpMethod = method.rawValue
 
@@ -214,8 +224,7 @@ public class WebServiceProxy {
             urlRequest.setValue(value, forHTTPHeaderField: key)
         }
 
-        switch method {
-        case .post where content == nil:
+        if (method == .post && content == nil) {
             switch encoding {
             case .applicationXWWWFormURLEncoded:
                 urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -227,12 +236,9 @@ public class WebServiceProxy {
                 urlRequest.setValue("multipart/form-data; boundary=\(multipartBoundary)", forHTTPHeaderField: "Content-Type")
                 urlRequest.httpBody = encodeMultipartFormData(for: arguments, multipartBoundary: multipartBoundary)
             }
-
-        default:
-            if (content != nil) {
-                urlRequest.setValue(contentType ?? "application/octet-stream", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpBody = content
-            }
+        } else {
+            urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+            urlRequest.httpBody = content
         }
 
         let task = session.dataTask(with: urlRequest) { data, urlResponse, error in
@@ -243,13 +249,7 @@ public class WebServiceProxy {
                     let contentType = httpURLResponse.mimeType
 
                     if (statusCode / 100 == 2) {
-                        var headers: [String: String] = [:]
-
-                        for (key, value) in httpURLResponse.allHeaderFields {
-                            headers[String(describing: key)] = String(describing: value)
-                        }
-
-                        result = .success(try responseHandler(content, contentType, headers))
+                        result = .success(try responseHandler(content, contentType))
                     } else {
                         let errorDescription: String?
                         if contentType?.hasPrefix("text/") ?? false {

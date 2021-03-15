@@ -8,7 +8,7 @@ Kilo is a Swift package for consuming RESTful and REST-like web services. The pr
 For example, the following Swift code uses Kilo's `WebServiceProxy` class to access a simple web service that returns the first _n_ values in the Fibonacci sequence:
 
 ```swift
-let webServiceProxy = WebServiceProxy(session: URLSession.shared, serviceURL: serviceURL)
+let webServiceProxy = WebServiceProxy(session: URLSession.shared, baseURL: baseURL)
 
 // GET test/fibonacci?count=8
 webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
@@ -28,7 +28,7 @@ webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
 The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single initializer that accepts the following arguments:
 
 * `session` - a `URLSession` instance
-* `serviceURL` - the base URL of the service
+* `baseURL` - the base URL of the service
 
 Service operations are initiated via one of the following methods:
 
@@ -55,30 +55,28 @@ public func invoke<T>(_ method: Method, path: String,
     resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? { ... }
 ```
 
-All method variants accept the following arguments:
+All variants accept the following arguments:
 
 * `method` - the HTTP method to execute
-* `path` - the path to the requested resource, relative to the service URL
+* `path` - the path to the requested resource, relative to the base URL
 * `arguments` - a dictionary containing the method arguments as key/value pairs
 * `resultHandler` - a callback that will be invoked upon completion of the request
 
-The first two versions execute a service method that does not return a value. The following two versions deserialize the response using `JSONDecoder`.
+The first two versions execute a service method that does not return a value. The following two versions deserialize the service response using `JSONDecoder`. The final version accepts a `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
 
 Three of the methods accept the following arguments for specifying custom request body content:
 
 * `content` - an optional `Data` instance representing the body of the request
 * `contentType` - an optional string value containing the MIME type of the content
 
-The other two methods accept an encodable body value that is serialized using `JSONEncoder`.
-
-The final version accepts an additional `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
+The other two methods accept an encodable `body` argument that is serialized using `JSONEncoder`.
 
 JSON data is encoded and decoded using a date strategy of `millisecondsSince1970`.
 
 Response and result handler callbacks are defined as follows:
 
 ```swift
-public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?, _ headers: [String: String]) throws -> T
+public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
 
 public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
 ```
