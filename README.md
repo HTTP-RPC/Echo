@@ -62,7 +62,7 @@ All variants accept the following arguments:
 * `arguments` - a dictionary containing the method arguments as key/value pairs
 * `resultHandler` - a callback that will be invoked upon completion of the request
 
-The first two versions execute a service method that does not return a value. The following two versions deserialize the service response using `JSONDecoder`. The final version accepts a `responseHandler` argument to facilitate decoding of custom response content (for example, a `UIImage`).
+The first two versions execute a service method that does not return a value. The following two versions deserialize the service response using `JSONDecoder`. The final version accepts a `responseHandler` callback to facilitate decoding of custom response content.
 
 Three of the methods accept the following arguments for specifying custom request body content:
 
