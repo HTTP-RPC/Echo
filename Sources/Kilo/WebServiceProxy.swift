@@ -55,7 +55,7 @@ public class WebServiceProxy {
      Creates a new web service proxy.
 
      - parameter session: The URL session the service proxy will use to issue HTTP requests.
-     - parameter serviceURL: The base URL.
+     - parameter baseURL: The base URL of the service.
      */
     public init(session: URLSession, baseURL: URL) {
         self.session = session
@@ -68,7 +68,7 @@ public class WebServiceProxy {
     public private(set) var session: URLSession
 
     /**
-     The base URL.
+     The base URL of the service.
      */
     public private(set) var baseURL: URL
 
@@ -106,10 +106,10 @@ public class WebServiceProxy {
     }()
 
     /**
-     Invokes a web service method.
+     Invokes a service operation.
 
-     - parameter method: The HTTP verb associated with the request.
-     - parameter path: The path associated with the request.
+     - parameter method: The HTTP method.
+     - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
@@ -125,10 +125,10 @@ public class WebServiceProxy {
     }
 
     /**
-     Invokes a web service method.
+     Invokes a service operation.
 
-     - parameter method: The HTTP verb associated with the request.
-     - parameter path: The path associated with the request.
+     - parameter method: The HTTP method.
+     - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter body: The request body.
      - parameter resultHandler: A callback that will be invoked to handle the result.
@@ -143,10 +143,10 @@ public class WebServiceProxy {
     }
 
     /**
-     Invokes a web service method.
+     Invokes a service operation.
 
-     - parameter method: The HTTP verb associated with the request.
-     - parameter path: The path associated with the request.
+     - parameter method: The HTTP method.
+     - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
@@ -164,10 +164,10 @@ public class WebServiceProxy {
     }
 
     /**
-     Invokes a web service method.
+     Invokes a service operation.
 
-     - parameter method: The HTTP verb associated with the request.
-     - parameter path: The path associated with the request.
+     - parameter method: The HTTP method.
+     - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter body: The request body.
      - parameter resultHandler: A callback that will be invoked to handle the result.
@@ -182,10 +182,10 @@ public class WebServiceProxy {
     }
 
     /**
-     Invokes a web service method.
+     Invokes a service operation.
 
-     - parameter method: The HTTP verb associated with the request.
-     - parameter path: The path associated with the request.
+     - parameter method: The HTTP method.
+     - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
