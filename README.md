@@ -59,17 +59,17 @@ All variants accept the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the path to the requested resource, relative to the base URL
-* `arguments` - a dictionary containing the method arguments as key/value pairs
+* `arguments` - a dictionary containing the request arguments as name/value pairs
 * `resultHandler` - a callback that will be invoked upon completion of the request
 
-The first two versions execute a service method that does not return a value. The following two versions deserialize the service response using `JSONDecoder`. The final version accepts a `responseHandler` callback to facilitate decoding of custom response content.
+The first two versions execute a service method that does not return a value. The following two versions deserialize a service response of type `T` using `JSONDecoder`. The final version accepts a `responseHandler` callback to facilitate decoding of custom response content.
 
 Three of the methods accept the following arguments for specifying custom request body content:
 
 * `content` - an optional `Data` instance representing the body of the request
 * `contentType` - an optional string value containing the MIME type of the content
 
-The other two methods accept an encodable `body` argument that is serialized using `JSONEncoder`.
+The other two methods accept a `body` argument of type `B` that is serialized using `JSONEncoder`.
 
 JSON data is encoded and decoded using a date strategy of `millisecondsSince1970`.
 
@@ -93,10 +93,7 @@ The `undefined` property of the `WebServiceProxy` class can be used to represent
 ## Return Values
 The result handler is called upon completion of the operation. If successful, the result will contain a deserialized representation of the content returned by the server. Otherwise, it will contain an error describing the problem that occurred. If the content type of the error response is "text/*", the deserialized response body will be provided in the error's localized description.
 
-## Threading Considerations
 While service requests are typically processed on a background thread, result handlers are always executed on the main thread. This allows the callback to update an application's user interface directly, rather than posting a separate update operation to the main queue. 
-
-Response handlers are always executed in the background, before the result handler is invoked.
 
 # Additional Information
 For more information, see the [test cases](https://github.com/HTTP-RPC/Kilo/blob/master/Tests/KiloTests/KiloTests.swift).
