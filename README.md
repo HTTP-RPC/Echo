@@ -1,7 +1,7 @@
 [![Releases](https://img.shields.io/github/release/HTTP-RPC/Kilo.svg)](https://github.com/HTTP-RPC/Kilo/releases)
 
 # Introduction
-Kilo is a Swift package for consuming RESTful and REST-like web services. It is a thin, REST-centric wrapper around the more general `URLSesssion` API provided by the Foundation framework. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+Kilo is a Swift package for consuming RESTful and REST-like web services. It provides a thin, API-centric wrapper around the more general `URLSesssion` API provided by the Foundation framework. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
 ![](kilo.png)
 
