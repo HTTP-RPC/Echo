@@ -38,22 +38,13 @@ public class WebServiceProxy {
 
     /**
      Response handler type alias.
-     
      - parameter content: The response content.
      - parameter contentType: The response content type, or `nil` if the content type is not known.
      */
     public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
 
     /**
-     Result handler type alias.
-     
-     - parameter result: The result of the method invocation.
-     */
-    public typealias ResultHandler<T> = (_ result: Result<T, Error>) -> Void
-
-    /**
      Creates a new web service proxy.
-
      - parameter session: The URL session the service proxy will use to issue HTTP requests.
      - parameter baseURL: The base URL of the service.
      */
@@ -107,98 +98,71 @@ public class WebServiceProxy {
 
     /**
      Invokes a service operation.
-
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
-     - parameter resultHandler: A callback that will be invoked to handle the result.
-
-     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
      */
-    @discardableResult
     public func invoke(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
-        resultHandler: @escaping ResultHandler<Void>) -> URLSessionDataTask? {
-        return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _ in }, resultHandler: resultHandler)
+        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil) async throws {
+        try await invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _ in })
     }
 
     /**
      Invokes a service operation.
-
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter body: The request body.
-     - parameter resultHandler: A callback that will be invoked to handle the result.
-
-     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
      */
-    @discardableResult
     public func invoke<B: Encodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: B,
-        resultHandler: @escaping ResultHandler<Void>) throws -> URLSessionDataTask? {
-        return invoke(method, path: path, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json", resultHandler: resultHandler)
+        arguments: [String: Any] = [:], body: B) async throws {
+        try await invoke(method, path: path, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
     }
 
     /**
      Invokes a service operation.
-
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
-     - parameter resultHandler: A callback that will be invoked to handle the result.
-
-     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
+     - returns The response body.
      */
-    @discardableResult
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
-        resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
-        return invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _ in
+        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil) async throws -> T {
+        return try await invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _ in
             return try WebServiceProxy.jsonDecoder.decode(T.self, from: content)
-        }, resultHandler: resultHandler)
+        })
     }
 
     /**
      Invokes a service operation.
-
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter body: The request body.
-     - parameter resultHandler: A callback that will be invoked to handle the result.
-
-     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
+     - returns The response body.
      */
-    @discardableResult
     public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: B,
-        resultHandler: @escaping ResultHandler<T>) throws -> URLSessionDataTask? {
-        return invoke(method, path: path, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json", resultHandler: resultHandler)
+        arguments: [String: Any] = [:], body: B) async throws -> T {
+        return try await invoke(method, path: path, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
     }
 
     /**
      Invokes a service operation.
-
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
      - parameter responseHandler: A callback that will be invoked to handle the response.
-     - parameter resultHandler: A callback that will be invoked to handle the result.
-
-     - returns: A URL session data task representing the invocation request, or `nil` if the task could not be created.
+     - returns The response body.
      */
-    @discardableResult
     public func invoke<T>(_ method: Method, path: String,
         arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
-        responseHandler: @escaping ResponseHandler<T>,
-        resultHandler: @escaping ResultHandler<T>) -> URLSessionDataTask? {
+        responseHandler: @escaping ResponseHandler<T>) async throws -> T {
         let url: URL?
         if (method == .post && content == nil) {
             url = URL(string: path, relativeTo: baseURL)
@@ -213,7 +177,7 @@ public class WebServiceProxy {
         }
         
         if (url == nil) {
-            return nil
+            throw WebServiceError(errorDescription: "Invalid path.", statusCode: 0)
         }
         
         var urlRequest = URLRequest(url: url!)
@@ -244,40 +208,27 @@ public class WebServiceProxy {
             urlRequest.httpBody = content
         }
 
-        let task = session.dataTask(with: urlRequest) { data, urlResponse, error in
-            let result: Result<T, Error>
-            if let content = data, let httpURLResponse = urlResponse as? HTTPURLResponse {
-                do {
-                    let statusCode = httpURLResponse.statusCode
-                    let contentType = httpURLResponse.mimeType
-
-                    if (statusCode / 100 == 2) {
-                        result = .success(try responseHandler(content, contentType))
-                    } else {
-                        let errorDescription: String?
-                        if contentType?.hasPrefix("text/") ?? false {
-                            errorDescription = String(data: content, encoding: .utf8)
-                        } else {
-                            errorDescription = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-                        }
-
-                        result = .failure(WebServiceError(errorDescription: errorDescription, statusCode: statusCode))
-                    }
-                } catch {
-                    result = .failure(error)
-                }
-            } else {
-                result = .failure(error!)
-            }
-
-            OperationQueue.main.addOperation {
-                resultHandler(result)
-            }
+        let (content, urlResponse) = try await session.data(for: urlRequest)
+        
+        guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
+            throw WebServiceError(errorDescription: "Unexpected response.", statusCode: 0)
         }
+        
+        let statusCode = httpURLResponse.statusCode
+        let contentType = httpURLResponse.mimeType
 
-        task.resume()
+        if (statusCode / 100 == 2) {
+            return try responseHandler(content, contentType)
+        } else {
+            let errorDescription: String?
+            if contentType?.hasPrefix("text/") ?? false {
+                errorDescription = String(data: content, encoding: .utf8)
+            } else {
+                errorDescription = HTTPURLResponse.localizedString(forStatusCode: statusCode)
+            }
 
-        return task
+            throw WebServiceError(errorDescription: errorDescription, statusCode: statusCode)
+        }
     }
 
     func encodeQuery(for arguments: [String: Any]) -> String {

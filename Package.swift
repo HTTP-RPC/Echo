@@ -1,12 +1,12 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.5
 
 import PackageDescription
 
 let package = Package(
     name: "Kilo",
     platforms: [
-        .iOS(.v9),
-        .macOS(.v10_11)
+        .iOS(.v15),
+        .macOS(.v12)
     ],
     products: [
         .library(
@@ -19,6 +19,10 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "KiloTests",
-            dependencies: ["Kilo"])
+            dependencies: ["Kilo"],
+            resources: [
+                .process("test.jpg"),
+                .process("test.txt")
+            ])
     ]
 )
