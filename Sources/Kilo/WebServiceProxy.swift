@@ -105,7 +105,8 @@ public class WebServiceProxy {
      - parameter contentType: The request content type, or `nil` for no content type.
      */
     public func invoke(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil) async throws {
+        arguments: [String: Any] = [:],
+        content: Data? = nil, contentType: String? = nil) async throws {
         try await invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _ in })
     }
 
@@ -117,7 +118,8 @@ public class WebServiceProxy {
      - parameter body: The request body.
      */
     public func invoke<B: Encodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: B) async throws {
+        arguments: [String: Any] = [:],
+        body: B) async throws {
         try await invoke(method, path: path, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
     }
 
@@ -131,7 +133,8 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil) async throws -> T {
+        arguments: [String: Any] = [:],
+        content: Data? = nil, contentType: String? = nil) async throws -> T {
         return try await invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _ in
             return try WebServiceProxy.jsonDecoder.decode(T.self, from: content)
         })
@@ -146,7 +149,8 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], body: B) async throws -> T {
+        arguments: [String: Any] = [:],
+        body: B) async throws -> T {
         return try await invoke(method, path: path, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
     }
 
@@ -161,7 +165,8 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:], content: Data? = nil, contentType: String? = nil,
+        arguments: [String: Any] = [:],
+        content: Data? = nil, contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>) async throws -> T {
         let url: URL?
         if (method == .post && content == nil) {
