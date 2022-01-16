@@ -81,7 +81,8 @@ public class WebServiceProxy {
     // JSON encoder
     private static let jsonEncoder: JSONEncoder = {
         let jsonEncoder = JSONEncoder()
-        
+
+        jsonEncoder.outputFormatting = .prettyPrinted
         jsonEncoder.dateEncodingStrategy = .millisecondsSince1970
         
         return jsonEncoder
