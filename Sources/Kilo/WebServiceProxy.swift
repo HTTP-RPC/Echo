@@ -226,7 +226,7 @@ public class WebServiceProxy {
             return try responseHandler(content, contentType)
         } else {
             let errorDescription: String?
-            if contentType?.hasPrefix("text/") ?? false {
+            if (contentType?.hasPrefix("text/") ?? false) {
                 errorDescription = String(data: content, encoding: .utf8)
             } else {
                 errorDescription = HTTPURLResponse.localizedString(forStatusCode: statusCode)
