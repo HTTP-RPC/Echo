@@ -5,6 +5,10 @@ Kilo is a Swift package for consuming RESTful and REST-like web services. It pro
 
 ![](kilo.png)
 
+**NOTE** Kilo will be renamed to Echo in an upcoming release. This name comes from the nautical _E_ or _Echo_ flag, and was chosen because this project "echoes" the functionality provided by the HTTP-RPC project (which will be renamed to Kilo):
+  
+![](echo.png)
+
 For example, the following Swift code uses Kilo's `WebServiceProxy` class to access a simple web service that returns the first _n_ values in the Fibonacci sequence:
 
 ```swift
