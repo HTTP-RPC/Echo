@@ -1,7 +1,7 @@
 import XCTest
-@testable import Kilo
+@testable import Echo
 
-final class KiloTests: XCTestCase {
+final class EchoTests: XCTestCase {
     struct Response: Decodable {
         let string: String
         let strings: [String]
@@ -39,7 +39,7 @@ final class KiloTests: XCTestCase {
 
         let session = URLSession(configuration: sessionConfiguration)
 
-        guard let baseURL = URL(string: "http://localhost:8080/httprpc-test-1.0/") else {
+        guard let baseURL = URL(string: "http://localhost:8080/kilo-test-1.0/") else {
             XCTFail()
             return
         }
@@ -50,7 +50,7 @@ final class KiloTests: XCTestCase {
     func testGet() async throws {
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
-        let response: Response = try await KiloTests.webServiceProxy.invoke(.get, path: "test", arguments: [
+        let response: Response = try await EchoTests.webServiceProxy.invoke(.get, path: "test", arguments: [
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -67,7 +67,7 @@ final class KiloTests: XCTestCase {
     }
     
     func testGetFibonacci() async throws {
-        let response: [Int] = try await KiloTests.webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
+        let response: [Int] = try await EchoTests.webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
             "count": 8
         ])
         
@@ -77,9 +77,9 @@ final class KiloTests: XCTestCase {
     func testURLEncodedPost() async throws {
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
-        KiloTests.webServiceProxy.encoding = .applicationXWWWFormURLEncoded
+        EchoTests.webServiceProxy.encoding = .applicationXWWWFormURLEncoded
         
-        let response: Response = try await KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
+        let response: Response = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -102,9 +102,9 @@ final class KiloTests: XCTestCase {
         let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
         let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
                 
-        KiloTests.webServiceProxy.encoding = .multipartFormData
+        EchoTests.webServiceProxy.encoding = .multipartFormData
 
-        let response: Response = try await KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
+        let response: Response = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -137,7 +137,7 @@ final class KiloTests: XCTestCase {
             return
         }
         
-        let response: Body = try await KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
+        let response: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "id": 101
         ], content: content, contentType: "application/json")
         
@@ -151,7 +151,7 @@ final class KiloTests: XCTestCase {
         let fileURL = URL(fileURLWithPath: #file)
         let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
 
-        let response: Data? = try await KiloTests.webServiceProxy.invoke(.post, path: "test", arguments: [
+        let response: Data? = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "name": testImageURL.lastPathComponent
         ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
             return content
@@ -164,7 +164,7 @@ final class KiloTests: XCTestCase {
         let fileURL = URL(fileURLWithPath: #file)
         let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
 
-        let response: String? = try await KiloTests.webServiceProxy.invoke(.put, path: "test", arguments: [
+        let response: String? = try await EchoTests.webServiceProxy.invoke(.put, path: "test", arguments: [
             "id": 101
         ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
@@ -174,7 +174,7 @@ final class KiloTests: XCTestCase {
     }
     
     func testDelete() async throws {
-        try await KiloTests.webServiceProxy.invoke(.delete, path: "test", arguments: [
+        try await EchoTests.webServiceProxy.invoke(.delete, path: "test", arguments: [
             "id": 101
         ])
         
@@ -183,7 +183,7 @@ final class KiloTests: XCTestCase {
     
     func testUnauthorized() async {
         do {
-            try await KiloTests.webServiceProxy.invoke(.get, path: "test/unauthorized")
+            try await EchoTests.webServiceProxy.invoke(.get, path: "test/unauthorized")
             
             XCTFail()
         } catch {
@@ -198,7 +198,7 @@ final class KiloTests: XCTestCase {
     
     func testError() async throws {
         do {
-            try await KiloTests.webServiceProxy.invoke(.get, path: "test/error")
+            try await EchoTests.webServiceProxy.invoke(.get, path: "test/error")
             
             XCTFail()
         } catch {
@@ -210,7 +210,7 @@ final class KiloTests: XCTestCase {
     
     func testTimeout() async throws {
         do {
-            try await KiloTests.webServiceProxy.invoke(.get, path: "test", arguments: [
+            try await EchoTests.webServiceProxy.invoke(.get, path: "test", arguments: [
                 "value": 123,
                 "delay": 6000
             ])
@@ -224,7 +224,7 @@ final class KiloTests: XCTestCase {
     }
     
     func testCatalog() async throws {
-        let item: Item = try await KiloTests.webServiceProxy.invoke(.post, path: "catalog/items",
+        let item: Item = try await EchoTests.webServiceProxy.invoke(.post, path: "catalog/items",
             body: Item(id: nil, description: "abc", price: 150.00))
             
         guard let itemID = item.id, item.description == "abc" && item.price == 150.00 else {
@@ -232,10 +232,10 @@ final class KiloTests: XCTestCase {
             return
         }
         
-        try await KiloTests.webServiceProxy.invoke(.put, path: "catalog/items/\(itemID)",
+        try await EchoTests.webServiceProxy.invoke(.put, path: "catalog/items/\(itemID)",
             body: Item(id: item.id, description: "xyz", price: 300.00))
             
-        try await KiloTests.webServiceProxy.invoke(.delete, path: "catalog/items/\(itemID)")
+        try await EchoTests.webServiceProxy.invoke(.delete, path: "catalog/items/\(itemID)")
         
         XCTAssert(true)
     }

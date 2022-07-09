@@ -3,23 +3,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "Kilo",
+    name: "Echo",
     platforms: [
         .iOS(.v15),
         .macOS(.v12)
     ],
     products: [
         .library(
-            name: "Kilo",
-            targets: ["Kilo"])
+            name: "Echo",
+            targets: ["Echo"])
     ],
     targets: [
         .target(
-            name: "Kilo",
+            name: "Echo",
             dependencies: []),
         .testTarget(
-            name: "KiloTests",
-            dependencies: ["Kilo"],
+            name: "EchoTests",
+            dependencies: ["Echo"],
             resources: [
                 .process("test.jpg"),
                 .process("test.txt")

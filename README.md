@@ -1,15 +1,11 @@
-[![Releases](https://img.shields.io/github/release/HTTP-RPC/Kilo.svg)](https://github.com/HTTP-RPC/Kilo/releases)
+[![Releases](https://img.shields.io/github/release/HTTP-RPC/Echo.svg)](https://github.com/HTTP-RPC/Echo/releases)
 
 # Introduction
-Kilo is a Swift package for consuming RESTful and REST-like web services. It provides a lightweight, API-centric wrapper around the more general `URLSesssion` API provided by the Foundation framework. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+Echo is a Swift package for consuming RESTful and REST-like web services. It provides a lightweight, API-centric wrapper around the more general `URLSesssion` API provided by the Foundation framework. The project's name comes from the nautical _E_ or _Echo_ flag, and was chosen because this project "echoes" the functionality provided by the [Kilo](https://github.com/HTTP-RPC/Kilo) project:
 
-![](kilo.png)
-
-**NOTE** Kilo will be renamed to Echo in an upcoming release. This name comes from the nautical _E_ or _Echo_ flag, and was chosen because this project "echoes" the functionality provided by the HTTP-RPC project (which will be renamed to Kilo):
-  
 ![](echo.png)
 
-For example, the following Swift code uses Kilo's `WebServiceProxy` class to access a simple web service that returns the first _n_ values in the Fibonacci sequence:
+For example, the following Swift code uses Echo's `WebServiceProxy` class to access a simple web service that returns the first _n_ values in the Fibonacci sequence:
 
 ```swift
 let webServiceProxy = WebServiceProxy(session: URLSession.shared, baseURL: baseURL)
@@ -97,4 +93,4 @@ print(error.localizedDescription)
 ```
 
 # Additional Information
-For more information, see the [examples](https://github.com/HTTP-RPC/Kilo/blob/master/Tests/KiloTests/KiloTests.swift).
+For more information, see the [examples](https://github.com/HTTP-RPC/Echo/blob/master/Tests/EchoTests/EchoTests.swift).
