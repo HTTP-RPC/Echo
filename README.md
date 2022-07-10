@@ -1,7 +1,7 @@
 [![Releases](https://img.shields.io/github/release/HTTP-RPC/Echo.svg)](https://github.com/HTTP-RPC/Echo/releases)
 
 # Introduction
-Echo is a Swift package for consuming RESTful and REST-like web services. It provides a lightweight, API-centric wrapper around the more general `URLSesssion` API provided by the Foundation framework. The project's name comes from the nautical _E_ or _Echo_ flag, and was chosen because this project "echoes" the functionality provided by the [Kilo](https://github.com/HTTP-RPC/Kilo) project:
+Echo is a Swift package for consuming RESTful and REST-like web services. It provides a lightweight, API-centric wrapper around the more general `URLSesssion` API provided by the Foundation framework. The project's name comes from the nautical _E_ or _Echo_ flag:
 
 ![](echo.png)
 
