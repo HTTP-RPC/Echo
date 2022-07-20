@@ -39,7 +39,7 @@ final class EchoTests: XCTestCase {
 
         let session = URLSession(configuration: sessionConfiguration)
 
-        guard let baseURL = URL(string: "http://localhost:8080/kilo-test-1.0/") else {
+        guard let baseURL = URL(string: "http://localhost:8080/kilo-test/") else {
             XCTFail()
             return
         }
