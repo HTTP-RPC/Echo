@@ -69,7 +69,7 @@ public class WebServiceProxy {
     public var encoding: Encoding = .applicationXWWWFormURLEncoded
 
     /**
-     * The header dictionary.
+     * Common request headers.
      */
     public var headers: [String: String] = [:]
 
@@ -101,42 +101,45 @@ public class WebServiceProxy {
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
+     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
      */
     public func invoke(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        headers: [String: String] = [:], arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil) async throws {
-        try await invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _ in })
+        try await invoke(method, path: path, headers: headers, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _ in })
     }
 
     /**
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
+     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter body: The request body.
      */
     public func invoke<B: Encodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        headers: [String: String] = [:], arguments: [String: Any] = [:],
         body: B) async throws {
-        try await invoke(method, path: path, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
+        try await invoke(method, path: path, headers: headers, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
     }
 
     /**
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
+     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
      - returns The response body.
      */
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        headers: [String: String] = [:], arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil) async throws -> T {
-        return try await invoke(method, path: path, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _ in
+        return try await invoke(method, path: path, headers: headers, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _ in
             return try WebServiceProxy.jsonDecoder.decode(T.self, from: content)
         })
     }
@@ -145,20 +148,22 @@ public class WebServiceProxy {
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
+     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter body: The request body.
      - returns The response body.
      */
     public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        headers: [String: String] = [:], arguments: [String: Any] = [:],
         body: B) async throws -> T {
-        return try await invoke(method, path: path, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
+        return try await invoke(method, path: path, headers: headers, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
     }
 
     /**
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
+     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
@@ -166,7 +171,7 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        headers: [String: String] = [:], arguments: [String: Any] = [:],
         content: Data? = nil, contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>) async throws -> T {
         let url: URL?
@@ -189,6 +194,10 @@ public class WebServiceProxy {
         var urlRequest = URLRequest(url: url!)
 
         urlRequest.httpMethod = method.rawValue
+
+        for (key, value) in self.headers {
+            urlRequest.setValue(value, forHTTPHeaderField: key)
+        }
 
         for (key, value) in headers {
             urlRequest.setValue(value, forHTTPHeaderField: key)

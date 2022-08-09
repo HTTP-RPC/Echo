@@ -180,7 +180,21 @@ final class EchoTests: XCTestCase {
         
         XCTAssert(true)
     }
-    
+
+    func testHeaders() async throws {
+        let response: [String: String]? = try await EchoTests.webServiceProxy.invoke(.get, path: "test/headers", headers: [
+            "X-Header-A": "abc",
+            "X-Header-B": "123"
+        ], responseHandler: { content, contentType in
+            return try? JSONSerialization.jsonObject(with: content) as? [String: String]
+        })
+
+        XCTAssert(response != nil)
+
+        XCTAssert(response?["X-Header-A"] == "abc")
+        XCTAssert(response?["X-Header-B"] == "123")
+    }
+
     func testUnauthorized() async {
         do {
             try await EchoTests.webServiceProxy.invoke(.get, path: "test/unauthorized")
@@ -222,7 +236,24 @@ final class EchoTests: XCTestCase {
             XCTAssert(true)
         }
     }
-    
+
+    func testMath1() async throws {
+        let result: Double = try await EchoTests.webServiceProxy.invoke(.get, path: "test/math/sum", arguments: [
+            "a": 4,
+            "b": 2
+        ])
+
+        XCTAssert(result == 6.0)
+    }
+
+    func testMath2() async throws {
+        let result: Double = try await EchoTests.webServiceProxy.invoke(.get, path: "test/math/sum", arguments: [
+            "values": [1, 2, 3]
+        ])
+
+        XCTAssert(result == 6.0)
+    }
+
     func testCatalog() async throws {
         let item: Item = try await EchoTests.webServiceProxy.invoke(.post, path: "catalog/items",
             body: Item(id: nil, description: "abc", price: 150.00))
