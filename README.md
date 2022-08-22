@@ -77,7 +77,7 @@ The other two methods accept a `body` argument of type `B` that is serialized us
 ## Arguments
 Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (determined via the service proxy's `encoding` property). However, if a custom body is specified via either the `content` or `body` parameter, `POST` arguments will be sent in the query string.
 
-Any value may be used as an argument. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970). Array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
+Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time. Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
 The `undefined` property of the `WebServiceProxy` class can be used to represent unspecified or unknown argument values.
 
