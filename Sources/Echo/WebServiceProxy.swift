@@ -195,11 +195,7 @@ public class WebServiceProxy {
 
         urlRequest.httpMethod = method.rawValue
 
-        for (key, value) in self.headers {
-            urlRequest.setValue(value, forHTTPHeaderField: key)
-        }
-
-        for (key, value) in headers {
+        for (key, value) in self.headers.merging(headers, uniquingKeysWith: { $1 }) {
             urlRequest.setValue(value, forHTTPHeaderField: key)
         }
 

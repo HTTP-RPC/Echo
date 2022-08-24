@@ -182,6 +182,10 @@ final class EchoTests: XCTestCase {
     }
 
     func testHeaders() async throws {
+        EchoTests.webServiceProxy.headers = [
+            "X-Header-A": "xyz"
+        ]
+
         let response: [String: String]? = try await EchoTests.webServiceProxy.invoke(.get, path: "test/headers", headers: [
             "X-Header-A": "abc",
             "X-Header-B": "123"

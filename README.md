@@ -34,23 +34,23 @@ Service operations are initiated via one of the following methods:
 
 ```swift
 public func invoke(_ method: Method, path: String, 
-    arguments: [String: Any] = [:],
+    headers: [String: String] = [:], arguments: [String: Any] = [:],
     content: Data? = nil, contentType: String? = nil) async throws { ... }
 
 public func invoke<B: Encodable>(_ method: Method, path: String, 
-    arguments: [String: Any] = [:], 
+    headers: [String: String] = [:], arguments: [String: Any] = [:], 
     body: B) async throws { ... }
 
 public func invoke<T: Decodable>(_ method: Method, path: String,
-    arguments: [String: Any] = [:],
+    headers: [String: String] = [:], arguments: [String: Any] = [:],
     content: Data? = nil, contentType: String? = nil) async throws -> T { ... }
 
 public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-    arguments: [String: Any] = [:],
+    headers: [String: String] = [:], arguments: [String: Any] = [:],
     body: B) async throws -> T { ... }
 
 public func invoke<T>(_ method: Method, path: String,
-    arguments: [String: Any] = [:],
+    headers: [String: String] = [:], arguments: [String: Any] = [:],
     content: Data? = nil, contentType: String? = nil,
     responseHandler: @escaping ResponseHandler<T>) async throws -> T { ... }
 ```
@@ -59,6 +59,7 @@ All variants accept the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the path to the requested resource, relative to the base URL
+* `headers` - a dictionary containing the request headers as name/value pairs
 * `arguments` - a dictionary containing the request arguments as name/value pairs
 
 The first two versions execute a service method that does not return a value. The following two versions deserialize a service response of type `T` using `JSONDecoder`. The final version accepts a `responseHandler` callback to facilitate decoding of custom response content:
