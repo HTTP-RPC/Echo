@@ -71,7 +71,7 @@ public class WebServiceProxy {
     /**
      * Common request headers.
      */
-    public var headers: [String: String] = [:]
+    public var defaultHeaders: [String: String] = [:]
 
     /**
      * Constant representing an unspecified value.
@@ -195,7 +195,7 @@ public class WebServiceProxy {
 
         urlRequest.httpMethod = method.rawValue
 
-        for (key, value) in self.headers.merging(headers, uniquingKeysWith: { $1 }) {
+        for (key, value) in defaultHeaders.merging(headers, uniquingKeysWith: { $1 }) {
             urlRequest.setValue(value, forHTTPHeaderField: key)
         }
 

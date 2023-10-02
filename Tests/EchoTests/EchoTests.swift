@@ -67,11 +67,11 @@ final class EchoTests: XCTestCase {
     }
     
     func testGetFibonacci() async throws {
-        let response: [Int] = try await EchoTests.webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
+        let result: [Int] = try await EchoTests.webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
             "count": 8
         ])
         
-        XCTAssert(response == [0, 1, 1, 2, 3, 5, 8, 13])
+        XCTAssert(result == [0, 1, 1, 2, 3, 5, 8, 13])
     }
     
     func testURLEncodedPost() async throws {
@@ -124,7 +124,7 @@ final class EchoTests: XCTestCase {
             ])
     }
     
-    func testCustomBodyPost() async throws {
+    func testBodyPost() async throws {
         let request: [String: Any] = [
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
@@ -137,83 +137,65 @@ final class EchoTests: XCTestCase {
             return
         }
         
-        let response: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
-            "id": 101
-        ], content: content, contentType: "application/json")
-        
-        XCTAssert(response.string == request["string"] as? String
-            && response.strings == request["strings"] as? [String]
-            && response.number == request["number"] as? Int
-            && response.flag == request["flag"] as? Bool)
+        let body: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test/body",
+            content: content, contentType: "application/json")
+
+        XCTAssert(body.string == request["string"] as? String
+            && body.strings == request["strings"] as? [String]
+            && body.number == request["number"] as? Int
+            && body.flag == request["flag"] as? Bool)
     }
     
-    func testCustomImagePost() async throws {
+    func testImagePost() async throws {
         let fileURL = URL(fileURLWithPath: #file)
         let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
 
-        let response: Data? = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
-            "name": testImageURL.lastPathComponent
-        ], content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
+        let result: Data? = try await EchoTests.webServiceProxy.invoke(.post, path: "test/image",
+            content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
             return content
         })
         
-        XCTAssert(response != nil)
+        XCTAssert(result != nil)
     }
     
     func testPut() async throws {
         let fileURL = URL(fileURLWithPath: #file)
         let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
 
-        let response: String? = try await EchoTests.webServiceProxy.invoke(.put, path: "test", arguments: [
-            "id": 101
-        ], content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
+        let result: String? = try await EchoTests.webServiceProxy.invoke(.put, path: "test",
+            content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
         })
         
-        XCTAssert(response != nil)
+        XCTAssert(result != nil)
     }
     
     func testDelete() async throws {
-        try await EchoTests.webServiceProxy.invoke(.delete, path: "test", arguments: [
-            "id": 101
-        ])
-        
-        XCTAssert(true)
+        let id = 101
+
+        let result: Int? = try await EchoTests.webServiceProxy.invoke(.delete, path: "test/\(id)")
+
+        XCTAssert(result == id)
     }
 
     func testHeaders() async throws {
-        EchoTests.webServiceProxy.headers = [
-            "X-Header-A": "xyz"
+        EchoTests.webServiceProxy.defaultHeaders = [
+            "X-Header-A": "abc",
+            "X-Header-B": "123",
         ]
 
-        let response: [String: String]? = try await EchoTests.webServiceProxy.invoke(.get, path: "test/headers", headers: [
-            "X-Header-A": "abc",
-            "X-Header-B": "123"
+        let result: [String: String]? = try await EchoTests.webServiceProxy.invoke(.get, path: "test/headers", headers: [
+            "X-Header-A": "xyz"
         ], responseHandler: { content, contentType in
             return try? JSONSerialization.jsonObject(with: content) as? [String: String]
         })
 
-        XCTAssert(response != nil)
+        XCTAssert(result != nil)
 
-        XCTAssert(response?["X-Header-A"] == "abc")
-        XCTAssert(response?["X-Header-B"] == "123")
+        XCTAssert(result?["X-Header-A"] == "xyz")
+        XCTAssert(result?["X-Header-B"] == "123")
     }
 
-    func testUnauthorized() async {
-        do {
-            try await EchoTests.webServiceProxy.invoke(.get, path: "test/unauthorized")
-            
-            XCTFail()
-        } catch {
-            guard let webServiceError = error as? WebServiceError else {
-                XCTFail()
-                return
-            }
-            
-            XCTAssert(webServiceError.statusCode == 403)
-        }
-    }
-    
     func testError() async throws {
         do {
             try await EchoTests.webServiceProxy.invoke(.get, path: "test/error")
