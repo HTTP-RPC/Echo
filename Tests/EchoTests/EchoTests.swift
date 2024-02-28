@@ -8,6 +8,7 @@ final class EchoTests: XCTestCase {
         let number: Int
         let flag: Bool
         let date: Date
+        let dates: [Date]
         let attachmentInfo: [AttachmentInfo]?
     }
 
@@ -55,7 +56,8 @@ final class EchoTests: XCTestCase {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
-            "date": now
+            "date": now,
+            "dates": [now]
         ])
 
         XCTAssert(response.string == "héllo&gøod+bye?"
@@ -63,6 +65,7 @@ final class EchoTests: XCTestCase {
             && response.number == 123
             && response.flag == true
             && response.date == now
+            && response.dates == [now]
             && response.attachmentInfo == nil)
     }
     
@@ -84,7 +87,8 @@ final class EchoTests: XCTestCase {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
-            "date": now
+            "date": now,
+            "dates": [now]
         ])
         
         XCTAssert(response.string == "héllo&gøod+bye?"
@@ -92,6 +96,7 @@ final class EchoTests: XCTestCase {
             && response.number == 123
             && response.flag == true
             && response.date == now
+            && response.dates == [now]
             && response.attachmentInfo == [])
     }
     
@@ -110,6 +115,7 @@ final class EchoTests: XCTestCase {
             "number": 123,
             "flag": true,
             "date": now,
+            "dates": [now],
             "attachments": [testTextURL, testImageURL]
         ])
         
@@ -118,6 +124,7 @@ final class EchoTests: XCTestCase {
             && response.number == 123
             && response.flag == true
             && response.date == now
+            && response.dates == [now]
             && response.attachmentInfo == [
                 AttachmentInfo(bytes: 26, checksum: 2412),
                 AttachmentInfo(bytes: 10392, checksum: 1038036)
