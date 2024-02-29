@@ -200,8 +200,6 @@ public class WebServiceProxy {
         }
 
         if (method == .post && encoding != nil) {
-            assert(content == nil, "Encoding already specified.")
-
             switch encoding! {
             case .applicationXWWWFormURLEncoded:
                 urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
