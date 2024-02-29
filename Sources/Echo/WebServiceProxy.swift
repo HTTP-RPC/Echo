@@ -66,7 +66,7 @@ public class WebServiceProxy {
     /**
      The encoding used to submit POST requests.
      */
-    public var encoding: Encoding = .applicationXWWWFormURLEncoded
+    public var encoding: Encoding?
 
     /**
      * Common request headers.
@@ -175,7 +175,7 @@ public class WebServiceProxy {
         content: Data? = nil, contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>) async throws -> T {
         let url: URL?
-        if (method == .post && content == nil) {
+        if (method == .post && encoding != nil) {
             url = URL(string: path, relativeTo: baseURL)
         } else {
             let query = encodeQuery(for: arguments)
@@ -186,7 +186,7 @@ public class WebServiceProxy {
                 url = URL(string: path + "?" + query, relativeTo: baseURL)
             }
         }
-        
+
         if (url == nil) {
             throw WebServiceError(errorDescription: "Invalid path.", statusCode: 0)
         }
@@ -199,8 +199,10 @@ public class WebServiceProxy {
             urlRequest.setValue(value, forHTTPHeaderField: key)
         }
 
-        if (method == .post && content == nil) {
-            switch encoding {
+        if (method == .post && encoding != nil) {
+            assert(content == nil, "Encoding already specified.")
+
+            switch encoding! {
             case .applicationXWWWFormURLEncoded:
                 urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
                 urlRequest.httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)

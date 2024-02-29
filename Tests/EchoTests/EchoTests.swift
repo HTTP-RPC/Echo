@@ -143,7 +143,9 @@ final class EchoTests: XCTestCase {
             XCTFail()
             return
         }
-        
+
+        EchoTests.webServiceProxy.encoding = nil
+
         let body: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test/body",
             content: content, contentType: "application/json")
 
@@ -156,6 +158,8 @@ final class EchoTests: XCTestCase {
     func testImagePost() async throws {
         let fileURL = URL(fileURLWithPath: #file)
         let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
+
+        EchoTests.webServiceProxy.encoding = nil
 
         let result: Data? = try await EchoTests.webServiceProxy.invoke(.post, path: "test/image",
             content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
@@ -248,6 +252,8 @@ final class EchoTests: XCTestCase {
     }
 
     func testCatalog() async throws {
+        EchoTests.webServiceProxy.encoding = nil
+
         let item: Item = try await EchoTests.webServiceProxy.invoke(.post, path: "catalog/items",
             body: Item(id: nil, description: "abc", price: 150.00))
             
