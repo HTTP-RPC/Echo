@@ -1,7 +1,7 @@
 [![Releases](https://img.shields.io/github/release/HTTP-RPC/Echo.svg)](https://github.com/HTTP-RPC/Echo/releases)
 
 # Introduction
-Echo is a Swift package for consuming RESTful and REST-like web services. It provides a lightweight, API-centric wrapper around the more general `URLSesssion` API provided by the Foundation framework. The project's name comes from the nautical _E_ or _Echo_ flag:
+Echo is a Swift package for consuming RESTful and REST-like web services. It provides a lightweight, API-centric wrapper around the more general `URLSesssion` class provided by the Foundation framework. The project's name comes from the nautical _E_ or _Echo_ flag:
 
 ![](echo.png)
 
@@ -62,7 +62,7 @@ All variants accept the following arguments:
 * `headers` - a dictionary containing the request headers as name/value pairs
 * `arguments` - a dictionary containing the request arguments as name/value pairs
 
-The first two versions execute a service method that does not return a value. The following two versions deserialize a service response of type `T` using `JSONDecoder`. The final version accepts a `responseHandler` callback to facilitate decoding of custom response content:
+The first two versions execute a service method that does not return a value. The following two versions deserialize a service response of type `T` using `JSONDecoder`. The final version accepts a `ResponseHandler` callback to facilitate decoding of custom response content:
 
 ```swift
 public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
@@ -83,7 +83,7 @@ Any value may be used as an argument and will generally be encoded using its str
 The `undefined` property of the `WebServiceProxy` class can be used to represent unspecified or unknown argument values.
 
 ## Return Values
-A value representing the server response is returned upon successful completion of an operation. If the service returns an error response, a `WebServiceError` will be thrown. The error's `statusCode` property can be used to determine the nature of the error. If the content type of the error response is "text/*", the content of the response will be provided in the error's localized description.
+A value representing the server response is returned upon successful completion of an operation. If an operation does not complete successfully, a `WebServiceError` will be thrown. The error's `statusCode` property can be used to determine the nature of the error. If the content type of the error response is "text/*", the content of the response will be provided in the error's localized description:
 
 ```swift
 if let webServiceError = error as? WebServiceError {
