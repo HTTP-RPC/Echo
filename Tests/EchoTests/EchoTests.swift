@@ -77,6 +77,29 @@ final class EchoTests: XCTestCase {
         XCTAssert(result == [0, 1, 1, 2, 3, 5, 8, 13])
     }
     
+    func testPost() async throws {
+        let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
+
+        EchoTests.webServiceProxy.encoding = nil
+
+        let response: Response = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
+            "string": "héllo&gøod+bye?",
+            "strings": ["a", "b", "c"],
+            "number": 123,
+            "flag": true,
+            "date": now,
+            "dates": [now]
+        ])
+
+        XCTAssert(response.string == "héllo&gøod+bye?"
+            && response.strings == ["a", "b", "c"]
+            && response.number == 123
+            && response.flag == true
+            && response.date == now
+            && response.dates == [now]
+            && response.attachmentInfo == [])
+    }
+
     func testURLEncodedPost() async throws {
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
