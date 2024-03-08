@@ -197,7 +197,7 @@ final class EchoTests: XCTestCase {
         let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
 
         let result: String? = try await EchoTests.webServiceProxy.invoke(.put, path: "test",
-            content: try? Data(contentsOf: testTextURL), contentType: "text/plain", responseHandler: { content, contentType in
+            content: try? Data(contentsOf: testTextURL), responseHandler: { content, contentType in
             return String(data: content, encoding: .utf8)
         })
         
