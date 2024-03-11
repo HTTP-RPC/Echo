@@ -23,13 +23,7 @@ final class EchoTests: XCTestCase {
         let number: Int
         let flag: Bool
     }
-    
-    struct Item: Codable {
-        let id: Int?
-        var description: String
-        var price: Double
-    }
-    
+
     static var webServiceProxy: WebServiceProxy!
     
     override class func setUp() {
@@ -203,7 +197,15 @@ final class EchoTests: XCTestCase {
         
         XCTAssert(result != nil)
     }
-    
+
+    func testEmptyPut() async throws {
+        let id = 101
+
+        let result: Int? = try await EchoTests.webServiceProxy.invoke(.put, path: "test/\(id)")
+
+        XCTAssert(result == id)
+    }
+
     func testDelete() async throws {
         let id = 101
 
@@ -272,24 +274,5 @@ final class EchoTests: XCTestCase {
         ])
 
         XCTAssert(result == 6.0)
-    }
-
-    func testCatalog() async throws {
-        EchoTests.webServiceProxy.encoding = nil
-
-        let item: Item = try await EchoTests.webServiceProxy.invoke(.post, path: "catalog/items",
-            body: Item(id: nil, description: "abc", price: 150.00))
-            
-        guard let itemID = item.id, item.description == "abc" && item.price == 150.00 else {
-            XCTFail()
-            return
-        }
-        
-        try await EchoTests.webServiceProxy.invoke(.put, path: "catalog/items/\(itemID)",
-            body: Item(id: item.id, description: "xyz", price: 300.00))
-            
-        try await EchoTests.webServiceProxy.invoke(.delete, path: "catalog/items/\(itemID)")
-        
-        XCTAssert(true)
     }
 }
