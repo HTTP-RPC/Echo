@@ -6,6 +6,7 @@ final class EchoTests: XCTestCase {
         let string: String
         let strings: [String]
         let number: Int
+        let numbers: [Int]
         let flag: Bool
         let date: Date
         let dates: [Date]
@@ -21,6 +22,7 @@ final class EchoTests: XCTestCase {
         let string: String
         let strings: [String]
         let number: Int
+        let numbers: [Int]
         let flag: Bool
     }
 
@@ -49,6 +51,7 @@ final class EchoTests: XCTestCase {
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
+            "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
             "date": now,
             "dates": [now]
@@ -57,6 +60,7 @@ final class EchoTests: XCTestCase {
         XCTAssert(response.string == "héllo&gøod+bye?"
             && response.strings == ["a", "b", "c"]
             && response.number == 123
+            && response.numbers == [1, 2, 3]
             && response.flag == true
             && response.date == now
             && response.dates == [now]
@@ -80,6 +84,7 @@ final class EchoTests: XCTestCase {
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
+            "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
             "date": now,
             "dates": [now]
@@ -88,6 +93,7 @@ final class EchoTests: XCTestCase {
         XCTAssert(response.string == "héllo&gøod+bye?"
             && response.strings == ["a", "b", "c"]
             && response.number == 123
+            && response.numbers == [1, 2, 3]
             && response.flag == true
             && response.date == now
             && response.dates == [now]
@@ -98,11 +104,12 @@ final class EchoTests: XCTestCase {
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
         EchoTests.webServiceProxy.encoding = .applicationXWWWFormURLEncoded
-        
+
         let response: Response = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
+            "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
             "date": now,
             "dates": [now]
@@ -111,6 +118,7 @@ final class EchoTests: XCTestCase {
         XCTAssert(response.string == "héllo&gøod+bye?"
             && response.strings == ["a", "b", "c"]
             && response.number == 123
+            && response.numbers == [1, 2, 3]
             && response.flag == true
             && response.date == now
             && response.dates == [now]
@@ -130,6 +138,7 @@ final class EchoTests: XCTestCase {
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
+            "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
             "date": now,
             "dates": [now],
@@ -139,6 +148,7 @@ final class EchoTests: XCTestCase {
         XCTAssert(response.string == "héllo&gøod+bye?"
             && response.strings == ["a", "b", "c"]
             && response.number == 123
+            && response.numbers == [1, 2, 3]
             && response.flag == true
             && response.date == now
             && response.dates == [now]
@@ -153,6 +163,7 @@ final class EchoTests: XCTestCase {
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
+            "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true
         ]
 
@@ -166,10 +177,11 @@ final class EchoTests: XCTestCase {
         let body: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test/body",
             content: content, contentType: "application/json")
 
-        XCTAssert(body.string == request["string"] as? String
-            && body.strings == request["strings"] as? [String]
-            && body.number == request["number"] as? Int
-            && body.flag == request["flag"] as? Bool)
+        XCTAssert(body.string == "héllo&gøod+bye?"
+            && body.strings == ["a", "b", "c"]
+            && body.number == 123
+            && body.numbers == [1, 2, 3]
+            && body.flag == true)
     }
     
     func testImagePost() async throws {
