@@ -2,11 +2,26 @@ import XCTest
 @testable import Echo
 
 final class EchoTests: XCTestCase {
+    enum DayOfWeek: String, Codable, CustomStringConvertible {
+        case monday = "MONDAY"
+        case tuesday = "TUESDAY"
+        case wednesday = "WEDNESDAY"
+        case thursday = "THURSDAY"
+        case friday = "FRIDAY"
+        case saturday = "SATURDAY"
+        case sunday = "SUNDAY"
+
+        var description: String {
+            return rawValue
+        }
+    }
+
     struct Response: Decodable {
         let string: String
         let strings: [String]
         let number: Int
         let numbers: [Int]
+        let dayOfWeek: DayOfWeek
         let flag: Bool
         let date: Date
         let dates: [Date]
@@ -53,6 +68,7 @@ final class EchoTests: XCTestCase {
             "number": 123,
             "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
+            "dayOfWeek": DayOfWeek.monday,
             "date": now,
             "dates": [now]
         ])
@@ -62,6 +78,7 @@ final class EchoTests: XCTestCase {
             && response.number == 123
             && response.numbers == [1, 2, 3]
             && response.flag == true
+            && response.dayOfWeek == .monday
             && response.date == now
             && response.dates == [now]
             && response.attachmentInfo == nil)
@@ -86,6 +103,7 @@ final class EchoTests: XCTestCase {
             "number": 123,
             "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
+            "dayOfWeek": DayOfWeek.monday,
             "date": now,
             "dates": [now]
         ])
@@ -95,6 +113,7 @@ final class EchoTests: XCTestCase {
             && response.number == 123
             && response.numbers == [1, 2, 3]
             && response.flag == true
+            && response.dayOfWeek == .monday
             && response.date == now
             && response.dates == [now]
             && response.attachmentInfo == [])
@@ -111,6 +130,7 @@ final class EchoTests: XCTestCase {
             "number": 123,
             "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
+            "dayOfWeek": DayOfWeek.monday,
             "date": now,
             "dates": [now]
         ])
@@ -120,6 +140,7 @@ final class EchoTests: XCTestCase {
             && response.number == 123
             && response.numbers == [1, 2, 3]
             && response.flag == true
+            && response.dayOfWeek == .monday
             && response.date == now
             && response.dates == [now]
             && response.attachmentInfo == [])
@@ -140,6 +161,7 @@ final class EchoTests: XCTestCase {
             "number": 123,
             "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
+            "dayOfWeek": DayOfWeek.monday,
             "date": now,
             "dates": [now],
             "attachments": [testTextURL, testImageURL]
@@ -150,6 +172,7 @@ final class EchoTests: XCTestCase {
             && response.number == 123
             && response.numbers == [1, 2, 3]
             && response.flag == true
+            && response.dayOfWeek == .monday
             && response.date == now
             && response.dates == [now]
             && response.attachmentInfo == [
