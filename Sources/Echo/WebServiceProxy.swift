@@ -29,14 +29,6 @@ public class WebServiceProxy {
     }
 
     /**
-     Encoding options for POST requests.
-     */
-    public enum Encoding: Int {
-        case applicationXWWWFormURLEncoded
-        case multipartFormData
-    }
-
-    /**
      Response handler type alias.
      - parameter content: The response content.
      - parameter contentType: The response content type, or `nil` if the content type is not known.
@@ -62,11 +54,6 @@ public class WebServiceProxy {
      The base URL of the service.
      */
     public private(set) var baseURL: URL
-
-    /**
-     The encoding used to submit POST requests.
-     */
-    public var encoding: Encoding?
 
     /**
      * Common request headers.
@@ -97,6 +84,8 @@ public class WebServiceProxy {
         return jsonDecoder
     }()
 
+    private static let applicationJSON = "application/json"
+
     /**
      Invokes a service operation.
      - parameter method: The HTTP method.
@@ -107,9 +96,15 @@ public class WebServiceProxy {
      - parameter contentType: The request content type, or `nil` for no content type.
      */
     public func invoke(_ method: Method, path: String,
-        headers: [String: String] = [:], arguments: [String: Any] = [:],
-        content: Data? = nil, contentType: String? = nil) async throws {
-        try await invoke(method, path: path, headers: headers, arguments: arguments, content: content, contentType: contentType, responseHandler: { _, _ in })
+        headers: [String: String] = [:],
+        arguments: [String: Any] = [:],
+        content: Data? = nil,
+        contentType: String? = nil) async throws {
+        try await invoke(method, path: path,
+            headers: headers,
+            arguments: arguments,
+            content: content,
+            contentType: contentType) { _, _ in }
     }
 
     /**
@@ -121,9 +116,14 @@ public class WebServiceProxy {
      - parameter body: The request body.
      */
     public func invoke<B: Encodable>(_ method: Method, path: String,
-        headers: [String: String] = [:], arguments: [String: Any] = [:],
+        headers: [String: String] = [:],
+        arguments: [String: Any] = [:],
         body: B) async throws {
-        try await invoke(method, path: path, headers: headers, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
+        try await invoke(method, path: path,
+            headers: headers,
+            arguments: arguments,
+            content: try WebServiceProxy.jsonEncoder.encode(body),
+            contentType: WebServiceProxy.applicationJSON)
     }
 
     /**
@@ -137,11 +137,15 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        headers: [String: String] = [:], arguments: [String: Any] = [:],
-        content: Data? = nil, contentType: String? = nil) async throws -> T {
-        return try await invoke(method, path: path, headers: headers, arguments: arguments, content: content, contentType: contentType, responseHandler: { content, _ in
-            return try WebServiceProxy.jsonDecoder.decode(T.self, from: content)
-        })
+        headers: [String: String] = [:],
+        arguments: [String: Any] = [:],
+        content: Data? = nil,
+        contentType: String? = nil) async throws -> T {
+        return try await invoke(method, path: path,
+            headers: headers,
+            arguments: arguments,
+            content: content,
+            contentType: contentType) { content, _ in try WebServiceProxy.jsonDecoder.decode(T.self, from: content) }
     }
 
     /**
@@ -154,9 +158,14 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-        headers: [String: String] = [:], arguments: [String: Any] = [:],
+        headers: [String: String] = [:],
+        arguments: [String: Any] = [:],
         body: B) async throws -> T {
-        return try await invoke(method, path: path, headers: headers, arguments: arguments, content: try WebServiceProxy.jsonEncoder.encode(body), contentType: "application/json")
+        return try await invoke(method, path: path,
+            headers: headers,
+            arguments: arguments,
+            content: try WebServiceProxy.jsonEncoder.encode(body),
+            contentType: WebServiceProxy.applicationJSON)
     }
 
     /**
@@ -171,20 +180,45 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<T>(_ method: Method, path: String,
-        headers: [String: String] = [:], arguments: [String: Any] = [:],
-        content: Data? = nil, contentType: String? = nil,
+        headers: [String: String] = [:],
+        arguments: [String: Any] = [:],
+        content: Data? = nil,
+        contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>) async throws -> T {
+        var urlQueryItems: [URLQueryItem] = []
+
+        for argument in arguments {
+            if (argument.key.isEmpty) {
+                continue
+            }
+
+            for element in argument.value as? [Any] ?? [argument.value] {
+                if (element is NSNull) {
+                    continue
+                }
+
+                let value: String
+                if let date = element as? Date {
+                    value = String(describing: Int64(date.timeIntervalSince1970 * 1000))
+                } else {
+                    value = String(describing: element)
+                }
+
+                urlQueryItems.append(URLQueryItem(name: argument.key, value: value))
+            }
+        }
+
+        var urlComponents = URLComponents()
+
+        urlComponents.queryItems = urlQueryItems
+
+        let query = urlComponents.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B") ?? ""
+
         let url: URL?
-        if (method == .post && encoding != nil) {
+        if (query.isEmpty) {
             url = URL(string: path, relativeTo: baseURL)
         } else {
-            let query = encodeQuery(for: arguments)
-            
-            if (query.isEmpty) {
-                url = URL(string: path, relativeTo: baseURL)
-            } else {
-                url = URL(string: path + "?" + query, relativeTo: baseURL)
-            }
+            url = URL(string: path + "?" + query, relativeTo: baseURL)
         }
 
         if (url == nil) {
@@ -199,27 +233,11 @@ public class WebServiceProxy {
             urlRequest.setValue(value, forHTTPHeaderField: key)
         }
 
-        if (method == .post && encoding != nil) {
-            assert(content == nil, "Encoding already specified.")
-
-            switch encoding! {
-            case .applicationXWWWFormURLEncoded:
-                urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpBody = encodeApplicationXWWWFormURLEncodedData(for: arguments)
-
-            case .multipartFormData:
-                let multipartBoundary = UUID().uuidString
-
-                urlRequest.setValue("multipart/form-data; boundary=\(multipartBoundary)", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpBody = encodeMultipartFormData(for: arguments, multipartBoundary: multipartBoundary)
-            }
-        } else {
-            if (content != nil) {
-                urlRequest.setValue(contentType ?? "application/octet-stream", forHTTPHeaderField: "Content-Type")
-            }
-
-            urlRequest.httpBody = content
+        if (content != nil) {
+            urlRequest.setValue(contentType ?? "application/octet-stream", forHTTPHeaderField: "Content-Type")
         }
+
+        urlRequest.httpBody = content
 
         let (content, urlResponse) = try await session.data(for: urlRequest)
         
@@ -234,95 +252,13 @@ public class WebServiceProxy {
             return try responseHandler(content, contentType)
         } else {
             let errorDescription: String?
-            if (contentType?.hasPrefix("text/") ?? false) {
+            if (contentType?.lowercased().hasPrefix("text/plain") ?? false) {
                 errorDescription = String(data: content, encoding: .utf8)
             } else {
                 errorDescription = HTTPURLResponse.localizedString(forStatusCode: statusCode)
             }
 
             throw WebServiceError(errorDescription: errorDescription, statusCode: statusCode)
-        }
-    }
-
-    func encodeQuery(for arguments: [String: Any]) -> String {
-        var urlQueryItems: [URLQueryItem] = []
-
-        for argument in arguments {
-            if (argument.key.isEmpty) {
-                continue
-            }
-
-            for element in argument.value as? [Any] ?? [argument.value] {
-                guard let value = value(for: element) else {
-                    continue
-                }
-
-                urlQueryItems.append(URLQueryItem(name: argument.key, value: value))
-            }
-        }
-
-        var urlComponents = URLComponents()
-
-        urlComponents.queryItems = urlQueryItems
-
-        return urlComponents.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B") ?? ""
-    }
-
-    func encodeApplicationXWWWFormURLEncodedData(for arguments: [String: Any]) -> Data {
-        var body = Data()
-
-        body.append(utf8DataFor: encodeQuery(for: arguments))
-
-        return body
-    }
-
-    func encodeMultipartFormData(for arguments: [String: Any], multipartBoundary: String) -> Data {
-        var body = Data()
-
-        for argument in arguments {
-            for element in argument.value as? [Any] ?? [argument.value] {
-                body.append(utf8DataFor: "--\(multipartBoundary)\r\n")
-                body.append(utf8DataFor: "Content-Disposition: form-data; name=\"\(argument.key)\"")
-
-                if let url = element as? URL {
-                    body.append(utf8DataFor: "; filename=\"\(url.lastPathComponent)\"\r\n")
-                    body.append(utf8DataFor: "Content-Type: application/octet-stream\r\n\r\n")
-
-                    if let data = try? Data(contentsOf: url) {
-                        body.append(data)
-                    }
-                } else {
-                    body.append(utf8DataFor: "\r\n\r\n")
-
-                    if let value = value(for: element) {
-                        body.append(utf8DataFor: value)
-                    }
-                }
-
-                body.append(utf8DataFor: "\r\n")
-            }
-        }
-
-        body.append(utf8DataFor: "--\(multipartBoundary)--\r\n")
-
-        return body
-    }
-
-    func value(for element: Any) -> String? {
-        if (element is NSNull) {
-            return nil
-        } else if let date = element as? Date {
-            return String(describing: Int64(date.timeIntervalSince1970 * 1000))
-        } else {
-            return String(describing: element)
-        }
-    }
-}
-
-extension Data {
-    mutating func append(utf8DataFor string: String) {
-        if let data = string.data(using: .utf8) {
-            append(data)
         }
     }
 }

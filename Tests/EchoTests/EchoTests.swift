@@ -95,8 +95,6 @@ final class EchoTests: XCTestCase {
     func testPost() async throws {
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
-        EchoTests.webServiceProxy.encoding = nil
-
         let response: Response = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
@@ -119,68 +117,6 @@ final class EchoTests: XCTestCase {
             && response.attachmentInfo == [])
     }
 
-    func testURLEncodedPost() async throws {
-        let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
-
-        EchoTests.webServiceProxy.encoding = .applicationXWWWFormURLEncoded
-
-        let response: Response = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
-            "string": "héllo&gøod+bye?",
-            "strings": ["a", "b", "c"],
-            "number": 123,
-            "numbers": [1, 2, 2, 3, 3, 3],
-            "flag": true,
-            "dayOfWeek": DayOfWeek.monday,
-            "date": now,
-            "dates": [now]
-        ])
-        
-        XCTAssert(response.string == "héllo&gøod+bye?"
-            && response.strings == ["a", "b", "c"]
-            && response.number == 123
-            && response.numbers == [1, 2, 3]
-            && response.flag == true
-            && response.dayOfWeek == .monday
-            && response.date == now
-            && response.dates == [now]
-            && response.attachmentInfo == [])
-    }
-    
-    func testMultipartPost() async throws {
-        let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
-        
-        let fileURL = URL(fileURLWithPath: #file)
-        let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
-        let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
-                
-        EchoTests.webServiceProxy.encoding = .multipartFormData
-
-        let response: Response = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
-            "string": "héllo&gøod+bye?",
-            "strings": ["a", "b", "c"],
-            "number": 123,
-            "numbers": [1, 2, 2, 3, 3, 3],
-            "flag": true,
-            "dayOfWeek": DayOfWeek.monday,
-            "date": now,
-            "dates": [now],
-            "attachments": [testTextURL, testImageURL]
-        ])
-        
-        XCTAssert(response.string == "héllo&gøod+bye?"
-            && response.strings == ["a", "b", "c"]
-            && response.number == 123
-            && response.numbers == [1, 2, 3]
-            && response.flag == true
-            && response.dayOfWeek == .monday
-            && response.date == now
-            && response.dates == [now]
-            && response.attachmentInfo == [
-                AttachmentInfo(bytes: 26, checksum: 2412),
-                AttachmentInfo(bytes: 10392, checksum: 1038036)
-            ])
-    }
-    
     func testBodyPost() async throws {
         let request: [String: Any] = [
             "string": "héllo&gøod+bye?",
@@ -195,8 +131,6 @@ final class EchoTests: XCTestCase {
             return
         }
 
-        EchoTests.webServiceProxy.encoding = nil
-
         let body: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test/body",
             content: content, contentType: "application/json")
 
@@ -210,8 +144,6 @@ final class EchoTests: XCTestCase {
     func testImagePost() async throws {
         let fileURL = URL(fileURLWithPath: #file)
         let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
-
-        EchoTests.webServiceProxy.encoding = nil
 
         let result: Data? = try await EchoTests.webServiceProxy.invoke(.post, path: "test/image",
             content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in

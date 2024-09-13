@@ -60,7 +60,7 @@ All variants accept the following arguments:
 * `method` - the HTTP method to execute
 * `path` - the path to the requested resource, relative to the base URL
 * `headers` - a dictionary containing the request headers as name/value pairs
-* `arguments` - a dictionary containing the request arguments as name/value pairs
+* `arguments` - a dictionary containing the query arguments as name/value pairs
 
 The first two versions execute a service method that does not return a value. The following two versions deserialize a service response of type `T` using `JSONDecoder`. The final version accepts a `ResponseHandler` callback to facilitate decoding of custom response content:
 
@@ -75,15 +75,13 @@ Three of the methods accept the following arguments for specifying custom reques
 
 The other two methods accept a `body` argument of type `B` that is serialized using `JSONEncoder`. JSON data is encoded and decoded using a date strategy of `millisecondsSince1970`.
 
-## Arguments
-Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the service proxy's `encoding` property).
-
-Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a 64-bit integer value representing epoch time. Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
+## Query Arguments
+Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a 64-bit integer value representing epoch time. Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
 The `undefined` property of the `WebServiceProxy` class can be used to represent unspecified or unknown argument values.
 
 ## Return Values
-A value representing the server response is returned upon successful completion of an operation. If an operation does not complete successfully, a `WebServiceError` will be thrown. The error's `statusCode` property can be used to determine the nature of the error. If the content type of the error response is "text/*", the content of the response will be provided in the error's localized description:
+A value representing the server response is returned upon successful completion of an operation. If an operation does not complete successfully, a `WebServiceError` will be thrown. The error's `statusCode` property can be used to determine the nature of the error. If the type of the error response is "text/plain", the content of the response will be provided in the error's localized description:
 
 ```swift
 if let webServiceError = error as? WebServiceError {
