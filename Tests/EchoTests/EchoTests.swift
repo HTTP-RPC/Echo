@@ -146,9 +146,9 @@ final class EchoTests: XCTestCase {
         let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
 
         let result: Data? = try await EchoTests.webServiceProxy.invoke(.post, path: "test/image",
-            content: try? Data(contentsOf: testImageURL), responseHandler: { content, contentType in
+            content: try? Data(contentsOf: testImageURL)) { content, contentType in
             return content
-        })
+        }
         
         XCTAssert(result != nil)
     }
@@ -158,9 +158,9 @@ final class EchoTests: XCTestCase {
         let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
 
         let result: String? = try await EchoTests.webServiceProxy.invoke(.put, path: "test",
-            content: try? Data(contentsOf: testTextURL), responseHandler: { content, contentType in
+            content: try? Data(contentsOf: testTextURL)) { content, contentType in
             return String(data: content, encoding: .utf8)
-        })
+        }
         
         XCTAssert(result != nil)
     }
@@ -182,20 +182,18 @@ final class EchoTests: XCTestCase {
     }
 
     func testHeaders() async throws {
-        EchoTests.webServiceProxy.defaultHeaders = [
+        EchoTests.webServiceProxy.headers = [
             "X-Header-A": "abc",
             "X-Header-B": "123",
         ]
 
-        let result: [String: String]? = try await EchoTests.webServiceProxy.invoke(.get, path: "test/headers", headers: [
-            "X-Header-A": "xyz"
-        ], responseHandler: { content, contentType in
+        let result: [String: String]? = try await EchoTests.webServiceProxy.invoke(.get, path: "test/headers") { content, contentType in
             return try? JSONSerialization.jsonObject(with: content) as? [String: String]
-        })
+        }
 
         XCTAssert(result != nil)
 
-        XCTAssert(result?["X-Header-A"] == "xyz")
+        XCTAssert(result?["X-Header-A"] == "abc")
         XCTAssert(result?["X-Header-B"] == "123")
     }
 

@@ -56,9 +56,9 @@ public class WebServiceProxy {
     public private(set) var baseURL: URL
 
     /**
-     * Common request headers.
+     * Request headers.
      */
-    public var defaultHeaders: [String: String] = [:]
+    public var headers: [String: String] = [:]
 
     /**
      * Constant representing an unspecified value.
@@ -90,18 +90,15 @@ public class WebServiceProxy {
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
-     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
      */
     public func invoke(_ method: Method, path: String,
-        headers: [String: String] = [:],
         arguments: [String: Any] = [:],
         content: Data? = nil,
         contentType: String? = nil) async throws {
         try await invoke(method, path: path,
-            headers: headers,
             arguments: arguments,
             content: content,
             contentType: contentType) { _, _ in }
@@ -111,16 +108,13 @@ public class WebServiceProxy {
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
-     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter body: The request body.
      */
     public func invoke<B: Encodable>(_ method: Method, path: String,
-        headers: [String: String] = [:],
         arguments: [String: Any] = [:],
         body: B) async throws {
         try await invoke(method, path: path,
-            headers: headers,
             arguments: arguments,
             content: try WebServiceProxy.jsonEncoder.encode(body),
             contentType: WebServiceProxy.applicationJSON)
@@ -130,19 +124,16 @@ public class WebServiceProxy {
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
-     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
      - returns The response body.
      */
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        headers: [String: String] = [:],
         arguments: [String: Any] = [:],
         content: Data? = nil,
         contentType: String? = nil) async throws -> T {
         return try await invoke(method, path: path,
-            headers: headers,
             arguments: arguments,
             content: content,
             contentType: contentType) { content, _ in try WebServiceProxy.jsonDecoder.decode(T.self, from: content) }
@@ -152,17 +143,14 @@ public class WebServiceProxy {
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
-     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter body: The request body.
      - returns The response body.
      */
     public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-        headers: [String: String] = [:],
         arguments: [String: Any] = [:],
         body: B) async throws -> T {
         return try await invoke(method, path: path,
-            headers: headers,
             arguments: arguments,
             content: try WebServiceProxy.jsonEncoder.encode(body),
             contentType: WebServiceProxy.applicationJSON)
@@ -172,7 +160,6 @@ public class WebServiceProxy {
      Invokes a service operation.
      - parameter method: The HTTP method.
      - parameter path: The path to the resource, relative to the base URL.
-     - parameter headers: Request-specific headers.
      - parameter arguments: The request arguments.
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
@@ -180,7 +167,6 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<T>(_ method: Method, path: String,
-        headers: [String: String] = [:],
         arguments: [String: Any] = [:],
         content: Data? = nil,
         contentType: String? = nil,
@@ -229,7 +215,7 @@ public class WebServiceProxy {
 
         urlRequest.httpMethod = method.rawValue
 
-        for (key, value) in defaultHeaders.merging(headers, uniquingKeysWith: { $1 }) {
+        for (key, value) in headers {
             urlRequest.setValue(value, forHTTPHeaderField: key)
         }
 
