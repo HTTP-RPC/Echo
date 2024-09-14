@@ -76,7 +76,7 @@ Three of the methods accept the following arguments for specifying custom reques
 The other two methods accept a `body` argument of type `B` that is serialized using `JSONEncoder`. JSON data is encoded and decoded using a date strategy of `millisecondsSince1970`.
 
 ## Query Arguments
-Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a 64-bit integer value representing epoch time. Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
+Any value may be used as a query argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a 64-bit integer value representing epoch time. Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
 The `undefined` property of the `WebServiceProxy` class can be used to represent unspecified or unknown argument values.
 
