@@ -81,7 +81,7 @@ Any value may be used as a query argument and will generally be encoded using it
 The `undefined` property of the `WebServiceProxy` class can be used to represent unspecified or unknown argument values.
 
 ## Return Values
-A value representing the server response is returned upon successful completion of an operation. If an operation does not complete successfully, a `WebServiceError` will be thrown. The error's `statusCode` property can be used to determine the nature of the error. If the type of the error response is "text/plain", the content of the response will be provided in the error's localized description:
+A value representing the server response is returned upon successful completion of an operation. If an operation does not complete successfully, a `WebServiceError` will be thrown. The error's `statusCode` property can be used to determine the nature of the error. If the type of the error response is "text/plain", the response content will be provided in the error's localized description:
 
 ```swift
 if let webServiceError = error as? WebServiceError {
