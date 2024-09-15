@@ -168,7 +168,9 @@ final class EchoTests: XCTestCase {
     func testEmptyPut() async throws {
         let id = 101
 
-        let result: Int? = try await EchoTests.webServiceProxy.invoke(.put, path: "test/\(id)")
+        let result: Int? = try await EchoTests.webServiceProxy.invoke(.put, path: "test/\(id)", arguments: [
+            "value": "abc"
+        ])
 
         XCTAssert(result == id)
     }
