@@ -19,10 +19,6 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "EchoTests",
-            dependencies: ["Echo"],
-            resources: [
-                .process("test.jpg"),
-                .process("test.txt")
-            ])
+            dependencies: ["Echo"])
     ]
 )

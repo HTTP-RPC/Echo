@@ -25,14 +25,8 @@ final class EchoTests: XCTestCase {
         let flag: Bool
         let date: Date
         let dates: [Date]
-        let attachmentInfo: [AttachmentInfo]?
     }
 
-    struct AttachmentInfo: Decodable, Equatable {
-        let bytes: Int
-        let checksum: Int
-    }
-    
     struct Body: Decodable {
         let string: String
         let strings: [String]
@@ -80,8 +74,7 @@ final class EchoTests: XCTestCase {
             && response.flag == true
             && response.dayOfWeek == .monday
             && response.date == now
-            && response.dates == [now]
-            && response.attachmentInfo == nil)
+            && response.dates == [now])
     }
     
     func testGetFibonacci() async throws {
@@ -113,8 +106,7 @@ final class EchoTests: XCTestCase {
             && response.flag == true
             && response.dayOfWeek == .monday
             && response.date == now
-            && response.dates == [now]
-            && response.attachmentInfo == [])
+            && response.dates == [now])
     }
 
     func testBodyPost() async throws {
