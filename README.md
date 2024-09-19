@@ -5,7 +5,7 @@ Echo is a Swift package for consuming RESTful and REST-like web services. It pro
 
 ![](echo.png)
 
-For example, the following code uses Echo's `WebServiceProxy` class to access a simple web service that returns the first _n_ values in the Fibonacci sequence:
+For example, the following code uses Echo's `WebServiceProxy` class to access a simple web service that returns the first _n_ values of the Fibonacci sequence:
 
 ```swift
 let webServiceProxy = WebServiceProxy(session: URLSession.shared, baseURL: baseURL)
