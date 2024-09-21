@@ -175,7 +175,7 @@ public class WebServiceProxy {
 
         for argument in arguments {
             if (argument.key.isEmpty) {
-                continue
+                throw WebServiceError(errorDescription: "Invalid key.", statusCode: 0)
             }
 
             for element in argument.value as? [Any] ?? [argument.value] {
