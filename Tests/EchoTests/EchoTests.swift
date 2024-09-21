@@ -85,7 +85,23 @@ final class EchoTests: XCTestCase {
         
         XCTAssert(result == [0, 1, 1, 2, 3, 5, 8, 13])
     }
-    
+
+    func testPost() async throws {
+        let body = ["a", "b", "c"]
+
+        do {
+            try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
+                "number": 0
+            ], body: body)
+
+            XCTFail()
+        } catch {
+            print(error.localizedDescription)
+
+            XCTAssert(true)
+        }
+    }
+
     func testBodyPost() async throws {
         let body = Body(string: "héllo&gøod+bye?",
             strings: ["a", "b", "c"],
