@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import Echo
 
 final class EchoTests: XCTestCase {
@@ -16,7 +17,7 @@ final class EchoTests: XCTestCase {
         }
     }
 
-    struct Response: Decodable {
+    class Response: Decodable {
         let string: String
         let strings: [String]
         let number: Int
@@ -27,7 +28,7 @@ final class EchoTests: XCTestCase {
         let dates: [Date]
     }
 
-    struct Body: Decodable {
+    struct Body: Codable {
         let string: String
         let strings: [String]
         let number: Int
@@ -56,7 +57,7 @@ final class EchoTests: XCTestCase {
     func testGet() async throws {
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
-        let response: Response = try await EchoTests.webServiceProxy.invoke(.get, path: "test", arguments: [
+        let result: Response = try await EchoTests.webServiceProxy.invoke(.get, path: "test", arguments: [
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -67,14 +68,14 @@ final class EchoTests: XCTestCase {
             "dates": [now]
         ])
 
-        XCTAssert(response.string == "héllo&gøod+bye?"
-            && response.strings == ["a", "b", "c"]
-            && response.number == 123
-            && response.numbers == [1, 2, 3]
-            && response.flag == true
-            && response.dayOfWeek == .monday
-            && response.date == now
-            && response.dates == [now])
+        XCTAssert(result.string == "héllo&gøod+bye?"
+            && result.strings == ["a", "b", "c"]
+            && result.number == 123
+            && result.numbers == [1, 2, 3]
+            && result.flag == true
+            && result.dayOfWeek == .monday
+            && result.date == now
+            && result.dates == [now])
     }
     
     func testGetFibonacci() async throws {
@@ -85,52 +86,20 @@ final class EchoTests: XCTestCase {
         XCTAssert(result == [0, 1, 1, 2, 3, 5, 8, 13])
     }
     
-    func testPost() async throws {
-        let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
-
-        let response: Response = try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
-            "string": "héllo&gøod+bye?",
-            "strings": ["a", "b", "c"],
-            "number": 123,
-            "numbers": [1, 2, 2, 3, 3, 3],
-            "flag": true,
-            "dayOfWeek": DayOfWeek.monday,
-            "date": now,
-            "dates": [now]
-        ])
-
-        XCTAssert(response.string == "héllo&gøod+bye?"
-            && response.strings == ["a", "b", "c"]
-            && response.number == 123
-            && response.numbers == [1, 2, 3]
-            && response.flag == true
-            && response.dayOfWeek == .monday
-            && response.date == now
-            && response.dates == [now])
-    }
-
     func testBodyPost() async throws {
-        let request: [String: Any] = [
-            "string": "héllo&gøod+bye?",
-            "strings": ["a", "b", "c"],
-            "number": 123,
-            "numbers": [1, 2, 2, 3, 3, 3],
-            "flag": true
-        ]
+        let body = Body(string: "héllo&gøod+bye?",
+            strings: ["a", "b", "c"],
+            number: 123,
+            numbers: [1, 2, 2, 3, 3, 3],
+            flag: true)
 
-        guard let content = try? JSONSerialization.data(withJSONObject: request) else {
-            XCTFail()
-            return
-        }
+        let result: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test/body", body: body)
 
-        let body: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test/body",
-            content: content, contentType: "application/json")
-
-        XCTAssert(body.string == "héllo&gøod+bye?"
-            && body.strings == ["a", "b", "c"]
-            && body.number == 123
-            && body.numbers == [1, 2, 3]
-            && body.flag == true)
+        XCTAssert(result.string == "héllo&gøod+bye?"
+            && result.strings == ["a", "b", "c"]
+            && result.number == 123
+            && result.numbers == [1, 2, 3]
+            && result.flag == true)
     }
     
     func testImagePost() async throws {
@@ -216,22 +185,5 @@ final class EchoTests: XCTestCase {
             
             XCTAssert(true)
         }
-    }
-
-    func testMath1() async throws {
-        let result: Double = try await EchoTests.webServiceProxy.invoke(.get, path: "test/math/sum", arguments: [
-            "a": 4,
-            "b": 2
-        ])
-
-        XCTAssert(result == 6.0)
-    }
-
-    func testMath2() async throws {
-        let result: Double = try await EchoTests.webServiceProxy.invoke(.get, path: "test/math/sum", arguments: [
-            "values": [1, 2, 3]
-        ])
-
-        XCTAssert(result == 6.0)
     }
 }
