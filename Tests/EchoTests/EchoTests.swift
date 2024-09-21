@@ -68,14 +68,14 @@ final class EchoTests: XCTestCase {
             "dates": [now]
         ])
 
-        XCTAssert(result.string == "héllo&gøod+bye?"
-            && result.strings == ["a", "b", "c"]
-            && result.number == 123
-            && result.numbers == [1, 2, 3]
-            && result.flag == true
-            && result.dayOfWeek == .monday
-            && result.date == now
-            && result.dates == [now])
+        XCTAssert(result.string == "héllo&gøod+bye?")
+        XCTAssert(result.strings == ["a", "b", "c"])
+        XCTAssert(result.number == 123)
+        XCTAssert(result.numbers == [1, 2, 3])
+        XCTAssert(result.flag == true)
+        XCTAssert(result.dayOfWeek == .monday)
+        XCTAssert(result.date == now)
+        XCTAssert(result.dates == [now])
     }
     
     func testGetFibonacci() async throws {
@@ -111,11 +111,11 @@ final class EchoTests: XCTestCase {
 
         let result: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test/body", body: body)
 
-        XCTAssert(result.string == "héllo&gøod+bye?"
-            && result.strings == ["a", "b", "c"]
-            && result.number == 123
-            && result.numbers == [1, 2, 3]
-            && result.flag == true)
+        XCTAssert(result.string == "héllo&gøod+bye?")
+        XCTAssert(result.strings == ["a", "b", "c"])
+        XCTAssert(result.number == 123)
+        XCTAssert(result.numbers == [1, 2, 3])
+        XCTAssert(result.flag == true)
     }
     
     func testImagePost() async throws {
