@@ -22,7 +22,7 @@ do {
 }
 ```
 
-iOS 15 or macOS 12 or later is required.
+iOS 15 or later is required.
 
 # WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single initializer that accepts the following arguments:
@@ -92,6 +92,3 @@ if let webServiceError = error as? WebServiceError {
 
 print(error.localizedDescription)
 ```
-
-# Additional Information
-For more information, see the [examples](https://github.com/HTTP-RPC/Echo/blob/master/Tests/EchoTests/EchoTests.swift).
