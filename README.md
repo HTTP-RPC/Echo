@@ -22,7 +22,7 @@ do {
 }
 ```
 
-iOS 15 or later is required.
+iOS 16 or later is required.
 
 # WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to the server. This class provides a single initializer that accepts the following arguments:
