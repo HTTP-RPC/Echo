@@ -36,9 +36,7 @@ final class EchoTests: XCTestCase {
         let flag: Bool
     }
 
-    static var webServiceProxy: WebServiceProxy!
-    
-    override class func setUp() {
+    func createWebServiceProxy() -> WebServiceProxy {
         let sessionConfiguration = URLSessionConfiguration.default
 
         sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
@@ -46,18 +44,15 @@ final class EchoTests: XCTestCase {
 
         let session = URLSession(configuration: sessionConfiguration)
 
-        guard let baseURL = URL(string: "http://localhost:8080/kilo-test/") else {
-            XCTFail()
-            return
-        }
-        
-        webServiceProxy = WebServiceProxy(session: session, baseURL: baseURL)
+        return WebServiceProxy(session: session, baseURL: URL(string: "http://localhost:8080/kilo-test/")!)
     }
     
     func testGet() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
 
-        let result: Response = try await EchoTests.webServiceProxy.invoke(.get, path: "test", arguments: [
+        let result: Response = try await webServiceProxy.invoke(.get, path: "test", arguments: [
             "string": "héllo&gøod+bye?",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -79,7 +74,9 @@ final class EchoTests: XCTestCase {
     }
     
     func testGetFibonacci() async throws {
-        let result: [Int] = try await EchoTests.webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
+        let webServiceProxy = createWebServiceProxy()
+
+        let result: [Int] = try await webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
             "count": 8
         ])
         
@@ -87,10 +84,12 @@ final class EchoTests: XCTestCase {
     }
 
     func testPost() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         let body = ["a", "b", "c"]
 
         do {
-            try await EchoTests.webServiceProxy.invoke(.post, path: "test", arguments: [
+            try await webServiceProxy.invoke(.post, path: "test", arguments: [
                 "number": 0
             ], body: body)
 
@@ -103,13 +102,15 @@ final class EchoTests: XCTestCase {
     }
 
     func testBodyPost() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         let body = Body(string: "héllo&gøod+bye?",
             strings: ["a", "b", "c"],
             number: 123,
             numbers: [1, 2, 2, 3, 3, 3],
             flag: true)
 
-        let result: Body = try await EchoTests.webServiceProxy.invoke(.post, path: "test/body", body: body)
+        let result: Body = try await webServiceProxy.invoke(.post, path: "test/body", body: body)
 
         XCTAssert(result.string == "héllo&gøod+bye?")
         XCTAssert(result.strings == ["a", "b", "c"])
@@ -119,10 +120,12 @@ final class EchoTests: XCTestCase {
     }
     
     func testImagePost() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         let fileURL = URL(fileURLWithPath: #file)
         let testImageURL = URL(fileURLWithPath: "test.jpg", relativeTo: fileURL)
 
-        let result: Data? = try await EchoTests.webServiceProxy.invoke(.post, path: "test/image",
+        let result: Data? = try await webServiceProxy.invoke(.post, path: "test/image",
             content: try? Data(contentsOf: testImageURL)) { content, contentType in
             return content
         }
@@ -131,10 +134,12 @@ final class EchoTests: XCTestCase {
     }
     
     func testPut() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         let fileURL = URL(fileURLWithPath: #file)
         let testTextURL = URL(fileURLWithPath: "test.txt", relativeTo: fileURL)
 
-        let result: String? = try await EchoTests.webServiceProxy.invoke(.put, path: "test",
+        let result: String? = try await webServiceProxy.invoke(.put, path: "test",
             content: try? Data(contentsOf: testTextURL)) { content, contentType in
             return String(data: content, encoding: .utf8)
         }
@@ -143,9 +148,11 @@ final class EchoTests: XCTestCase {
     }
 
     func testEmptyPut() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         let id = 101
 
-        let result: Int? = try await EchoTests.webServiceProxy.invoke(.put, path: "test/\(id)", arguments: [
+        let result: Int? = try await webServiceProxy.invoke(.put, path: "test/\(id)", arguments: [
             "value": "abc"
         ])
 
@@ -153,20 +160,24 @@ final class EchoTests: XCTestCase {
     }
 
     func testDelete() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         let id = 101
 
-        let result: Int? = try await EchoTests.webServiceProxy.invoke(.delete, path: "test/\(id)")
+        let result: Int? = try await webServiceProxy.invoke(.delete, path: "test/\(id)")
 
         XCTAssert(result == id)
     }
 
     func testHeaders() async throws {
-        EchoTests.webServiceProxy.headers = [
+        let webServiceProxy = createWebServiceProxy()
+
+        webServiceProxy.headers = [
             "X-Header-A": "abc",
             "X-Header-B": "123",
         ]
 
-        let result: [String: String]? = try await EchoTests.webServiceProxy.invoke(.get, path: "test/headers") { content, contentType in
+        let result: [String: String]? = try await webServiceProxy.invoke(.get, path: "test/headers") { content, contentType in
             return try? JSONSerialization.jsonObject(with: content) as? [String: String]
         }
 
@@ -177,8 +188,10 @@ final class EchoTests: XCTestCase {
     }
 
     func testError() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         do {
-            try await EchoTests.webServiceProxy.invoke(.get, path: "test/error")
+            try await webServiceProxy.invoke(.get, path: "test/error")
             
             XCTFail()
         } catch {
@@ -189,8 +202,10 @@ final class EchoTests: XCTestCase {
     }
     
     func testTimeout() async throws {
+        let webServiceProxy = createWebServiceProxy()
+
         do {
-            try await EchoTests.webServiceProxy.invoke(.get, path: "test", arguments: [
+            try await webServiceProxy.invoke(.get, path: "test", arguments: [
                 "value": 123,
                 "delay": 6000
             ])

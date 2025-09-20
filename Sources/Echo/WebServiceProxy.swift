@@ -63,7 +63,7 @@ public class WebServiceProxy {
     /**
      * Constant representing an unspecified value.
      */
-    public static let undefined: Any = NSNull()
+    public static let undefined = NSNull()
     
     // JSON encoder
     private static let jsonEncoder: JSONEncoder = {
