@@ -36,17 +36,23 @@ final class EchoTests: XCTestCase {
         let flag: Bool
     }
 
-    func createWebServiceProxy() -> WebServiceProxy {
-        let sessionConfiguration = URLSessionConfiguration.default
+    func testExample() async throws {
+        let baseURL = URL(string: "http://localhost:8080/kilo-test/")!
 
-        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-        sessionConfiguration.timeoutIntervalForResource = 4
+        let webServiceProxy = WebServiceProxy(session: URLSession.shared, baseURL: baseURL)
 
-        let session = URLSession(configuration: sessionConfiguration)
+        do {
+            // GET test/fibonacci?count=8
+            let response: [Int] = try await webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
+                "count": 8
+            ])
 
-        return WebServiceProxy(session: session, baseURL: URL(string: "http://localhost:8080/kilo-test/")!)
+            print(response) // [0, 1, 1, 2, 3, 5, 8, 13]
+        } catch {
+            print(error.localizedDescription)
+        }
     }
-    
+
     func testGet() async throws {
         let webServiceProxy = createWebServiceProxy()
 
@@ -71,16 +77,6 @@ final class EchoTests: XCTestCase {
         XCTAssert(result.dayOfWeek == .monday)
         XCTAssert(result.date == now)
         XCTAssert(result.dates == [now])
-    }
-    
-    func testGetFibonacci() async throws {
-        let webServiceProxy = createWebServiceProxy()
-
-        let result: [Int] = try await webServiceProxy.invoke(.get, path: "test/fibonacci", arguments: [
-            "count": 8
-        ])
-        
-        XCTAssert(result == [0, 1, 1, 2, 3, 5, 8, 13])
     }
 
     func testPost() async throws {
@@ -216,5 +212,16 @@ final class EchoTests: XCTestCase {
             
             XCTAssert(true)
         }
+    }
+
+    func createWebServiceProxy() -> WebServiceProxy {
+        let sessionConfiguration = URLSessionConfiguration.default
+
+        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        sessionConfiguration.timeoutIntervalForResource = 4
+
+        let session = URLSession(configuration: sessionConfiguration)
+
+        return WebServiceProxy(session: session, baseURL: URL(string: "http://localhost:8080/kilo-test/")!)
     }
 }
