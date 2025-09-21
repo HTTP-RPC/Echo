@@ -63,8 +63,8 @@ public class WebServiceProxy {
     /**
      * Constant representing an unspecified value.
      */
-    public static let undefined = NSNull()
-    
+    public static let undefined: Void = ()
+
     // JSON encoder
     private static let jsonEncoder: JSONEncoder = {
         let jsonEncoder = JSONEncoder()
@@ -95,7 +95,7 @@ public class WebServiceProxy {
      - parameter contentType: The request content type, or `nil` for no content type.
      */
     public func invoke(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        arguments: [String: Sendable] = [:],
         content: Data? = nil,
         contentType: String? = nil) async throws {
         try await invoke(method, path: path,
@@ -112,7 +112,7 @@ public class WebServiceProxy {
      - parameter body: The request body.
      */
     public func invoke<B: Encodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        arguments: [String: Sendable] = [:],
         body: B) async throws {
         try await invoke(method, path: path,
             arguments: arguments,
@@ -130,7 +130,7 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        arguments: [String: Sendable] = [:],
         content: Data? = nil,
         contentType: String? = nil) async throws -> T {
         return try await invoke(method, path: path,
@@ -148,7 +148,7 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        arguments: [String: Sendable] = [:],
         body: B) async throws -> T {
         return try await invoke(method, path: path,
             arguments: arguments,
@@ -167,7 +167,7 @@ public class WebServiceProxy {
      - returns The response body.
      */
     public func invoke<T>(_ method: Method, path: String,
-        arguments: [String: Any] = [:],
+        arguments: [String: Sendable] = [:],
         content: Data? = nil,
         contentType: String? = nil,
         responseHandler: @escaping ResponseHandler<T>) async throws -> T {
@@ -178,8 +178,8 @@ public class WebServiceProxy {
                 throw WebServiceError(errorDescription: "Invalid key.", statusCode: 0)
             }
 
-            for element in argument.value as? [Any] ?? [argument.value] {
-                if (element is NSNull) {
+            for element in argument.value as? [Sendable] ?? [argument.value] {
+                if (element is Void) {
                     continue
                 }
 

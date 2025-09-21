@@ -34,25 +34,25 @@ Service operations are initiated via one of the following methods:
 
 ```swift
 public func invoke(_ method: Method, path: String, 
-    arguments: [String: Any] = [:],
+    arguments: [String: Sendable] = [:],
     content: Data? = nil, 
     contentType: String? = nil) async throws { ... }
 
 public func invoke<B: Encodable>(_ method: Method, path: String, 
-    arguments: [String: Any] = [:], 
+    arguments: [String: Sendable] = [:],
     body: B) async throws { ... }
 
 public func invoke<T: Decodable>(_ method: Method, path: String,
-    arguments: [String: Any] = [:],
+    arguments: [String: Sendable] = [:],
     content: Data? = nil, 
     contentType: String? = nil) async throws -> T { ... }
 
 public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
-    arguments: [String: Any] = [:],
+    arguments: [String: Sendable] = [:],
     body: B) async throws -> T { ... }
 
 public func invoke<T>(_ method: Method, path: String,
-    arguments: [String: Any] = [:],
+    arguments: [String: Sendable] = [:],
     content: Data? = nil, 
     contentType: String? = nil,
     responseHandler: @escaping ResponseHandler<T>) async throws -> T { ... }
@@ -78,7 +78,7 @@ Three of the methods accept the following arguments for specifying custom reques
 The other two methods accept a `body` argument of type `B` that is serialized using `JSONEncoder`. JSON data is encoded and decoded using a date strategy of `millisecondsSince1970`.
 
 ## Query Arguments
-Any value may be used as a query argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a 64-bit integer value representing epoch time. Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
+Any sendable value may be used as a query argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a 64-bit integer value representing epoch time. Additionally, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
 The `undefined` property of the `WebServiceProxy` class can be used to represent unspecified or unknown argument values.
 

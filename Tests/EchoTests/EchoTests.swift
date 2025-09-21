@@ -26,6 +26,7 @@ final class EchoTests: XCTestCase {
         let flag: Bool
         let date: Date
         let dates: [Date]
+        let instant: String?
     }
 
     struct Body: Codable {
@@ -66,7 +67,8 @@ final class EchoTests: XCTestCase {
             "flag": true,
             "dayOfWeek": DayOfWeek.monday,
             "date": now,
-            "dates": [now]
+            "dates": [now],
+            "instant": WebServiceProxy.undefined
         ])
 
         XCTAssert(result.string == "héllo&gøod+bye?")
