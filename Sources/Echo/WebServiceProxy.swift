@@ -33,7 +33,7 @@ public class WebServiceProxy {
      - parameter content: The response content.
      - parameter contentType: The response content type, or `nil` if the content type is not known.
      */
-    public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
+    public typealias ResponseHandler<T> = @Sendable (_ content: Data, _ contentType: String?) throws -> T
 
     /**
      Creates a new web service proxy.
@@ -129,7 +129,7 @@ public class WebServiceProxy {
      - parameter contentType: The request content type, or `nil` for no content type.
      - returns The response body.
      */
-    public func invoke<T: Decodable>(_ method: Method, path: String,
+    public func invoke<T: Decodable & SendableMetatype>(_ method: Method, path: String,
         arguments: [String: Sendable] = [:],
         content: Data? = nil,
         contentType: String? = nil) async throws -> T {
@@ -147,7 +147,7 @@ public class WebServiceProxy {
      - parameter body: The request body.
      - returns The response body.
      */
-    public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
+    public func invoke<B: Encodable, T: Decodable & SendableMetatype>(_ method: Method, path: String,
         arguments: [String: Sendable] = [:],
         body: B) async throws -> T {
         return try await invoke(method, path: path,

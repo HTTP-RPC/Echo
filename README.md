@@ -42,12 +42,12 @@ public func invoke<B: Encodable>(_ method: Method, path: String,
     arguments: [String: Sendable] = [:],
     body: B) async throws { ... }
 
-public func invoke<T: Decodable>(_ method: Method, path: String,
+public func invoke<T: Decodable & SendableMetatype>(_ method: Method, path: String,
     arguments: [String: Sendable] = [:],
     content: Data? = nil, 
     contentType: String? = nil) async throws -> T { ... }
 
-public func invoke<B: Encodable, T: Decodable>(_ method: Method, path: String,
+public func invoke<B: Encodable, T: Decodable & SendableMetatype>(_ method: Method, path: String,
     arguments: [String: Sendable] = [:],
     body: B) async throws -> T { ... }
 
@@ -67,7 +67,7 @@ All variants accept the following arguments:
 The first two versions execute a service method that does not return a value. The following two versions deserialize a service response of type `T` using `JSONDecoder`. The final version accepts a `ResponseHandler` callback to facilitate decoding of custom response content:
 
 ```swift
-public typealias ResponseHandler<T> = (_ content: Data, _ contentType: String?) throws -> T
+public typealias ResponseHandler<T> = @Sendable (_ content: Data, _ contentType: String?) throws -> T
 ```
 
 Three of the methods accept the following arguments for specifying custom request body content:
