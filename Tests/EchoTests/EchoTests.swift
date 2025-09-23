@@ -193,8 +193,12 @@ final class EchoTests: XCTestCase {
             
             XCTFail()
         } catch {
+            if let webServiceError = error as? WebServiceError {
+                print(webServiceError.statusCode)
+            }
+
             print(error.localizedDescription)
-            
+
             XCTAssert(true)
         }
     }
