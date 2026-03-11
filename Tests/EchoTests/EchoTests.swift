@@ -57,7 +57,9 @@ final class EchoTests: XCTestCase {
     func testGet() async throws {
         let webServiceProxy = createWebServiceProxy()
 
-        let now = Date(timeIntervalSince1970: TimeInterval(UInt64(Date().timeIntervalSince1970 * 1000)))
+        let now = Date()
+
+        let date = Date(timeIntervalSince1970: TimeInterval(UInt64(now.timeIntervalSince1970 / 1000) * 1000))
 
         let result: Response = try await webServiceProxy.invoke(.get, path: "test", arguments: [
             "string": "héllo&gøod+bye?",
@@ -66,8 +68,8 @@ final class EchoTests: XCTestCase {
             "numbers": [1, 2, 2, 3, 3, 3],
             "flag": true,
             "dayOfWeek": DayOfWeek.monday,
-            "date": now,
-            "dates": [now],
+            "date": date,
+            "dates": [date],
             "instant": WebServiceProxy.undefined
         ])
 
@@ -77,8 +79,8 @@ final class EchoTests: XCTestCase {
         XCTAssert(result.numbers == [1, 2, 3])
         XCTAssert(result.flag == true)
         XCTAssert(result.dayOfWeek == .monday)
-        XCTAssert(result.date == now)
-        XCTAssert(result.dates == [now])
+        XCTAssert(result.date == date)
+        XCTAssert(result.dates == [date])
     }
 
     func testPost() async throws {

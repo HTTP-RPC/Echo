@@ -173,6 +173,10 @@ public class WebServiceProxy {
         responseHandler: @escaping ResponseHandler<T>) async throws -> T {
         var urlQueryItems: [URLQueryItem] = []
 
+        let iso8601DateFormatter = ISO8601DateFormatter()
+
+        iso8601DateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
         for argument in arguments {
             if (argument.key.isEmpty) {
                 throw WebServiceError(errorDescription: "Invalid key.", statusCode: 0)
@@ -185,7 +189,7 @@ public class WebServiceProxy {
 
                 let value: String
                 if let date = element as? Date {
-                    value = String(describing: Int64(date.timeIntervalSince1970 * 1000))
+                    value = iso8601DateFormatter.string(from: date)
                 } else {
                     value = String(describing: element)
                 }
