@@ -94,6 +94,7 @@ public class WebServiceProxy {
      - parameter content: The request content, or `nil` for no content.
      - parameter contentType: The request content type, or `nil` for no content type.
      */
+    nonisolated(nonsending)
     public func invoke(_ method: Method, path: String,
         arguments: [String: Sendable] = [:],
         content: Data? = nil,
@@ -111,6 +112,7 @@ public class WebServiceProxy {
      - parameter arguments: The request arguments.
      - parameter body: The request body.
      */
+    nonisolated(nonsending)
     public func invoke<B: Encodable>(_ method: Method, path: String,
         arguments: [String: Sendable] = [:],
         body: B) async throws {
@@ -129,6 +131,7 @@ public class WebServiceProxy {
      - parameter contentType: The request content type, or `nil` for no content type.
      - returns The response body.
      */
+    nonisolated(nonsending)
     public func invoke<T: Decodable & SendableMetatype>(_ method: Method, path: String,
         arguments: [String: Sendable] = [:],
         content: Data? = nil,
@@ -147,6 +150,7 @@ public class WebServiceProxy {
      - parameter body: The request body.
      - returns The response body.
      */
+    nonisolated(nonsending)
     public func invoke<B: Encodable, T: Decodable & SendableMetatype>(_ method: Method, path: String,
         arguments: [String: Sendable] = [:],
         body: B) async throws -> T {
@@ -166,6 +170,7 @@ public class WebServiceProxy {
      - parameter responseHandler: A callback that will be invoked to handle the response.
      - returns The response body.
      */
+    nonisolated(nonsending)
     public func invoke<T>(_ method: Method, path: String,
         arguments: [String: Sendable] = [:],
         content: Data? = nil,
